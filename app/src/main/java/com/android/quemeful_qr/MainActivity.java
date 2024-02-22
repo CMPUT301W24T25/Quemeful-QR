@@ -21,33 +21,27 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.baseline_event_24));
         bottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.baseline_account_circle_24));
 
-        bottomNavigation.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {
-            @Override
-            public void onClickItem(MeowBottomNavigation.Model item) {
-                // your codes
-                Toast.makeText(MainActivity.this,
-                        "clicked item :" + item.getId(),
-                        Toast.LENGTH_SHORT).show();
-            }
+        bottomNavigation.setOnClickMenuListener(item -> {
+            // your codes
+            Toast.makeText(MainActivity.this,
+                    "clicked item :" + item.getId(),
+                    Toast.LENGTH_SHORT).show();
         });
 
-        bottomNavigation.setOnShowListener(new MeowBottomNavigation.ShowListener() {
-            @Override
-            public void onShowItem(MeowBottomNavigation.Model item) {
-                Fragment fragment = null;
-                switch (item.getId()){
-                    case 1:
-                        fragment = new Home();
-                        break;
-                    case 2:
-                        fragment = new Events();
-                        break;
-                    case 3:
-                        fragment = new Profile();
-                        break;
-                }
-                loadFragment(fragment);
+        bottomNavigation.setOnShowListener(item -> {
+            Fragment fragment = null;
+            switch (item.getId()){
+                case 1:
+                    fragment = new Home();
+                    break;
+                case 2:
+                    fragment = new Events();
+                    break;
+                case 3:
+                    fragment = new Profile();
+                    break;
             }
+            loadFragment(fragment);
         });
 
         bottomNavigation.show(1, true);
