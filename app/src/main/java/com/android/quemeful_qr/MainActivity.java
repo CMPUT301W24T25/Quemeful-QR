@@ -65,18 +65,15 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation.show(1, true);
         askNotificationPermission();
-
+        new sign_up_to_notificaition(Eventid);
     }
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             this.registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     Toast.makeText(this, "Notification Permission Approved", Toast.LENGTH_SHORT).show();
                 } else {
-<<<<<<< Updated upstream
-                    Toast.makeText(t, "Give Notification permission to receive Event Announcements", Toast.LENGTH_SHORT).show();
-=======
                     Toast.makeText(this, "Give Notification permission to receive Event Announcements", Toast.LENGTH_SHORT).show();
->>>>>>> Stashed changes
+                    Toast.makeText(this, "Give Notification permission to receive Event Announcements", Toast.LENGTH_SHORT).show();
                 }
             });
 

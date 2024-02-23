@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
@@ -34,7 +33,7 @@ public class recieveNotification extends FirebaseMessagingService {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setAutoCancel(true);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            getNotification();
+
             return;
         }
         NotificationManagerCompat.from(this).notify(1, notification.build());

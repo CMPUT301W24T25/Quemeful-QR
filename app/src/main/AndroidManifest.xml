@@ -23,20 +23,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< Updated upstream
 
         <activity
             android:name=".EventDetailsActivity">
         </activity>
 
-=======
 <service android:name=".recieveNotification"
     android:exported="true">
     <intent-filter>
         <action android:name="android.intent.action.GET_NOTIFICATION"/>
     </intent-filter>
 </service>
->>>>>>> Stashed changes
+
     </application>
 
 </manifest>

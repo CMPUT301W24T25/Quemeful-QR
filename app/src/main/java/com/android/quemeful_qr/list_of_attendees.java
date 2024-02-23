@@ -1,10 +1,7 @@
 package com.android.quemeful_qr;
 
-import android.graphics.drawable.Icon;
-import android.media.metrics.Event;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -92,7 +87,7 @@ public class list_of_attendees extends Fragment {
             // implement back button functionality
                     }
         });
-        new getNotification(Eventid);
+        new sign_up_to_notificaition(Eventid);
 
         ImageButton announcement_button = view.findViewById(R.id.megaphone_button);
         announcement_button.setOnClickListener(new View.OnClickListener() {
