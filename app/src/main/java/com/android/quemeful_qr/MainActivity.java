@@ -2,12 +2,15 @@ package com.android.quemeful_qr;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -35,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
                 if (task.getResult().exists()) {
                     // Document exists, meaning the user is "logged in"
                     Log.d(TAG, "User exists with ID: " + deviceId);
-                    setContentView(R.layout.activity_main);
+                    //setContentView(R.layout.activity_main);
+                    Toast.makeText(MainActivity.this, "Username Already Exists, Try another", Toast.LENGTH_SHORT).show();
                 } else {
                     // No such document exists, meaning the user is not "logged in"
                     Log.d(TAG, "No user found with ID: " + deviceId);
@@ -66,7 +70,10 @@ public class MainActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d(TAG, "New user added with details");
                                         // Optionally, switch to the main activity layout or another activity after successful submission
-                                        setContentView(R.layout.activity_main);
+                                        // Optionally, just for checking purpose switching to the next QRCheck activity - jahnabi
+                                        //setContentView(R.layout.activity_main);
+                                        Intent intent = new Intent(MainActivity.this, QRCheckActivity.class);
+                                        startActivity(intent);
                                     })
                                     .addOnFailureListener(e -> Log.e(TAG, "Error adding new user", e));
                         }

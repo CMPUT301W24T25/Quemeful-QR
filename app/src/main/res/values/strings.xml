@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Quemeful-QR</string>
+    <string name="check_in">Check In</string>
+    <string name="generate_new_qr">Generate New QR</string>
+    <string name="you_don_t_have_any_promotion_qr_code_for_this_event">You don\'t have any promotion QR code for this event</string>
+    <string name="event_promotion">Event Promotion</string>
+    <string name="enter_event_name">Enter Event Name</string>
+    <string name="generate">Generate</string>
+    <string name="scan_qr_code">Scan QR Code</string>
 </resources>
