@@ -1,6 +1,8 @@
 package com.android.quemeful_qr;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Home extends Fragment {
+public class Home extends Fragment implements EventClickListenerInterface{
 
     public Home() {
     }
@@ -45,6 +47,9 @@ public class Home extends Fragment {
 
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     EventHelper event = document.toObject(EventHelper.class);
+
+                    event.setId(document.getId()); // Set the document ID as the event ID
+
                     Date eventDate = DateUtils.parseDate(event.getDate());
                     if (eventDate != null) {
                         if (DateUtils.isToday(eventDate)) {
@@ -63,16 +68,24 @@ public class Home extends Fragment {
 
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
         if (!todayEvents.isEmpty()) {
-            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents);
+            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this);
             eventsRecyclerView.setAdapter(todayEventAdapter);
         } else {
         }
 
         if (!upcomingEvents.isEmpty()) {
-            UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents);
+            UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this);
             upcomingEventsRecyclerView.setAdapter(upcomingEventAdapter);
         } else {
         }
+    }
+
+    @Override
+    public void onEventClick(EventHelper event) {
+        Log.d("HomeFragment", "Event clicked: " + event.getTitle());
+        Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+        intent.putExtra("event_id", event.getId());
+        startActivity(intent);
     }
 
 }

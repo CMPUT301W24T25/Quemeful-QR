@@ -1,6 +1,7 @@
 package com.android.quemeful_qr;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+
+
 public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.EventViewHolder>{
 
-    private List<EventHelper> events;
+    private static List<EventHelper> events;
     private Context context;
+    private LayoutInflater mInflater;
+    private static EventClickListenerInterface mClickListener;
 
-    public EventsTodayAdapter(Context context, List<EventHelper> events){
+    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener){
         this.context = context;
         this.events = events;
+        this.mClickListener = clickListener;
     }
 
     @NonNull
@@ -43,7 +49,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         return events.size();
     }
 
-    public static class EventViewHolder extends RecyclerView.ViewHolder {
+    public static class EventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView eventImage;
         TextView eventTitle, eventLocation, eventTime;
 
@@ -53,6 +59,13 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
             eventTitle = itemView.findViewById(R.id.eventTitle);
             eventLocation = itemView.findViewById(R.id.eventLocation);
             eventTime = itemView.findViewById(R.id.eventTime);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Log.d("EventsTodayAdapter", "Item clicked");
+            if (mClickListener != null) mClickListener.onEventClick(events.get(getAdapterPosition()));
         }
     }
 }
