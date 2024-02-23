@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "421957393900",
-    "project_id": "quemefulqr",
-    "storage_bucket": "quemefulqr.appspot.com"
+    "project_number": "877799211960",
+    "project_id": "quemeful-qr-8e3a2",
+    "storage_bucket": "quemeful-qr-8e3a2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:421957393900:android:a4f3ed35c712ca7179b4c9",
+        "mobilesdk_app_id": "1:877799211960:android:f352cca7be3ab5db43c54d",
         "android_client_info": {
           "package_name": "com.android.quemeful_qr"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDtRgfkE5wRGDyUu1ot74xsmCs6-C_K6uE"
+          "current_key": "AIzaSyDYF_-yZiSa6klTgbZcxi8gz6AyqVZxJpg"
         }
       ],
       "services": {
