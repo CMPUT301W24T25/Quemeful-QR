@@ -6,10 +6,6 @@ package com.android.quemeful_qr;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -198,9 +193,14 @@ public class HomeFragment extends Fragment {
             Toast myToast = Toast.makeText(getActivity(), "please enter an event", Toast.LENGTH_SHORT);
             myToast.show();
         } else {
-            HashMap<String, String> data = new HashMap<>();
-            data.put("Event UUID", event.getEventUUID());
-            data.put("Event Name", event.getEventName());
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("Event QR code", event.getEventUUID());
+
+            //shows details of the event QR code
+            HashMap<String, String> nestedData = new HashMap<>();
+            nestedData.put("Event Name", event.getEventName());
+            data.put("Event Details", nestedData);
+
             eventsRef
                     .document(db.collection("events").document().getId())
                     .set(data)
