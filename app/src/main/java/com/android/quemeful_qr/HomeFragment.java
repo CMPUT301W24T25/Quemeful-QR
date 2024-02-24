@@ -193,10 +193,11 @@ public class HomeFragment extends Fragment {
             Toast myToast = Toast.makeText(getActivity(), "please enter an event", Toast.LENGTH_SHORT);
             myToast.show();
         } else {
+            //event QR code is key
             HashMap<String, Object> data = new HashMap<>();
             data.put("Event QR code", event.getEventUUID());
 
-            //shows details of the event QR code
+            //shows the details of the event as values
             HashMap<String, String> nestedData = new HashMap<>();
             nestedData.put("Event Name", event.getEventName());
             data.put("Event Details", nestedData);
