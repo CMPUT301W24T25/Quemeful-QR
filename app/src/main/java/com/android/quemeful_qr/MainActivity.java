@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
                 if (task.getResult().exists()) {
                     // Document exists, meaning the user is "logged in"
                     Log.d(TAG, "User exists with ID: " + deviceId);
-                    setContentView(R.layout.activity_main);
+//                    setContentView(R.layout.activity_main);
+                    setContentView(R.layout.fragment_home);
                 } else {
                     // No such document exists, meaning the user is not "logged in"
                     Log.d(TAG, "No user found with ID: " + deviceId);
