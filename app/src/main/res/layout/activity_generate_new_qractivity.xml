@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="serif"
         android:text="@string/event_promotion"
         android:textAlignment="center"
         android:textColor="@color/black"
@@ -63,6 +63,7 @@
         android:layout_marginTop="30dp"
         android:text="@string/generate"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:fontFamily="serif"/>
 
 </RelativeLayout>

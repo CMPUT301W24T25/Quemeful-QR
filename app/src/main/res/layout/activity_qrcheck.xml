@@ -22,7 +22,8 @@
             android:layout_marginTop="10dp"
             android:text="@string/event_promotion"
             android:textAlignment="center"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:fontFamily="serif"/>
 
         <TextView
             android:id="@+id/event_text"
@@ -34,7 +35,8 @@
             android:layout_marginRight="10dp"
             android:text="@string/you_don_t_have_any_promotion_qr_code_for_this_event"
             android:textAlignment="center"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:fontFamily="serif"/>
 
         <Button
             android:id="@+id/generate_button"
@@ -44,7 +46,8 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
             android:text="@string/generate_new_qr"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:fontFamily="serif"/>
 
         <Button
             android:id="@+id/scan_button"
@@ -54,7 +57,8 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
             android:text="@string/check_in"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:fontFamily="serif"/>
 
 </RelativeLayout>
 

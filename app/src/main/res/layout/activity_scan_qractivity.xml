@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="@string/scan_qr_code"
         android:textSize="30sp"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="serif"
         android:textColor="@color/black"
         android:textAlignment="center"
         android:layout_marginTop="10dp" />

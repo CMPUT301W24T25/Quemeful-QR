@@ -7,4 +7,11 @@
     <string name="enter_event_name">Enter Event Name</string>
     <string name="generate">Generate</string>
     <string name="scan_qr_code">Scan QR Code</string>
+    <string name="quemeful_qr">Quemeful QR</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="enter_first_name">Enter First Name</string>
+    <string name="log_in">Log In</string>
+    <string name="already_logged_in">Already Logged In</string>
+    <string name="get_started">Get Started!</string>
+    <string name="enter_last_name">Enter Last Name</string>
 </resources>

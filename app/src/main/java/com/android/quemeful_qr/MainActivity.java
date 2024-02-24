@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -38,8 +39,52 @@ public class MainActivity extends AppCompatActivity {
                 if (task.getResult().exists()) {
                     // Document exists, meaning the user is "logged in"
                     Log.d(TAG, "User exists with ID: " + deviceId);
-                    //setContentView(R.layout.activity_main);
-                    Toast.makeText(MainActivity.this, "Username Already Exists, Try another", Toast.LENGTH_SHORT).show();
+
+                    // still set content view to no login (instead of activity main) page but do not type in any inputs just login automatically
+                    setContentView(R.layout.nologin);
+
+//                    // autofill existing data
+//                    EditText firstNameEditText = findViewById(R.id.firstNameEditText);
+//                    EditText lastNameEditText = findViewById(R.id.lastNameEditText);
+                    Button skipLogin = findViewById(R.id.SkipLoginForExistingUsersButton);
+
+//                    // Get the entered names that is saved
+//                    SharedPreferences preferences = getSharedPreferences("LoginData", MODE_PRIVATE);
+//                    String firstName = preferences.getString("First Name", "");
+//                    String lastName = preferences.getString("Last Name", "");
+//
+//                    //If field is empty set text
+//                    if(!firstName.isEmpty() && !lastName.isEmpty()){
+//
+//                        //autofill
+//                        firstNameEditText.setText(firstName);
+//                        lastNameEditText.setText(lastName);
+//                        // optionally displaying a toast
+//                        Toast.makeText(MainActivity.this, "Username Already Exists, Logging In", Toast.LENGTH_SHORT).show();
+//                        // after displaying message simply click on already exists button and proceed to next activity
+//                        skipLogin.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//
+//                                // already checked In user proceeds to the next activity - jahnabi
+//                                Intent intent = new Intent(MainActivity.this, QRCheckActivity.class);
+//                                startActivity(intent);
+//                            }
+//                        });
+//                    }
+                    // optionally displaying a toast
+                    Toast.makeText(MainActivity.this, "Username Already Exists, Logging In", Toast.LENGTH_SHORT).show();
+                    // after displaying message simply click on already exists button and proceed to next activity
+                    skipLogin.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            // already checked In user proceeds to the next activity - jahnabi
+                            Intent intent = new Intent(MainActivity.this, QRCheckActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
                 } else {
                     // No such document exists, meaning the user is not "logged in"
                     Log.d(TAG, "No user found with ID: " + deviceId);
