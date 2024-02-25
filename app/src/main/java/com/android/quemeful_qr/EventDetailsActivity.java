@@ -28,7 +28,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // This will close the current activity and return to the previous one in the stack
                 finish();
             }
         });

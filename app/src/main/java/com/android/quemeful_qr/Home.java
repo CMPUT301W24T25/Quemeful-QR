@@ -46,11 +46,13 @@ public class Home extends Fragment implements EventClickListenerInterface{
                 List<EventHelper> upcomingEvents = new ArrayList<>();
 
                 for (QueryDocumentSnapshot document : task.getResult()) {
+
                     EventHelper event = document.toObject(EventHelper.class);
 
                     event.setId(document.getId()); // Set the document ID as the event ID
 
                     Date eventDate = DateUtils.parseDate(event.getDate());
+
                     if (eventDate != null) {
                         if (DateUtils.isToday(eventDate)) {
                             todayEvents.add(event);
@@ -71,12 +73,14 @@ public class Home extends Fragment implements EventClickListenerInterface{
             EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this);
             eventsRecyclerView.setAdapter(todayEventAdapter);
         } else {
+
         }
 
         if (!upcomingEvents.isEmpty()) {
             UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this);
             upcomingEventsRecyclerView.setAdapter(upcomingEventAdapter);
         } else {
+
         }
     }
 
