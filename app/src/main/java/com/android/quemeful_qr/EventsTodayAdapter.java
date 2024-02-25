@@ -19,7 +19,6 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
 
     private static List<EventHelper> events;
     private Context context;
-    private LayoutInflater mInflater;
     private static EventClickListenerInterface mClickListener;
 
     public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener){

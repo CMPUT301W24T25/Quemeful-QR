@@ -1,6 +1,5 @@
 package com.android.quemeful_qr;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ public class attendeeAdapter extends RecyclerView.Adapter<attendeeAdapter.Attend
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public attendeeAdapter(String eventId) {
-        DocumentReference eventRef = db.collection("Events").document(eventId);
+        DocumentReference eventRef = db.collection("events").document(eventId);
 
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

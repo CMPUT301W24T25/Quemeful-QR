@@ -2,7 +2,6 @@ package com.android.quemeful_qr;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog.Builder;
 import android.os.StrictMode;
 
 import org.apache.commons.io.IOUtils;
@@ -15,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 
 public class FCMSend {
     private static String BASE_URL = "https://fcm.googleapis.com/fcm/send";

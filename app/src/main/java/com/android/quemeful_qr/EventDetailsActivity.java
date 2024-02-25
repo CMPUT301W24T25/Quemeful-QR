@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -16,6 +17,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow;
+    private TextView viewAttendee;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+
         textViewEventTitle = findViewById(R.id.textViewEventTitle);
         textViewEventDate = findViewById(R.id.textViewEventDate);
         textViewEventTime = findViewById(R.id.textViewEventTime);
@@ -44,7 +48,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         } else {
             // Handle the error
         }
+
     }
+
 
     private void fetchEventDetails (String eventId) {
         db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {

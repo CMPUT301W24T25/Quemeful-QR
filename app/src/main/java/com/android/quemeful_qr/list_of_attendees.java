@@ -33,7 +33,7 @@ public class list_of_attendees extends Fragment {
     // TODO: Rename and change types of parameters
     private String Eventid;
 
-    public list_of_attendees( String Eventid) {
+    public list_of_attendees(String eventid) {
         this.Eventid = Eventid;
         // Required empty public constructor
     }
@@ -46,11 +46,14 @@ public class list_of_attendees extends Fragment {
      * @return A new instance of fragment list_of_attendees.
      */
     // TODO: Rename and change types and number of parameters
-    public list_of_attendees newInstance() {
+    public list_of_attendees newInstance(String eventId) {
         list_of_attendees fragment = new list_of_attendees(this.Eventid);
 
         return fragment;
     }
+
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -10,6 +10,4 @@ public class sign_up_to_notificaition {
     }
 
 
-
-
 }

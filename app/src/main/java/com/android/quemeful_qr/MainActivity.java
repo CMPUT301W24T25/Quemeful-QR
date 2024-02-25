@@ -1,16 +1,13 @@
 package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -19,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
-    private MeowBottomNavigation bottomNavigation;
 
     private String userFirstName = "";
     private String userLastName = "";
@@ -90,11 +85,9 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.baseline_event_24));
         bottomNavigation.add(new MeowBottomNavigation.Model(3, R.drawable.baseline_account_circle_24));
 
-        bottomNavigation.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {
-            @Override
-            public void onClickItem(MeowBottomNavigation.Model item) {
-                // Handle click
-            }
+        bottomNavigation.setOnClickMenuListener(item -> {
+            // Handle click
+
         });
 
         bottomNavigation.setOnShowListener(item -> {
@@ -107,10 +100,15 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new Events();
                     break;
                 case 3:
-                    fragment = Profile.newInstance(userFirstName, userLastName);; // Consider passing user data to the Profile fragment here
+                    fragment = Profile.newInstance(userFirstName, userLastName); // Consider passing user data to the Profile fragment here
                     break;
             }
             loadFragment(fragment);
+        });
+
+        // Setting a no-op ReselectListener to avoid NullPointerException
+        bottomNavigation.setOnReselectListener(item -> {
+            // Implement reselection logic here if needed, otherwise leave as no-op to prevent NullPointerException
         });
 
         bottomNavigation.show(1, true);
