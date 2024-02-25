@@ -3,6 +3,7 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+
 android {
     namespace = "com.android.quemeful_qr"
     compileSdk = 34
@@ -29,7 +30,12 @@ android {
     }
 }
 
+
+
 dependencies {
+    implementation ("org.apache.directory.studio:org.apache.commons.io:2.4")
+    implementation ("com.google.firebase:firebase-messaging:23.4.1")
+
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
