@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
@@ -185,16 +187,16 @@ public class AddEventActivity extends AppCompatActivity {
             nesteddata.put("Event Poster", event.getEventPoster());
             data.put("Event details", nesteddata);
 
-//            eventsRef
-//                    .document(db.collection("events").document().getId())
-//                    .set(data)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            Log.d("Firestore", "DocumentSnapshot successfully written!");
-//                            Log.d("UUID", "the UUID is " + event.getEventUUID());
-//                        }
-//                    });
+            eventsRef
+                    .document(db.collection("events").document().getId())
+                    .set(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+                            Log.d("UUID", "the UUID is " + event.getEventUUID());
+                        }
+                    });
             addeventedittext.setText(""); //clears the editText for next entry
             addeventedittext.requestFocus(); // sets cursor back to addCityEditText
         }

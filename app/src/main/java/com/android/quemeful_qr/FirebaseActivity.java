@@ -122,16 +122,16 @@ public class FirebaseActivity extends AppCompatActivity {
             HashMap<String, String> data = new HashMap<>();
             data.put("Event UUID", event.getEventUUID());
             data.put("Event Name", event.getEventName());
-            eventsRef
-                    .document(db.collection("events").document().getId())
-                    .set(data)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("Firestore", "DocumentSnapshot successfully written!");
-                            Log.d("UUID", "the UUID is " + event.getEventUUID());
-                        }
-                    });
+//            eventsRef
+//                    .document(db.collection("events").document().getId())
+//                    .set(data)
+//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                        @Override
+//                        public void onSuccess(Void aVoid) {
+//                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+//                            Log.d("UUID", "the UUID is " + event.getEventUUID());
+//                        }
+//                    });
             addEventEditText.setText(""); //clears the editText for next entry
             addEventEditText.requestFocus(); // sets cursor back to addCityEditText
         }
