@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:fontFamily="serif"
-        android:text="@string/event_promotion"
+        android:text="@string/new_qr_code"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="30sp" />
@@ -52,7 +52,8 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:hint="@string/enter_event_name"
-        android:textColorHint="#CC000000"/>
+        android:textColorHint="#CC000000"
+        android:textAlignment="center"/>
 
     <Button
         android:id="@+id/generate"

@@ -14,4 +14,22 @@
     <string name="already_logged_in">Already Logged In</string>
     <string name="get_started">Get Started!</string>
     <string name="enter_last_name">Enter Last Name</string>
+    <string name="event_title">Event Title</string>
+    <string name="create_event">Create Event</string>
+    <string name="e_g_tech_event_concerts">e.g. Tech Event, Concerts,...</string>
+    <string name="add_poster">Add Poster</string>
+    <string name="event_details">Event Details</string>
+    <string name="event_description">Event Description ...</string>
+    <string name="start_date">Start Date</string>
+    <string name="start_time">Start Time</string>
+    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
+    <string name="_16_00">16:00</string>
+    <string name="end_date">End Date</string>
+    <string name="end_time">End Time</string>
+    <string name="_20_00">20:00</string>
+    <string name="qr_code">QR Code</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
+    <string name="create_new_event_check">Create New Event (check)</string>
+    <string name="new_qr_code">New QR Code</string>
 </resources>

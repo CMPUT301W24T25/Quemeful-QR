@@ -46,7 +46,7 @@
         android:src="@drawable/logo"
         android:scaleType="fitCenter"
         android:layout_marginTop="10dp"
-        android:background="@drawable/rounded_corner_for_logo"
+        android:background="@drawable/rounded_corner"
         android:padding="18dp"
         android:layout_below="@id/queuemfulQrTextView"
         android:layout_centerHorizontal="true"/>
