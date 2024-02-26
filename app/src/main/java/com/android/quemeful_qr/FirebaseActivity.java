@@ -57,7 +57,7 @@ public class FirebaseActivity extends AppCompatActivity {
         generateQR_button = findViewById(R.id.generateQR);
         imageView = findViewById(R.id.qr_code);
         db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("event details");
+        eventsRef = db.collection("events");
         eventDataList = new ArrayList<>();
 
 
