@@ -1,23 +1,22 @@
 package com.android.quemeful_qr;
 
-import android.provider.CalendarContract;
-
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.UUID;
 
-public class Event {
+public class Event implements Serializable {
     //Event event = new Event(eventUUID, eventName, checkInTimeDate, checkInLocation, attendees);
     private String eventUUID;
     private String eventName;
+    private String eventPoster;
     private LocalDateTime checkInTimeDate;
     private Double checkInLocation;
 
 //    private ArrayList<Attendees> attendeeList;
 
-    Event(String eventUUID, String eventName){
+    Event(String eventUUID, String eventName, String eventPoster){
         this.eventUUID = eventUUID;
         this.eventName = eventName;
+        this.eventPoster = eventPoster;
 //        this.checkInLocation = checkInLocation;
 //        this.checkInTimeDate = checkInTimeDate;
 //        this.attendeeList = ArrayList< Attendees >
@@ -33,6 +32,14 @@ public class Event {
 
     public String getEventName() {
         return eventName;
+    }
+
+    public String getEventPoster() {
+        return eventPoster;
+    }
+
+    public void setEventPoster(String eventPoster) {
+        this.eventPoster = eventPoster;
     }
 
     public void setEventName(String eventName) {

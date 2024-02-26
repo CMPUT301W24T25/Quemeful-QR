@@ -1,5 +1,6 @@
 package com.android.quemeful_qr;
 
+
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -8,11 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.android.quemeful_qr.databinding.HomeBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -22,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Tag for logging
     private static final String TAG = "MainActivity";
-    HomeBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,25 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 if (task.getResult().exists()) {
                     // Document exists, meaning the user is "logged in"
                     Log.d(TAG, "User exists with ID: " + deviceId);
-//                    setContentView(R.layout.activity_main);
-//                    setContentView(R.layout.fragment_home);
-                    binding = HomeBinding.inflate(getLayoutInflater());
-//        setContentView(R.layout.activity_main);
-                    setContentView(binding.getRoot());
-                    replaceFragment(new HomeFragment());
-
-                    binding.bottomNavigationView.setOnItemSelectedListener(item-> {
-                        //case statements converted to if statements because constant
-                        int itemId = item.getItemId();
-                        if (itemId == R.id.home) {
-                            replaceFragment(new HomeFragment());
-                        } else if (itemId == R.id.profile) {
-                            replaceFragment(new ProfileFragment());
-                        } else if (itemId == R.id.settings) {
-                            replaceFragment(new SettingsFragment());
-                        }
-                        return true;
-                    });
+                    setContentView(R.layout.activity_home);
                 } else {
                     // No such document exists, meaning the user is not "logged in"
                     Log.d(TAG, "No user found with ID: " + deviceId);
@@ -89,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d(TAG, "New user added with details");
                                         // Optionally, switch to the main activity layout or another activity after successful submission
-                                        setContentView(R.layout.activity_main);
+                                        setContentView(R.layout.activity_home);
                                     })
                                     .addOnFailureListener(e -> Log.e(TAG, "Error adding new user", e));
                         }
@@ -101,13 +79,5 @@ public class MainActivity extends AppCompatActivity {
                 setContentView(R.layout.nologin);
             }
         });
-    }
-    //replace fragment with particular layout when click menu buttons
-    private void replaceFragment(Fragment fragment){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
-        fragmentTransaction.commit();
-
     }
 }

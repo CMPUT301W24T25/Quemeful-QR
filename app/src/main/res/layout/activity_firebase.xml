@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    tools:context=".FirebaseActivity">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -12,11 +12,10 @@
         android:id="@+id/add_event_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="236dp"
+        android:layout_marginTop="56dp"
         android:text="add event"
-        app:layout_constraintBottom_toTopOf="@+id/add_event_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,10 +23,12 @@
         android:id="@+id/scanQR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="508dp"
         android:text="QR Scanner"
+        app:layout_constraintBottom_toBottomOf="@+id/qr_code"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_event_edit_text" />
+        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/text"
@@ -45,7 +46,7 @@
         android:id="@+id/add_event_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:hint="add event"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"

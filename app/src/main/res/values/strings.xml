@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Quemeful-QR</string>
+    <string name="type_delete_to_confirm_deletion">type delete to confirm deletion</string>
+    <string name="confirm">confirm</string>
+    <string name="delete_event">delete event</string>
+    <string name="delete_all">delete all</string>
+    <string name="edit_event">edit event</string>
+    <string name="event_count">event count</string>
+    <string name="attending_count">attending count</string>
+    <string name="add_fab">add fab</string>
+    <string name="attending_check">\u2713 attending</string>
+    <string name="event_name">event name</string>
+    <string name="view_event">view event</string>
+    <string name="checkin_event">check in</string>
+    <string name="event_promotion">Event promotion</string>
+    <string name="you_don_t_have_any_promotion_qr_code_for_this_event">You don\'t have any promotion QR code for this event</string>
+    <string name="generate_new_qr">Generate new QR</string>
+    <string name="check_in">Check in</string>
+    <string name="scan_qr_code">Scan QR code</string>
+    <string name="enter_event_name">Enter event name</string>
+    <string name="generate">Generate</string>
+    <string name="add_event">add event</string>
+    <string name="add_poster">add poster</string>
+    <string name="choose_image">choose image</string>
+
 </resources>
