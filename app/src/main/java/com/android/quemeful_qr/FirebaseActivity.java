@@ -119,19 +119,24 @@ public class FirebaseActivity extends AppCompatActivity {
             Toast myToast = Toast.makeText(FirebaseActivity.this, "please enter an event", Toast.LENGTH_SHORT);
             myToast.show();
         } else {
-            HashMap<String, String> data = new HashMap<>();
-            data.put("Event UUID", event.getEventUUID());
-            data.put("Event Name", event.getEventName());
-//            eventsRef
-//                    .document(db.collection("events").document().getId())
-//                    .set(data)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            Log.d("Firestore", "DocumentSnapshot successfully written!");
-//                            Log.d("UUID", "the UUID is " + event.getEventUUID());
-//                        }
-//                    });
+            HashMap<String, Object> data = new HashMap<>();
+//            data.put("Event QR id", event.getEventUUID());
+            HashMap<String, String> nestedData = new HashMap<>();
+            nestedData.put("Event Name", event.getEventName());
+            nestedData.put("Event Date", "14-03-2024");
+            data.put(event.getEventUUID(), nestedData);
+
+
+            eventsRef
+                    .document(db.collection("events").document().getId())
+                    .set(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+                            Log.d("UUID", "the UUID is " + event.getEventUUID());
+                        }
+                    });
             addEventEditText.setText(""); //clears the editText for next entry
             addEventEditText.requestFocus(); // sets cursor back to addCityEditText
         }
