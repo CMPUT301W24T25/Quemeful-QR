@@ -1,16 +1,30 @@
+//https://firebase.google.com/docs/firestore/query-data/queries#java
 package com.android.quemeful_qr;
 
+import static android.content.ContentValues.TAG;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -21,6 +35,10 @@ public class QRCheckActivity extends AppCompatActivity {
     //scan and generate QR
     private ImageButton scan;
     private TextView camera;
+    private FirebaseFirestore db;
+
+    private CollectionReference eventsRef;
+
 
     /**
      * The onCreate method of this activity is used to set a listener on the camera icon button to scan a QR code.
@@ -79,6 +97,9 @@ public class QRCheckActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
+
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null){
             if (result.getContents() == null) {
@@ -87,6 +108,29 @@ public class QRCheckActivity extends AppCompatActivity {
             else{
                 camera.setText(result.getContents());
                 Toast.makeText(getBaseContext(), "Scanned successfully", Toast.LENGTH_SHORT).show();
+                // check if a document exists with the id and name we scanned
+                //if exists, display it
+                //if not exist, error message
+                db.collection("events").whereEqualTo("Event UUID", result.getContents()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                //brings the user to a new activity with event details
+                                //image of event, etc
+                                camera.setText("scanned successfully");
+                                //document.getData()
+                                openViewEventActivity();
+
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            camera.setText("QR code not recognized");
+                            //set the error message onto the camera textview "QR code not recognized"
+                        }
+                    }
+                });
 
             }
         }
@@ -94,5 +138,9 @@ public class QRCheckActivity extends AppCompatActivity {
             //pass the result to the activity
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+    protected void openViewEventActivity(){
+        Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
+        startActivity(intent);
     }
 }
