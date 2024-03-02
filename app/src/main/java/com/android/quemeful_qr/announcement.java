@@ -99,7 +99,7 @@ public class announcement extends Fragment {
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
-                .addHeader("Authorization", "key=AAAAzGDpA7g:APA91bHInBsxmCSQsBEnH7LShN12yL3It4yxTWmQhOMsYgaI52YRch2zPtk_XwY2kkf95VqPdSFRZlhcmnTEMDg4n_qkMxJqX1My5jLrrPkZEwA6VZI9_jF_DmO6dTA8nSaGnTqIlhry")
+                .addHeader("Authorization", "key=")
                 .build();
 
         okHttpClient.newCall(request);
