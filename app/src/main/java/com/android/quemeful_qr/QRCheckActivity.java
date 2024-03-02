@@ -1,10 +1,12 @@
 //https://firebase.google.com/docs/firestore/query-data/queries#java
+//https://stackoverflow.com/a/8638723
 package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +30,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This code here is the MainActivity code of the QRScanner project done locally.
  */
@@ -38,6 +44,8 @@ public class QRCheckActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private CollectionReference eventsRef;
+
+    private String eventPoster;
 
 
     /**
@@ -79,6 +87,17 @@ public class QRCheckActivity extends AppCompatActivity {
                 integrator.initiateScan();
             }
         });
+        if (savedInstanceState == null){
+            Bundle extras = getIntent().getExtras();
+            if (extras == null){
+                eventPoster = null;
+            } else {
+                eventPoster = extras.getString("key");
+            }
+        } else {
+            eventPoster= (String) savedInstanceState.getSerializable("key");
+
+        }
     }
 
     /**
@@ -114,14 +133,20 @@ public class QRCheckActivity extends AppCompatActivity {
                 db.collection("events").whereEqualTo("Event UUID", result.getContents()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
-                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Log.d(TAG, document.getId() + "=>>" + document.getData().values());
                                 //brings the user to a new activity with event details
                                 //image of event, etc
-                                camera.setText("scanned successfully");
-                                //document.getData()
-                                openViewEventActivity();
+                                camera.setText(document.getData().toString());//document.getData() returns a map, need to convert to String
+                                Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
+                                eventPoster = document.getData().values().toString();
+                                int indexOfOpenBracket = eventPoster.indexOf("[");
+                                int indexOfLastBracket = eventPoster.lastIndexOf("]");
+
+                                intent.putExtra("key", eventPoster.substring(indexOfOpenBracket+1, indexOfLastBracket));
+                                startActivity(intent);
 
                             }
                         } else {
@@ -129,18 +154,18 @@ public class QRCheckActivity extends AppCompatActivity {
                             camera.setText("QR code not recognized");
                             //set the error message onto the camera textview "QR code not recognized"
                         }
+
                     }
                 });
 
+
             }
+
         }
         else{
             //pass the result to the activity
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-    protected void openViewEventActivity(){
-        Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
-        startActivity(intent);
-    }
+
 }

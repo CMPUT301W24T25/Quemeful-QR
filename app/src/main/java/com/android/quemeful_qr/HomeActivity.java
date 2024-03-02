@@ -92,7 +92,6 @@ public class HomeActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_home);
         setUpToolbars();
         setUpNavbars();
-        setUpInterface();
 
         String[] events = {
 
@@ -318,8 +317,6 @@ public class HomeActivity extends AppCompatActivity implements
     protected void openViewEventActivity(){
         Intent intent = new Intent(HomeActivity.this, ViewEventActivity.class);
         startActivity(intent);
-    }
-    protected void setUpInterface(){
     }
     protected void setUpToolbars(){
         backIcon = (ImageView) findViewById(R.id.backarrow_icon);

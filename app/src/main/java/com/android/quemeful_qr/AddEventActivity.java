@@ -3,6 +3,7 @@
 //https://www.youtube.com/watch?v=_mo0vPfOaAQ
 //https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
 //https://firebase.google.com/docs/firestore/query-data/queries#java
+//https://stackoverflow.com/q/41396194
 package com.android.quemeful_qr;
 
 import android.app.Activity;

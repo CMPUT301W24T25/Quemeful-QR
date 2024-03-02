@@ -11,7 +11,7 @@ public class Event implements Serializable {
     private LocalDateTime checkInTimeDate;
     private Double checkInLocation;
 
-//    private ArrayList<Attendees> attendeeList;
+
 
     Event(String eventUUID, String eventName, String eventPoster){
         this.eventUUID = eventUUID;
