@@ -54,16 +54,11 @@ public class AddEventActivity extends AppCompatActivity {
     private Button firebasepagebutton;
     private ImageView imageviewqrcode;
     private Button uploadPic;
-    int SELECT_PICTURE = 200;
-    // Uri indicates, where the image will be picked from
 
-//    private FirebaseStorage storage;
-//    private StorageReference storageReference;
     private Uri selectedImageUri;
     private FirebaseFirestore db;
 
     private CollectionReference eventsRef;
-    private final int PICK_IMAGE_REQUEST = 22;
 
 
     @Override
@@ -94,20 +89,12 @@ public class AddEventActivity extends AppCompatActivity {
                 imageChooser();
             }
         });
-//        addposter.setOnClickListener(new View.OnClickListener(){
-//
-//            @Override
-//            public void onClick(View v) {
-//                uploadImage();
-//            }
-//        });
+
         addeventbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                uploadImage();
                 eventUUID = UUID.randomUUID().toString();
                 String eventName = addeventedittext.getText().toString();
-//                Event event = new Event(eventUUID, eventName, selectedImageUri.toString());
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -116,7 +103,6 @@ public class AddEventActivity extends AppCompatActivity {
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     Event event = new Event(eventUUID, eventName, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
-//                  return Base64.encodeToString(byteArray, Base64.DEFAULT);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -135,15 +121,7 @@ public class AddEventActivity extends AppCompatActivity {
                 openFirebaseActivity();
             }
         });
-        uploadPic.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Toast myToast = Toast.makeText(AddEventActivity.this, "pic button clicked", Toast.LENGTH_SHORT);
-                myToast.show();
-                uploadImage();
 
-            }
-        });
     }
     // this function is triggered when
     // the Select Image Button is clicked
@@ -174,70 +152,11 @@ public class AddEventActivity extends AppCompatActivity {
                 }
             });
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if(requestCode==123 && resultCode==RESULT_OK) {
-//            selectedImageUri = data.getData(); //The uri with the location of the file
-//            if (selectedImageUri != null) {
-//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
-//            }
-//        }
-//    }
 
 
-    private void uploadImage()
-    {
-        if (selectedImageUri != null) {
-
-//             Defining the child of storageReference
-//            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
-//            ref.putFile(selectedImageUri);
-
-        }
-    }
     private void addNewEvent(Event event) {
 // Add the event to the Firestore collection
 
-//        String eventName = addeventedittext.getText().toString();
-//        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-//
-//        try {
-//            eventUUID = UUID.randomUUID().toString(); //make random uuid
-//            BitMatrix bitMatrix = multiFormatWriter.encode(eventUUID,
-//                    BarcodeFormat.QR_CODE, 200,200);
-//            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-//            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-//            imageviewqrcode.setImageBitmap(bitmap);
-//            addeventedittext.onEditorAction(EditorInfo.IME_ACTION_DONE);
-//        } catch(WriterException e){
-//            throw new RuntimeException(e);
-//        }
-//
-//        if (eventUUID.matches("") || eventName.matches("")){ //empty string
-//            Toast myToast = Toast.makeText(AddEventActivity.this, "please enter an event", Toast.LENGTH_SHORT);
-//            myToast.show();
-//        } else {
-//            HashMap<String, Object> data = new HashMap<>();
-//            data.put("Event UUID", event.getEventUUID());
-//            HashMap<String, String> nesteddata = new HashMap<>();
-//            nesteddata.put("Event Name", event.getEventName());
-//            nesteddata.put("Event Poster", event.getEventPoster());
-//            data.put("Event details", nesteddata);
-//
-//            eventsRef
-//                    .document(db.collection("events").document().getId())
-//                    .set(data)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            Log.d("Firestore", "DocumentSnapshot successfully written!");
-//                            Log.d("UUID", "the UUID is " + event.getEventUUID());
-//                        }
-//                    });
-//            addeventedittext.setText(""); //clears the editText for next entry
-//            addeventedittext.requestFocus(); // sets cursor back to addCityEditText
-//        }
         String eventName = addeventedittext.getText().toString();
         if (eventUUID.matches("") || eventName.matches("")){ //empty string
             Toast myToast = Toast.makeText(AddEventActivity.this, "please enter an event", Toast.LENGTH_SHORT);
@@ -248,8 +167,6 @@ public class AddEventActivity extends AppCompatActivity {
             data.put("Event Name", event.getEventName());
             data.put("Event Date", "14-03-2024");
             data.put("Event Poster", event.getEventPoster());
-
-
             eventsRef
                     .document(db.collection("events").document().getId())
                     .set(data)
