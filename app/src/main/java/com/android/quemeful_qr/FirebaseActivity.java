@@ -1,12 +1,10 @@
 //https://stackoverflow.com/questions/33477025/how-to-set-a-ripple-effect-on-textview-or-imageview-on-android
 package com.android.quemeful_qr;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -16,9 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,7 +28,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
