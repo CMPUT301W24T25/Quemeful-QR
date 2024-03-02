@@ -1,6 +1,8 @@
 //https://www.geeksforgeeks.org/how-to-select-an-image-from-gallery-in-android/
 //https://www.youtube.com/watch?v=CQ5qcJetYAI
 //https://www.youtube.com/watch?v=_mo0vPfOaAQ
+//https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
+//https://firebase.google.com/docs/firestore/query-data/queries#java
 package com.android.quemeful_qr;
 
 import android.app.Activity;
@@ -23,6 +25,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.quemeful_qr.FirebaseActivity;
+import com.android.quemeful_qr.HomeActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
