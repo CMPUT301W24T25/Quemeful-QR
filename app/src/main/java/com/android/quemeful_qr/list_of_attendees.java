@@ -90,8 +90,6 @@ public class list_of_attendees extends Fragment {
             // implement back button functionality
                     }
         });
-        new sign_up_to_notificaition(Eventid);
-
         ImageButton announcement_button = view.findViewById(R.id.megaphone_button);
         announcement_button.setOnClickListener(new View.OnClickListener() {
             @Override
