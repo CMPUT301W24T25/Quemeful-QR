@@ -57,7 +57,7 @@ public class Home extends Fragment implements EventClickListenerInterface{
                         Log.e("HomeFragment", "Error parsing event date", e);
 
                     }
-                     Date eventDate = DateUtils.parseDate("01/01/2022");
+                     Date eventDate = DateUtils.parseDate(event.getDate());
 
                     if (eventDate != null) {
                         if (DateUtils.isToday(eventDate)) {
