@@ -40,6 +40,7 @@ public class Home extends Fragment implements EventClickListenerInterface{
     }
 
     private void fetchEvents() {
+        System.out.println(db.collection("events").toString());
         db.collection("events").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<EventHelper> todayEvents = new ArrayList<>();
@@ -67,6 +68,8 @@ public class Home extends Fragment implements EventClickListenerInterface{
                         }
                     }
                 }
+                System.out.println(todayEvents.toString());
+                System.out.println(upcomingEvents.toString());
                 updateUI(todayEvents, upcomingEvents);
             } else {
                 // Handle errors

@@ -35,13 +35,14 @@
             tools:layout_conversion_absoluteHeight="64dp"
             tools:layout_conversion_absoluteWidth="56dp" />
 
+
         <TextView
             android:id="@+id/Accouncement_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Announcement"
             android:textColor="#FFFFFF"
-            android:textSize="40sp"
+            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

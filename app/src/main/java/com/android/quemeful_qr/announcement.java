@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.compose.ui.window.Notification;
@@ -66,6 +67,16 @@ public class announcement extends Fragment {
                 titleTextInput.getText().clear();
                 descriptionTextInput.getText().clear();
 
+            }
+        });
+
+        ImageButton back_button = view.findViewById(R.id.back_button);
+        back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getFragmentManager() != null) {
+                    getFragmentManager().popBackStack();
+                }
             }
         });
 

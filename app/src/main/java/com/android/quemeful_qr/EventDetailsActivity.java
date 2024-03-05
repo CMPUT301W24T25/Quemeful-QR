@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -41,14 +42,39 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewEventTime = findViewById(R.id.textViewEventTime);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
         textViewEventDescription = findViewById(R.id.textViewEventDescription);
+        viewAttendee = findViewById(R.id.viewAttendee);
+
 
         String eventId = getIntent().getStringExtra("event_id");
         if (eventId != null) {
             fetchEventDetails(eventId);
+            viewAttendee.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    navigateToListOfAttendees(eventId);
+                }
+            });
         } else {
             // Handle the error
         }
 
+
+
+    }
+
+    private void navigateToListOfAttendees(String eventId) {
+        list_of_attendees attendeesFragment = new list_of_attendees(eventId);
+
+        // Begin a transaction
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, attendeesFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
     }
 
 

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -26,6 +27,9 @@ import java.util.List;
  */
 public class list_of_attendees extends Fragment {
 
+
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
@@ -34,7 +38,7 @@ public class list_of_attendees extends Fragment {
     private String Eventid;
 
     public list_of_attendees(String eventid) {
-        this.Eventid = Eventid;
+        this.Eventid = eventid;
         // Required empty public constructor
     }
 
@@ -71,7 +75,7 @@ public class list_of_attendees extends Fragment {
         TextView totalAttendeeTextView = view.findViewById(R.id.total_attendee);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference eventRef = db.collection("Events").document(Eventid);
+        DocumentReference eventRef = db.collection("events").document(Eventid);
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
@@ -88,8 +92,21 @@ public class list_of_attendees extends Fragment {
             @Override
             public void onClick(View v) {
             // implement back button functionality
+                // Check if the FragmentManager has any entries in the back stack
+                if (getFragmentManager() != null && getFragmentManager().getBackStackEntryCount() > 0) {
+                    // Pop the current fragment from the back stack
+                    getFragmentManager().popBackStack();
+                } else {
+                    // Optionally, if there is no entry in the back stack, you might want to handle it differently.
+                    // For example, you could exit the activity if this is the last fragment in the stack.
+                    if (getActivity() != null) {
+                        getActivity().finish();
                     }
+                }
+            }
         });
+
+
         ImageButton announcement_button = view.findViewById(R.id.megaphone_button);
         announcement_button.setOnClickListener(new View.OnClickListener() {
             @Override
