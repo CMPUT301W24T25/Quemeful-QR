@@ -32,7 +32,13 @@ public class ViewEventActivity extends AppCompatActivity {
         posterView = findViewById(R.id.poster_view);
 
         Intent intent = getIntent();
-        String poster = intent.getStringExtra("key");
+        Event event = (Event) intent.getSerializableExtra("event");
+
+//        String poster = intent.getStringExtra("key");
+        assert event != null;
+        String poster = event.getEventPoster();
+        String name = event.getEventName();
+        String uuid = event.getEventUUID();
         textview_EventName.setText(poster);
         assert poster != null;
         byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);

@@ -46,6 +46,8 @@ public class QRCheckActivity extends AppCompatActivity {
     private CollectionReference eventsRef;
 
     private String eventPoster;
+    private String eventName;
+    private String eventUUID;
 
 
     /**
@@ -139,13 +141,20 @@ public class QRCheckActivity extends AppCompatActivity {
                                 Log.d(TAG, document.getId() + "=>>" + document.getData().values());
                                 //brings the user to a new activity with event details
                                 //image of event, etc
-                                camera.setText(document.getData().toString());//document.getData() returns a map, need to convert to String
-                                Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
-                                eventPoster = document.getData().values().toString();
-                                int indexOfOpenBracket = eventPoster.indexOf("[");
-                                int indexOfLastBracket = eventPoster.lastIndexOf("]");
+//                                camera.setText(document.getData().toString());//document.getData() returns a map, need to convert to String
+                                eventPoster = document.getData().get("Event Poster").toString();
+                                eventName = document.getData().get("Event Name").toString();
+                                eventUUID = result.getContents();
+                                camera.setText(eventPoster);
 
-                                intent.putExtra("key", eventPoster.substring(indexOfOpenBracket+1, indexOfLastBracket));
+                                Event event = new Event(eventUUID,eventName,eventPoster);
+                                Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
+//                                eventPoster = document.getData().values().toString();
+//                                int indexOfOpenBracket = eventPoster.indexOf("[");
+//                                int indexOfLastBracket = eventPoster.lastIndexOf("]");
+                                intent.putExtra("event", event);
+
+//                                intent.putExtra("key", eventPoster.substring(indexOfOpenBracket+1, indexOfLastBracket));
                                 startActivity(intent);
 
                             }
