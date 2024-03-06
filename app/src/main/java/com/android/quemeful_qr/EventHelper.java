@@ -1,5 +1,9 @@
 package com.android.quemeful_qr;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 public class EventHelper {
     private String id;
     private String title;
@@ -7,7 +11,8 @@ public class EventHelper {
     private String time;
     private String date;
     private String description;
-    private String imageResourceId;
+
+    private String poster;
 
     public String getDescription() {
         return description;
@@ -57,12 +62,12 @@ public class EventHelper {
         this.date = date;
     }
 
-    public String getImageResourceId() {
-        return imageResourceId;
+    public String getPoster() {
+        return poster;
     }
 
-    public void setImageResourceId(String imageResourceId) {
-        this.imageResourceId = imageResourceId;
+    public void setPoster(String poster) {
+        this.poster = poster;
     }
 }
 

@@ -1,6 +1,9 @@
 package com.android.quemeful_qr;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -41,6 +46,16 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         holder.eventLocation.setText(event.getLocation());
         holder.eventTime.setText(event.getTime());
 //        holder.eventImage.setImageResource(event.getImageResourceId());
+
+        if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            holder.eventImage.setImageBitmap(decodedByte);
+        } else {
+            holder.eventImage.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+        }
+
+
     }
 
     @Override
@@ -54,7 +69,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
 
         public EventViewHolder(View itemView) {
             super(itemView);
-//            eventImage = itemView.findViewById(R.id.eventImage);
+            eventImage = itemView.findViewById(R.id.eventImage);
             eventTitle = itemView.findViewById(R.id.eventTitle);
             eventLocation = itemView.findViewById(R.id.eventLocation);
             eventTime = itemView.findViewById(R.id.eventTime);

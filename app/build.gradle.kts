@@ -51,7 +51,9 @@ dependencies {
     implementation("com.etebarian:meow-bottom-navigation-java:1.2.0")
     implementation("androidx.navigation:navigation-fragment:2.7.6")
     implementation("com.google.firebase:firebase-firestore:24.10.3")
-
+    implementation ("com.github.bumptech.glide:glide:4.13.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0")
+    implementation ("com.google.android.material:material:1.11.0")
 
 
 }

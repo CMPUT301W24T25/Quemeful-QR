@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new Events();
                     break;
                 case 3:
-                    fragment = Profile.newInstance(userFirstName, userLastName); // Consider passing user data to the Profile fragment here
+                    fragment = Profile.newInstance(userFirstName, userLastName);
                     break;
             }
             loadFragment(fragment);
