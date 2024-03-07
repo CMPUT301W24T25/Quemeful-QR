@@ -47,7 +47,7 @@ import android.widget.Button;
 public class QRCheckActivity extends AppCompatActivity {
     //scan and generate QR
     private ImageButton scan;
-    private TextView camera;
+    private TextView confirm;
     private FirebaseFirestore db;
 
     private CollectionReference eventsRef;
@@ -55,6 +55,9 @@ public class QRCheckActivity extends AppCompatActivity {
     private String eventPoster;
     private String eventName;
     private String eventUUID;
+    private String eventTime;
+    private String eventDate;
+    private String eventDescription;
 
 
     /**
@@ -70,7 +73,7 @@ public class QRCheckActivity extends AppCompatActivity {
         setContentView(R.layout.activity_qrcheck);
 
         scan = findViewById(R.id.buttonCam);
-        camera = findViewById(R.id.camera_frame);
+        confirm = findViewById(R.id.camera_frame);
 
 
         // navigates back to the previous page on clicking the back arrow
@@ -134,12 +137,12 @@ public class QRCheckActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Scan Cancelled", Toast.LENGTH_SHORT).show();
             }
             else{
-                camera.setText(result.getContents());
+                confirm.setText(result.getContents());
                 Toast.makeText(getBaseContext(), "Scanned successfully", Toast.LENGTH_SHORT).show();
                 // check if a document exists with the id and name we scanned
                 //if exists, display it
                 //if not exist, error message
-                db.collection("events").whereEqualTo("Event UUID", result.getContents()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                db.collection("events").whereEqualTo("id", result.getContents()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -148,11 +151,14 @@ public class QRCheckActivity extends AppCompatActivity {
                                 Log.d(TAG, document.getId() + "=>>" + document.getData().values());
                                 //brings the user to a new activity with event details
                                 eventUUID = result.getContents();
-                                eventName = document.getData().get("Event Name").toString();
-                                eventPoster = document.getData().get("Event Poster").toString();
-                                camera.setText(eventPoster);
+                                eventName = document.getData().get("title").toString();
+                                eventPoster = document.getData().get("poster").toString();
+                                eventTime = document.getData().get("time").toString();
+                                eventDate = document.getData().get("date").toString();
+                                eventDescription = document.getData().get("description").toString();
+                                confirm.setText(eventPoster);
 
-                                EventHelper event = new EventHelper(eventUUID, eventName, "location", "time", "date", "description", eventPoster);
+                                EventHelper event = new EventHelper(eventUUID, eventName, "location", eventTime, eventDate, eventDescription, eventPoster);
                                 Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
 
                                 intent.putExtra("event", event);
@@ -161,7 +167,7 @@ public class QRCheckActivity extends AppCompatActivity {
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
-                            camera.setText("QR code not recognized");
+                            confirm.setText("QR code not recognized");
                             //set the error message onto the camera textview "QR code not recognized"
                         }
 

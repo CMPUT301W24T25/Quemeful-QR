@@ -85,6 +85,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
         endDate = findViewById(R.id.enter_endDate);
         endTime = findViewById(R.id.enter_endTime);
         generateQRButton = findViewById(R.id.QR_generate_button_for_createEvent);
+//        generateQRButton.setVisibility();
         cancelButton = findViewById(R.id.cancel_button);
         createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
