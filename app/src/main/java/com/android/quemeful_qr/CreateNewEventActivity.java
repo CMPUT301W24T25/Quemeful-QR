@@ -128,6 +128,8 @@ public class CreateNewEventActivity extends AppCompatActivity {
                 eventUUID = UUID.randomUUID().toString();
                 String eventName = eventTitle.getText().toString();
                 String eventLocation = "location";
+
+
                 String eventTime = startTime.getText().toString();
                 String eventDate = startDate.getText().toString();
                 String eventDescr = eventDescription.getText().toString();
@@ -178,7 +180,8 @@ public class CreateNewEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(CreateNewEventActivity.this, "Create New Event Cancelled", Toast.LENGTH_SHORT).show();
-                finish();
+                Intent intent = new Intent(CreateNewEventActivity.this, Home.class);
+                startActivity(intent);
             }
         });
     }
@@ -231,8 +234,9 @@ public class CreateNewEventActivity extends AppCompatActivity {
             myToast.show();
         } else {
             HashMap<String, Object> data = new HashMap<>();
-            Date parsedTime = DateUtils.parseTime(event.getTime());
-            Date parsedDate = DateUtils.parseDate(event.getDate());
+            String parsedTime = DateUtils.formatTime(event.getTime());
+
+            String parsedDate = DateUtils.formatDate(event.getDate());
             data.put("Event ID", event.getId());
             data.put("Event Title", event.getTitle());
             data.put("Event Location", event.getLocation());
