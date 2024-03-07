@@ -102,10 +102,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
                 String title = eventTitle.getText().toString();
                 String description = eventDescription.getText().toString();
 
-//                // Create a new event object in db
-//                Map<String, Object> NewEvent = new HashMap<>();
-//                NewEvent.put("Event Title", title);
-//                NewEvent.put("Event Details", description);
+
 
                 // set the retrieved details in their respective text boxes
                 eventTitle.setText(title);

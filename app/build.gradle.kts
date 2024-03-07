@@ -20,6 +20,7 @@ android {
 
     }
 
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -30,15 +31,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-//    splits {
-//        abi {
-//            enable true
-//            reset()
-//            include("x86", "armeabi-v7a")
-//            universalApk true
-//        }
-//    }
-
 }
 
 
@@ -55,6 +47,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.compose.ui:ui-desktop:1.6.2")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("com.etebarian:meow-bottom-navigation-java:1.2.0")
@@ -67,6 +60,8 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.2.0")
     coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.2") //generate QR
     implementation("androidx.multidex:multidex:2.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
 
 
 }
