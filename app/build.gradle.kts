@@ -59,6 +59,12 @@ android {
             implementation("com.github.bumptech.glide:glide:4.13.0")
             implementation("com.github.bumptech.glide:compiler:4.13.0")
             implementation("com.caverock:androidsvg:1.4")
+            implementation("com.google.zxing:core:3.4.1") //scan QR
+            implementation("com.journeyapps:zxing-android-embedded:4.2.0")
+            coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.2") //generate QR
+            implementation("androidx.multidex:multidex:2.0.1")
+            testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+            testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
         }
     }
 }
