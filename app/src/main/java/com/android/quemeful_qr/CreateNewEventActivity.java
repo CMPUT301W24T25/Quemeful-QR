@@ -6,16 +6,7 @@
 //https://stackoverflow.com/q/41396194
 package com.android.quemeful_qr;
 
-import static android.app.PendingIntent.getActivity;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -25,22 +16,21 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -56,19 +46,25 @@ import java.util.UUID;
  */
 public class CreateNewEventActivity extends AppCompatActivity {
     // declare variables
-    private TextInputEditText eventTitle;
-    private TextInputEditText eventDescription;
-    private TextInputEditText startDate;
-    private TextInputEditText startTime;
-    private TextInputEditText endDate;
-    private TextInputEditText endTime;
+//    private TextInputEditText eventTitle;
+//    private TextInputEditText eventDescription;
+//    private TextInputEditText startDate;
+//    private TextInputEditText startTime;
+//    private TextInputEditText endDate;
+//    private TextInputEditText endTime;
+    private EditText eventTitle;
+    private EditText eventDescription;
+    private EditText startDate;
+    private EditText startTime;
+    private EditText endDate;
+    private EditText endTime;
     private Button generateQRButton;
     private Button cancelButton;
     private Button createButton;
     private ImageButton uploadPoster;
     //for date and time picker
-    Calendar calendar = Calendar.getInstance();
-    Calendar time = Calendar.getInstance();
+//    Calendar calendar = Calendar.getInstance();
+//    Calendar time = Calendar.getInstance();
     private Uri selectedImageUri;
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
@@ -89,7 +85,8 @@ public class CreateNewEventActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
         createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
-
+        db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
         // for adding poster by user added READ_MEDIA_IMAGES permission in AndroidManifest.xml
         // start image selecting activity and get its result using ActivityResultLauncher
 //        ActivityResultLauncher<PickVisualMediaRequest> pickImage = registerForActivityResult(
@@ -151,24 +148,24 @@ public class CreateNewEventActivity extends AppCompatActivity {
         });
 
         // set listener on create button
-        createButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // retrieve user input for event title and details
-                String title = eventTitle.getText().toString();
-                String description = eventDescription.getText().toString();
-
-
-
-                // set the retrieved details in their respective text boxes
-                eventTitle.setText(title);
-                eventDescription.setText(description);
-                // call selectDate and selectTime
-                selectDate();
-                selectTime();
-                Toast.makeText(CreateNewEventActivity.this, "New Event successfully created", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        createButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // retrieve user input for event title and details
+//                String title = eventTitle.getText().toString();
+//                String description = eventDescription.getText().toString();
+//
+//
+//
+//                // set the retrieved details in their respective text boxes
+//                eventTitle.setText(title);
+//                eventDescription.setText(description);
+//                // call selectDate and selectTime
+//                selectDate();
+//                selectTime();
+//                Toast.makeText(CreateNewEventActivity.this, "New Event successfully created", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         generateQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,35 +189,35 @@ public class CreateNewEventActivity extends AppCompatActivity {
      * selectDate() allows user to pick date.
      * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
      */
-    private void selectDate(){
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-                // set the date in its fields
-                startDate.setText(setDateFormat());
-                endDate.setText(setDateFormat());
-            }
-        };
+//    private void selectDate(){
+//        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                calendar.set(Calendar.YEAR, year);
+//                calendar.set(Calendar.MONTH, month);
+//                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+//
+//                // set the date in its fields
+//                startDate.setText(setDateFormat());
+//                endDate.setText(setDateFormat());
+//            }
+//        };
 
         // start date picker and end date picker works the same way
-        startDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(CreateNewEventActivity.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-
-        endDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(CreateNewEventActivity.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-    }
+//        startDate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new DatePickerDialog(CreateNewEventActivity.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+//            }
+//        });
+//
+//        endDate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new DatePickerDialog(CreateNewEventActivity.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+//            }
+//        });
+//    }
     private void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
@@ -279,48 +276,48 @@ public class CreateNewEventActivity extends AppCompatActivity {
             });
 
 
-    private String setDateFormat(){
-        String format = "dd/MM/yyyy";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.CANADA);
-        return simpleDateFormat.format(calendar.getTime());
-    }
+//    private String setDateFormat(){
+//        String format = "dd/MM/yyyy";
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.CANADA);
+//        return simpleDateFormat.format(calendar.getTime());
+//    }
 
     /**
      * This method is to get the start and the end time from user.
      * selectTime() allows user to pick time.
      * setTimeFormat() is a method used to set the format for displaying the time in HH:mm.
      */
-    private void selectTime(){
-        int hours = time.get(Calendar.HOUR_OF_DAY);
-        int minutes = time.get(Calendar.MINUTE);
-        TimePickerDialog.OnTimeSetListener timePickerDialog = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                time.set(Calendar.HOUR_OF_DAY, hours);
-                time.set(Calendar.MINUTE, minutes);
+//    private void selectTime(){
+//        int hours = time.get(Calendar.HOUR_OF_DAY);
+//        int minutes = time.get(Calendar.MINUTE);
+//        TimePickerDialog.OnTimeSetListener timePickerDialog = new TimePickerDialog.OnTimeSetListener() {
+//            @Override
+//            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//                time.set(Calendar.HOUR_OF_DAY, hours);
+//                time.set(Calendar.MINUTE, minutes);
+//
+//                // set the times in their fields
+//                startTime.setText(setTimeFormat());
+//                endTime.setText(setTimeFormat());
+//            }
+//        };
 
-                // set the times in their fields
-                startTime.setText(setTimeFormat());
-                endTime.setText(setTimeFormat());
-            }
-        };
-
-        startTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(CreateNewEventActivity.this, (TimePickerDialog.OnTimeSetListener) time, hours, minutes, true).show();
-            }
-        });
-        endTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimePickerDialog(CreateNewEventActivity.this, (TimePickerDialog.OnTimeSetListener) time, hours, minutes, true).show();
-            }
-        });
-    }
-    private String setTimeFormat(){
-        String format = "HH:mm";
-        SimpleDateFormat timeFormat = new SimpleDateFormat(format, Locale.CANADA);
-        return timeFormat.format(time.getTime());
-    }
+//        startTime.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new TimePickerDialog(CreateNewEventActivity.this, (TimePickerDialog.OnTimeSetListener) time, hours, minutes, true).show();
+//            }
+//        });
+//        endTime.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new TimePickerDialog(CreateNewEventActivity.this, (TimePickerDialog.OnTimeSetListener) time, hours, minutes, true).show();
+//            }
+//        });
+//    }
+//    private String setTimeFormat(){
+//        String format = "HH:mm";
+//        SimpleDateFormat timeFormat = new SimpleDateFormat(format, Locale.CANADA);
+//        return timeFormat.format(time.getTime());
+//    }
 }
