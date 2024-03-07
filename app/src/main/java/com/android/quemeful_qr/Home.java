@@ -57,8 +57,10 @@ public class Home extends Fragment implements EventClickListenerInterface{
                         if (eventDate != null) {
                             if (DateUtils.isToday(eventDate)) {
                                 todayEvents.add(event);
+                                Log.d("today", todayEvents.toString());
                             } else if (eventDate.after(new Date())) {
                                 upcomingEvents.add(event);
+                                Log.d("upcoming", upcomingEvents.toString());
                             }
                         }
                     }

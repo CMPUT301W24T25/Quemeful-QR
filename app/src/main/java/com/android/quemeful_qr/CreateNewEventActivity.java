@@ -238,13 +238,13 @@ public class CreateNewEventActivity extends AppCompatActivity {
             myToast.show();
         } else {
             HashMap<String, Object> data = new HashMap<>();
-            data.put("Event ID", event.getId());
-            data.put("Event Title", event.getTitle());
-            data.put("Event Location", event.getLocation());
-            data.put("Event Time", parsedTime);
-            data.put("Event Date", parsedDate);
-            data.put("Event Description", event.getDescription());
-            data.put("Event Poster", event.getPoster());
+            data.put("id", event.getId());
+            data.put("title", event.getTitle());
+            data.put("location", event.getLocation());
+            data.put("time", parsedTime);
+            data.put("date", parsedDate);
+            data.put("description", event.getDescription());
+            data.put("poster", event.getPoster());
             eventsRef
                     .document(db.collection("events").document().getId())
                     .set(data)
