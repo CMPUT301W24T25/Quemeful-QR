@@ -26,6 +26,7 @@ public class DateUtils {
         try {
             Date time = timeFormat.parse(timeString);
             String newTime = new SimpleDateFormat("h:mm a").format(time);
+            Log.d("time", newTime);
             return newTime;
         } catch (ParseException e) {
             e.printStackTrace();

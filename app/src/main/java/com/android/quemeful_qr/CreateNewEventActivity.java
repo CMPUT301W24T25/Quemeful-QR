@@ -72,6 +72,8 @@ public class CreateNewEventActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     private String eventUUID;
+    private String parsedTime;
+    private String parsedDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +134,9 @@ public class CreateNewEventActivity extends AppCompatActivity {
 
                 String eventTime = startTime.getText().toString();
                 String eventDate = startDate.getText().toString();
+                parsedTime = DateUtils.formatTime(eventTime);
+                Log.d("check time", parsedTime);
+                parsedDate = DateUtils.formatDate(eventDate);
                 String eventDescr = eventDescription.getText().toString();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
@@ -139,7 +144,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, parsedTime, parsedDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -233,9 +238,6 @@ public class CreateNewEventActivity extends AppCompatActivity {
             myToast.show();
         } else {
             HashMap<String, Object> data = new HashMap<>();
-            String parsedTime = DateUtils.formatTime(event.getTime());
-
-            String parsedDate = DateUtils.formatDate(event.getDate());
             data.put("Event ID", event.getId());
             data.put("Event Title", event.getTitle());
             data.put("Event Location", event.getLocation());

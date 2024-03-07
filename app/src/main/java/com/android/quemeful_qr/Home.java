@@ -24,7 +24,7 @@ public class Home extends Fragment implements EventClickListenerInterface{
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView eventsRecyclerView;
     private RecyclerView upcomingEventsRecyclerView;
-
+    Date eventDate;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -50,23 +50,26 @@ public class Home extends Fragment implements EventClickListenerInterface{
 
                     EventHelper event = document.toObject(EventHelper.class);
 
-                    event.setId(document.getId()); // Set the document ID as the event ID
+//                    event.setId(document.getId()); // Set the document ID as the event ID
                     try {
-                        Date eventDate = DateUtils.parseDate(event.getDate());
+                        eventDate = DateUtils.parseDate(event.getDate());
+                        Log.d("eventDate", String.valueOf(eventDate));
+                        if (eventDate != null) {
+                            if (DateUtils.isToday(eventDate)) {
+                                todayEvents.add(event);
+                            } else if (eventDate.after(new Date())) {
+                                upcomingEvents.add(event);
+                            }
+                        }
                     }
                     catch (Exception e) {
                         Log.e("HomeFragment", "Error parsing event date", e);
 
                     }
-                     Date eventDate = DateUtils.parseDate(event.getDate());
 
-                    if (eventDate != null) {
-                        if (DateUtils.isToday(eventDate)) {
-                            todayEvents.add(event);
-                        } else if (eventDate.after(new Date())) {
-                            upcomingEvents.add(event);
-                        }
-                    }
+//                     eventDate = DateUtils.parseDate(event.getDate());
+
+
                 }
                 System.out.println(todayEvents.toString());
                 System.out.println(upcomingEvents.toString());
