@@ -72,7 +72,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
     //for date and time picker
 //    Calendar calendar = Calendar.getInstance();
 //    Calendar time = Calendar.getInstance();
-    private Uri selectedImageUri;
+    private Uri selectedImageUri ;
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     private String eventUUID;
@@ -143,8 +143,9 @@ public class CreateNewEventActivity extends AppCompatActivity {
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, "" );
+                    addNewEvent(event);
                 }
 
               }
@@ -254,7 +255,12 @@ public class CreateNewEventActivity extends AppCompatActivity {
             data.put("time", parsedTime);
             data.put("date", parsedDate);
             data.put("description", event.getDescription());
-            data.put("poster", event.getPoster());
+            if (event.getPoster() != null) {
+                data.put("poster", event.getPoster());
+            }
+            else {
+                data.put("poster", "");
+            }
             List<Map<String, Object>> emptySignUpList = new ArrayList<>();
             data.put("signed_up", emptySignUpList);
 
@@ -293,6 +299,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
                         uploadPoster.setImageURI(selectedImageUri);
 
                     }
+
                 }
             });
 
