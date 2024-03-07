@@ -180,8 +180,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(CreateNewEventActivity.this, "Create New Event Cancelled", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(CreateNewEventActivity.this, Home.class);
-                startActivity(intent);
+                finish();
             }
         });
     }
