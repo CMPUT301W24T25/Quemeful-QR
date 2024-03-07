@@ -34,6 +34,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
+
+
+
+import android.widget.Button;
+
 /**
  * This code here is the MainActivity code of the QRScanner project done locally.
  */

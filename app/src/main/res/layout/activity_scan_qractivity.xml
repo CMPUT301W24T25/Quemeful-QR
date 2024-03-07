@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#5900C2FF"
-    tools:context=".QRCheckActivity">
+    tools:context=".ScanQRActivity">
 
     <!--    reference URL: https://stackoverflow.com/questions/49350686/back-to-previous-activity-arrow-button-->
 
@@ -40,20 +40,18 @@
             android:layout_height="400dp"
             android:background="@color/white" />
 
-
     </FrameLayout>
 
     <ImageButton
-        android:contentDescription="imagebutton"
         android:id="@+id/buttonCam"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_below="@+id/Camera"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:src="@drawable/baseline_camera_alt_24"
+        android:src="@drawable/camera_icon"
         android:scaleType="fitCenter"
-        android:background="@drawable/baseline_circle_24"
-        android:padding="20dp" />
+        android:background="@drawable/circle_bg_for_cam_button"
+        android:padding="14dp" />
 
 </RelativeLayout>
