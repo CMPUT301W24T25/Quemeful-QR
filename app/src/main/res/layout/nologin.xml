@@ -11,15 +11,26 @@
         android:id="@+id/welcomeToTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_marginTop="36dp"
         android:text="Welcome to"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
+=======
+        android:layout_marginTop="0dp"
+        android:text="welcome to"
+        android:letterSpacing="0.2"
+        android:fontFamily="@font/font1"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="50sp"
+>>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+<<<<<<< HEAD
     <TextView
         android:id="@+id/queuemfulQrTextView"
         android:layout_width="wrap_content"
@@ -29,10 +40,25 @@
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:layout_marginTop="8dp"
+=======
+
+    <TextView
+        android:id="@+id/quemefulQrTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:text="QUEMEFUL-QR!"
+        android:letterSpacing="0.3"
+        android:fontFamily="@font/font2"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+>>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/welcomeToTextView" />
 
+<<<<<<< HEAD
 
     <Button
         android:id="@+id/getStartedButton"
@@ -48,6 +74,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="1.0"
         android:layout_marginBottom="32dp" />
+=======
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/quemefulQrTextView"
+        app:layout_constraintBottom_toTopOf="@+id/firstNameEditText"
+        app:srcCompat="@drawable/scan_logo"
+        tools:layout_editor_absoluteY="-75dp" />
+>>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
 
     <EditText
         android:id="@+id/firstNameEditText"
@@ -56,6 +94,12 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/edittext_background"
         android:hint="First Name"
+<<<<<<< HEAD
+=======
+        android:fontFamily="@font/font3"
+        android:textStyle="italic"
+        android:textColorHint="#FFFFFF"
+>>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@id/lastNameEditText"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +113,7 @@
         android:id="@+id/lastNameEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_marginBottom="132dp"
         android:background="@drawable/edittext_background"
         android:hint="Last Name"
@@ -79,3 +124,34 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+=======
+        android:layout_marginBottom="56dp"
+        android:background="@drawable/edittext_background"
+        android:hint="Last Name"
+        android:fontFamily="@font/font3"
+        android:textStyle="italic"
+        android:textColorHint="#FFFFFF"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@id/getStartedButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/getStartedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#EfD9Af"
+        android:text="Get Started!"
+        android:fontFamily="@font/font3"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        android:layout_marginBottom="32dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+>>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381

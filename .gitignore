@@ -13,4 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+<<<<<<< HEAD
 .idea/
+=======
+.gitignore
+app/google-services.json
+/.idea/
+>>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
