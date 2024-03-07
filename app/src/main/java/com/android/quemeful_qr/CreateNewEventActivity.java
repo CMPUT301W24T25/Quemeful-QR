@@ -30,6 +30,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -69,6 +72,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     private String eventUUID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,11 +142,6 @@ public class CreateNewEventActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
-
-
-
-
 
               }
         });
@@ -225,17 +224,20 @@ public class CreateNewEventActivity extends AppCompatActivity {
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
+
         if (eventUUID.matches("") || eventName.matches("") || eventLocation.matches("")
         || eventTime.matches("") || eventDate.matches("")|| eventDescr.matches("")){ //empty string
             Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
             myToast.show();
         } else {
-            HashMap<String, String> data = new HashMap<>();
+            HashMap<String, Object> data = new HashMap<>();
+            Date parsedTime = DateUtils.parseTime(event.getTime());
+            Date parsedDate = DateUtils.parseDate(event.getDate());
             data.put("Event ID", event.getId());
             data.put("Event Title", event.getTitle());
             data.put("Event Location", event.getLocation());
-            data.put("Event Time", event.getTime());
-            data.put("Event Date", event.getDate());
+            data.put("Event Time", parsedTime);
+            data.put("Event Date", parsedDate);
             data.put("Event Description", event.getDescription());
             data.put("Event Poster", event.getPoster());
             eventsRef
@@ -245,6 +247,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("Firestore", "DocumentSnapshot successfully written!");
+                            Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
