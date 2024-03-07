@@ -45,33 +45,28 @@ public class Home extends Fragment implements EventClickListenerInterface{
             if (task.isSuccessful()) {
                 List<EventHelper> todayEvents = new ArrayList<>();
                 List<EventHelper> upcomingEvents = new ArrayList<>();
-
+                
                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                     EventHelper event = document.toObject(EventHelper.class);
 
-//                    event.setId(document.getId()); // Set the document ID as the event ID
+                    event.setId(document.getId()); // Set the document ID as the event ID
                     try {
-                        eventDate = DateUtils.parseDate(event.getDate());
-                        Log.d("eventDate", String.valueOf(eventDate));
-                        if (eventDate != null) {
-                            if (DateUtils.isToday(eventDate)) {
-                                todayEvents.add(event);
-                                Log.d("today", todayEvents.toString());
-                            } else if (eventDate.after(new Date())) {
-                                upcomingEvents.add(event);
-                                Log.d("upcoming", upcomingEvents.toString());
-                            }
-                        }
+                        Date eventDate = DateUtils.parseDate(event.getDate());
                     }
                     catch (Exception e) {
                         Log.e("HomeFragment", "Error parsing event date", e);
 
                     }
+                    Date eventDate = DateUtils.parseDate(event.getDate());
 
-//                     eventDate = DateUtils.parseDate(event.getDate());
-
-
+                    if (eventDate != null) {
+                        if (DateUtils.isToday(eventDate)) {
+                            todayEvents.add(event);
+                        } else if (eventDate.after(new Date())) {
+                            upcomingEvents.add(event);
+                        }
+                    }
                 }
                 System.out.println(todayEvents.toString());
                 System.out.println(upcomingEvents.toString());

@@ -30,10 +30,10 @@
     <string name="start_date">Start Date</string>
     <string name="start_time">Start Time</string>
     <string name="dd_mm_yyyy">yyyy-MM-dd</string>
-    <string name="_16_00">230pm</string>
+    <string name="_16_00">0230pm</string>
     <string name="end_date">End Date</string>
     <string name="end_time">End Time</string>
-    <string name="_20_00">530pm</string>
+    <string name="_20_00">0530pm</string>
     <string name="qr_code">QR Code</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
