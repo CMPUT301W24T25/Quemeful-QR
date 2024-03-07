@@ -1,5 +1,6 @@
 package com.android.quemeful_qr;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -71,6 +72,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (eventId != null) {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
+            setupCheckInButton();
             viewAttendee.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -87,6 +89,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 signUpForEvent(eventId);
+            }
+        });
+    }
+    private void setupCheckInButton(){
+        buttonCheckIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openQRCheckActivity();
             }
         });
     }
@@ -201,5 +211,9 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
         }
+    }
+    protected void openQRCheckActivity(){
+        Intent intent = new Intent(EventDetailsActivity.this, QRCheckActivity.class);
+        startActivity(intent);
     }
 }
