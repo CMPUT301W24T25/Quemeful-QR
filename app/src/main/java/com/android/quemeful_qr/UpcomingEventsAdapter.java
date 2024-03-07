@@ -64,9 +64,10 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.upcomingeventTitle);
-            date = itemView.findViewById(R.id.upcomingeventDate);
+            title = itemView.findViewById(R.id.event_title);
+            date = itemView.findViewById(R.id.event_date);
             image = itemView.findViewById(R.id.upcomingeventImage);
+
             itemView.setOnClickListener(this);
         }
 

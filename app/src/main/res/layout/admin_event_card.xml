@@ -18,7 +18,6 @@
             android:layout_height="120dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background"
-            app:shapeAppearanceOverlay="@style/RoundedImageView"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
