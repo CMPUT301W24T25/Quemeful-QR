@@ -16,7 +16,6 @@ import android.util.Log;
 
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,9 +23,6 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -366,6 +362,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
             loadFragment(fragment);
+        });
+
+        bottomNavigation.setOnReselectListener(item -> {
+            // Implement reselection logic here if needed, otherwise leave as no-op to prevent NullPointerException
         });
 
         bottomNavigation.show(1, true);
