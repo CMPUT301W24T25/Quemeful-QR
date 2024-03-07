@@ -1,14 +1,28 @@
+//https://www.geeksforgeeks.org/how-to-select-an-image-from-gallery-in-android/
+//https://www.youtube.com/watch?v=CQ5qcJetYAI
+//https://www.youtube.com/watch?v=_mo0vPfOaAQ
+//https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
+//https://firebase.google.com/docs/firestore/query-data/queries#java
+//https://stackoverflow.com/q/41396194
 package com.android.quemeful_qr;
+
+import static android.app.PendingIntent.getActivity;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -16,11 +30,18 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Draft copy, code to be reviewed again.
@@ -45,14 +66,13 @@ public class CreateNewEventActivity extends AppCompatActivity {
     private Button cancelButton;
     private Button createButton;
     private ImageButton uploadPoster;
-
     //for date and time picker
     Calendar calendar = Calendar.getInstance();
     Calendar time = Calendar.getInstance();
-
-//    // get the firestore db instance
-//    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    private Uri selectedImageUri;
+    private FirebaseFirestore db;
+    private CollectionReference eventsRef;
+    private String eventUUID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,26 +92,62 @@ public class CreateNewEventActivity extends AppCompatActivity {
 
         // for adding poster by user added READ_MEDIA_IMAGES permission in AndroidManifest.xml
         // start image selecting activity and get its result using ActivityResultLauncher
-        ActivityResultLauncher<PickVisualMediaRequest> pickImage = registerForActivityResult(
-                new ActivityResultContracts.PickVisualMedia(),
-                uri -> {
-                    if (uri != null) {
-                        // display the selected image
-                        uploadPoster.setImageURI(uri);
-                    }
-                }
-        );
+//        ActivityResultLauncher<PickVisualMediaRequest> pickImage = registerForActivityResult(
+//                new ActivityResultContracts.PickVisualMedia(),
+//                uri -> {
+//                    if (uri != null) {
+//                        // display the selected image
+//                        uploadPoster.setImageURI(uri);
+//                    }
+//                }
+//        );
 
         // initiate selection of image when the add button is clicked using Intent
         // add poster
+//        uploadPoster.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // allow user to select image from gallery
+//                pickImage.launch(new PickVisualMediaRequest.Builder()
+//                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+//                        .build());
+//            }
+//        });
         uploadPoster.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                // allow user to select image from gallery
-                pickImage.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build());
+                imageChooser();
             }
+        });
+
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventUUID = UUID.randomUUID().toString();
+                String eventName = eventTitle.getText().toString();
+                String eventLocation = "location";
+                String eventTime = startTime.getText().toString();
+                String eventDate = startDate.getText().toString();
+                String eventDescr = eventDescription.getText().toString();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    // In case you want to compress your image, here it's at 40%
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    addNewEvent(event);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+
+
+
+
+              }
         });
 
         // set listener on create button
@@ -165,6 +221,63 @@ public class CreateNewEventActivity extends AppCompatActivity {
             }
         });
     }
+    private void addNewEvent(EventHelper event) {
+
+        String eventName = eventTitle.getText().toString();
+        String eventLocation = "location";
+        String eventTime = startTime.getText().toString();
+        String eventDate = startDate.getText().toString();
+        String eventDescr = eventDescription.getText().toString();
+        if (eventUUID.matches("") || eventName.matches("") || eventLocation.matches("")
+        || eventTime.matches("") || eventDate.matches("")|| eventDescr.matches("")){ //empty string
+            Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
+            myToast.show();
+        } else {
+            HashMap<String, String> data = new HashMap<>();
+            data.put("Event ID", event.getId());
+            data.put("Event Title", event.getTitle());
+            data.put("Event Location", event.getLocation());
+            data.put("Event Time", event.getTime());
+            data.put("Event Date", event.getDate());
+            data.put("Event Description", event.getDescription());
+            data.put("Event Poster", event.getPoster());
+            eventsRef
+                    .document(db.collection("events").document().getId())
+                    .set(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+                        }
+                    });
+        }
+    }
+    private void imageChooser()
+    {
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+        launchSomeActivity.launch(i);
+
+    }
+    ActivityResultLauncher<Intent> launchSomeActivity
+            = registerForActivityResult(
+            new ActivityResultContracts
+                    .StartActivityForResult(),
+            result -> {
+                if (result.getResultCode()
+                        == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null
+                            && data.getData() != null) {
+                        selectedImageUri = data.getData();
+                        uploadPoster.setImageURI(selectedImageUri);
+
+                    }
+                }
+            });
+
 
     private String setDateFormat(){
         String format = "dd/MM/yyyy";
