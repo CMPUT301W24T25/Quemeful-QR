@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -150,6 +151,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                     textViewEventLocation.setText(event.getLocation());
                     textViewEventDescription.setText(event.getDescription());
 
+
+                    // Update UI for organizer or general user
+                    if (currentUserUID.equals(event.getOrganizer())) {
+                        updateUIForOrganizer();
+                    } else {
+                        updateUIForGeneralUser(currentUserUID, event, documentSnapshot);
+                    }
+
                     // Decode and set the image
                     if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
                         byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
@@ -160,30 +169,60 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
 
                     // Now, check if the user is signed up and/or checked in
-                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) documentSnapshot.get("signed_up");
-                    boolean isUserSignedUp = false;
-                    boolean isUserCheckedIn = false;
-
-                    if (signedUpUsers != null) {
-                        for (Map<String, Object> userMap : signedUpUsers) {
-                            String uid = (String) userMap.get("uid");
-                            String checkedIn = (String) userMap.get("checked_in");
-                            if (currentUserUID.equals(uid)) {
-                                isUserSignedUp = true;
-                                isUserCheckedIn = "1".equals(checkedIn);
-                                break;
-                            }
-                        }
-                    }
+//                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) documentSnapshot.get("signed_up");
+//                    boolean isUserSignedUp = false;
+//                    boolean isUserCheckedIn = false;
+//
+//                    if (signedUpUsers != null) {
+//                        for (Map<String, Object> userMap : signedUpUsers) {
+//                            String uid = (String) userMap.get("uid");
+//                            String checkedIn = (String) userMap.get("checked_in");
+//                            if (currentUserUID.equals(uid)) {
+//                                isUserSignedUp = true;
+//                                isUserCheckedIn = "1".equals(checkedIn);
+//                                break;
+//                            }
+//                        }
+//                    }
 
                     // Check if user is signed up or not and display UI accordingly
-                    updateUIBasedOnUserStatus(isUserSignedUp, isUserCheckedIn);
+//                    updateUIBasedOnUserStatus(isUserSignedUp, isUserCheckedIn);
 
                 }
             } else {
+
             }
         }).addOnFailureListener(e -> {
         });
+    }
+
+    private void updateUIForOrganizer() {
+        textViewScanQR.setVisibility(View.GONE);
+        buttonCheckIn.setVisibility(View.GONE);
+        textViewSignUp.setVisibility(View.GONE);
+        buttonSignUp.setVisibility(View.GONE);
+        viewAttendee.setVisibility(View.VISIBLE);
+    }
+
+    private void updateUIForGeneralUser(String currentUserUID, EventHelper event, DocumentSnapshot documentSnapshot) {
+        // Your existing logic to check if the user is signed up or checked in...
+        List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) documentSnapshot.get("signed_up");
+        boolean isUserSignedUp = false;
+        boolean isUserCheckedIn = false;
+
+        if (signedUpUsers != null) {
+            for (Map<String, Object> userMap : signedUpUsers) {
+                String uid = (String) userMap.get("uid");
+                String checkedIn = (String) userMap.get("checked_in");
+                if (currentUserUID.equals(uid)) {
+                    isUserSignedUp = true;
+                    isUserCheckedIn = "1".equals(checkedIn);
+                    break;
+                }
+            }
+        }
+
+        updateUIBasedOnUserStatus(isUserSignedUp, isUserCheckedIn);
     }
 
     private void updateUIBasedOnUserStatus(boolean isUserSignedUp, boolean isUserCheckedIn) {
@@ -195,6 +234,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (isUserSignedUp) {
             textViewSignUp.setVisibility(View.GONE);
             buttonSignUp.setVisibility(View.GONE);
+            viewAttendee.setVisibility(View.GONE);
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
