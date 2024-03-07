@@ -11,16 +11,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.compose.ui.window.Notification;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -102,38 +102,46 @@ public class announcement extends Fragment {
 
 
     void callApi(JSONObject jsonObject){
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        OkHttpClient okHttpClient = new OkHttpClient();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("notification").document("key")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                            // Retrieve the value of the key field
+                            String key = document.getString("key");
+                            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+                            OkHttpClient okHttpClient = new OkHttpClient();
 
-        String url = "https://fcm.googleapis.com/fcm/send";
-        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .addHeader("Authorization", "key=")
-                .build();
+                            String url = "https://fcm.googleapis.com/fcm/send";
+                            RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+                            Request request = new Request.Builder()
+                                    .url(url)
+                                    .post(body)
+                                    .addHeader("Authorization", "key=" + key)
+                                    .build();
 
-        okHttpClient.newCall(request);
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+                            okHttpClient.newCall(request);
+                            okHttpClient.newCall(request).enqueue(new Callback() {
+                                @Override
+                                public void onFailure(Call call, IOException e) {
+                                    e.printStackTrace();
+                                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d("TAG", "Response: " + responseBody);
-                    requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Notification sent successfully", Toast.LENGTH_SHORT).show());
+                                @Override
+                                public void onResponse(Call call, Response response) throws IOException {
+                                    if (response.isSuccessful()) {
+                                        String responseBody = response.body().string();
+                                        Log.d("TAG", "Response: " + responseBody);
+                                        requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Notification sent successfully", Toast.LENGTH_SHORT).show());
 
-                } else {
-                    Log.e("TAG", "Error: " + response.code() + " " + response.message());
-                    requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "An Error Occurred. Please try again later.", Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
+                                    } else {
+                                        Log.e("TAG", "Error: " + response.code() + " " + response.message());
+                                        requireActivity().runOnUiThread(() -> Toast.makeText(getContext(), "An Error Occurred. Please try again later.", Toast.LENGTH_SHORT).show());
+                                    }
+                                }
+                            });
+                        }
+                });
     }
-
-
 }
