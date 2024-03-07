@@ -32,8 +32,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -128,8 +131,6 @@ public class CreateNewEventActivity extends AppCompatActivity {
                 eventUUID = UUID.randomUUID().toString();
                 String eventName = eventTitle.getText().toString();
                 String eventLocation = "location";
-
-
                 String eventTime = startTime.getText().toString();
                 String eventDate = startDate.getText().toString();
                 String eventDescr = eventDescription.getText().toString();
@@ -236,13 +237,24 @@ public class CreateNewEventActivity extends AppCompatActivity {
             String parsedTime = DateUtils.formatTime(event.getTime());
 
             String parsedDate = DateUtils.formatDate(event.getDate());
-            data.put("Event ID", event.getId());
-            data.put("Event Title", event.getTitle());
-            data.put("Event Location", event.getLocation());
-            data.put("Event Time", parsedTime);
-            data.put("Event Date", parsedDate);
-            data.put("Event Description", event.getDescription());
-            data.put("Event Poster", event.getPoster());
+//            data.put("Event ID", event.getId());
+//            data.put("Event Title", event.getTitle());
+//            data.put("Event Location", event.getLocation());
+//            data.put("Event Time", parsedTime);
+//            data.put("Event Date", parsedDate);
+//            data.put("Event Description", event.getDescription());
+//            data.put("Event Poster", event.getPoster());
+
+            data.put("id", event.getId());
+            data.put("title", event.getTitle());
+            data.put("location", event.getLocation());
+            data.put("time", parsedTime);
+            data.put("date", parsedDate);
+            data.put("description", event.getDescription());
+            data.put("poster", event.getPoster());
+            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+            data.put("signed_up", emptySignUpList);
+
             eventsRef
                     .document(db.collection("events").document().getId())
                     .set(data)
