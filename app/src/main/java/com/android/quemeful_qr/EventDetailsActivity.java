@@ -1,8 +1,11 @@
 package com.android.quemeful_qr;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.Settings;
@@ -13,14 +16,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.List;
@@ -103,14 +107,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
-    void signUpForEvent(String eventId) {
+    private void signUpForEvent(String eventId) {
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference eventRef = db.collection("events").document(eventId);
 
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", currentUserUID);
         userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
-        FirebaseMessaging.getInstance().subscribeToTopic(eventId);
+
         eventRef.update("signed_up", FieldValue.arrayUnion(userMap))
                 .addOnSuccessListener(aVoid -> {
                     // Update UI to reflect that the user has signed up
@@ -144,7 +148,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
 
-    void fetchEventDetails(String eventId) {
+    private void fetchEventDetails (String eventId) {
 
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -264,7 +268,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-        @Override
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0) {
