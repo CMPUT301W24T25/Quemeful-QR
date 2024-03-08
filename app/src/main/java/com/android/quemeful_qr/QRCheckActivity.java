@@ -90,7 +90,7 @@ public class QRCheckActivity extends AppCompatActivity {
             if (extras == null){
                 eventPoster = null;
             } else {
-                eventPoster = extras.getString("key");
+                eventPoster = extras.getString("event");
             }
         } else {
             eventPoster= (String) savedInstanceState.getSerializable("key");

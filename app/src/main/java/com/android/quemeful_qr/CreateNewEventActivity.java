@@ -89,6 +89,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
     private boolean endTimeTextClicked;
+    private EventHelper event;
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         startTime = findViewById(R.id.enter_startTime);
@@ -169,6 +170,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 newFragment.show(getSupportFragmentManager(), "EndDatePicker");
             }
         });
+
         //creates event
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,7 +193,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     //create new event
-                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
@@ -206,7 +208,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CreateNewEventActivity.this, GenerateNewQRActivity.class);
-               
+                intent.putExtra("event", event);
                 startActivity(intent);
 
             }

@@ -30,7 +30,6 @@ public class ViewEventActivity extends AppCompatActivity {
         Intent intent = getIntent();
         EventHelper event = (EventHelper) intent.getSerializableExtra("event");
 
-//        String poster = intent.getStringExtra("key");
         assert event != null;
         String poster = event.getPoster();
         String name = event.getTitle();
