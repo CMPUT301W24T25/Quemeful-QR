@@ -383,11 +383,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+//                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+//            }
+//        }
     }
 
     private void loadFragment(Fragment fragment) {
@@ -396,15 +396,15 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == 1 && grantResults.length > 0) {
-//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
