@@ -27,9 +27,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 
-/**
- * This code here is the MainActivity code of the QRScanner project done locally.
- */
+
 public class QRCheckActivity extends AppCompatActivity {
     //scan and generate QR
     private ImageButton scan;
@@ -119,6 +117,11 @@ public class QRCheckActivity extends AppCompatActivity {
                 //if exists, display it
                 //if not exist, error message
                 db.collection("events").whereEqualTo("id", result.getContents()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    /**
+                     * compare id from QR code and ids in firebase, and if find a match, then
+                     * get data and switch to next page
+                     * @param task
+                     */
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 

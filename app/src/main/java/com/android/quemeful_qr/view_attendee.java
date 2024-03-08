@@ -24,6 +24,9 @@ public class view_attendee extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    /**
+     * constructor
+     */
     public view_attendee() {
         // Required empty public constructor
     }

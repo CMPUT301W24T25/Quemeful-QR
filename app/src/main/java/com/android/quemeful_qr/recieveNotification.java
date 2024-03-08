@@ -20,6 +20,9 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+/**
+ * receiving notifications through firebase
+ */
 public class recieveNotification extends FirebaseMessagingService {
 
     @Override
@@ -45,7 +48,11 @@ public class recieveNotification extends FirebaseMessagingService {
         return remoteViews;
     }
 
-
+    /**
+     * phone receives a notification message
+     * @param title
+     * @param message
+     */
     public void handleMessage(String title,String  message) {
         String CHANNEL_ID = "MESSAGE";
         String channename = "NOTIFICATION MESSAGE";

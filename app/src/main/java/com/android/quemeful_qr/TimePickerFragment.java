@@ -21,6 +21,11 @@ public class TimePickerFragment extends DialogFragment {
 
     }
     private TimePickerFragment.TimePickerDialogListener listener;
+
+    /**
+     * attaches the timepickerfragment to the host activity
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context){
 //        this will help set the buttons
@@ -31,6 +36,14 @@ public class TimePickerFragment extends DialogFragment {
             throw new RuntimeException(context + "must implement TimePickerDialogListener");
         }
     }
+
+    /**
+     * calendar pop up to select dates
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -44,6 +57,13 @@ public class TimePickerFragment extends DialogFragment {
         TimePickerDialog timePicker = new TimePickerDialog(getActivity(),(TimePickerDialog.OnTimeSetListener) getActivity(), hour, minute, DateFormat.is24HourFormat(getActivity()));
 
         timePicker.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener(){
+            /**
+             * if user clicks cancel it will clear out which time textview is clicked
+             * @param dialog the dialog that received the click
+             * @param which the button that was clicked (ex.
+             *              {@link DialogInterface#BUTTON_POSITIVE}) or the position
+             *              of the item clicked
+             */
             public void onClick(DialogInterface dialog, int which){
                 if (which == DialogInterface.BUTTON_NEGATIVE){
                     listener.setTimeClickFalse();

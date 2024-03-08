@@ -54,6 +54,9 @@ public class Home extends Fragment implements EventClickListenerInterface{
         return view;
     }
 
+    /**
+     * get events from firebase and order them by date
+     */
     private void fetchEvents() {
         System.out.println(db.collection("events").toString());
         db.collection("events").get().addOnCompleteListener(task -> {
@@ -93,6 +96,11 @@ public class Home extends Fragment implements EventClickListenerInterface{
         });
     }
 
+    /**
+     * updates the interface with today events and upcoming events if there are any
+     * @param todayEvents
+     * @param upcomingEvents
+     */
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
         if (!todayEvents.isEmpty()) {
             EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this);
@@ -109,6 +117,10 @@ public class Home extends Fragment implements EventClickListenerInterface{
         }
     }
 
+    /**
+     * goes to event details after clicking the event
+     * @param event
+     */
     @Override
     public void onEventClick(EventHelper event) {
         Log.d("HomeFragment", "Event clicked: " + event.getTitle());
