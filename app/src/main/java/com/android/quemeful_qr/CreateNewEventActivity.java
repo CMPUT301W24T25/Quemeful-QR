@@ -4,9 +4,12 @@
 //https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
 //https://firebase.google.com/docs/firestore/query-data/queries#java
 //https://stackoverflow.com/q/41396194
+//https://www.youtube.com/watch?v=33BFCdL0Di0
 package com.android.quemeful_qr;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -17,27 +20,31 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
+import com.android.quemeful_qr.DatePickerFragment;
+import com.android.quemeful_qr.DateUtils;
+import com.android.quemeful_qr.EventHelper;
+import com.android.quemeful_qr.GenerateNewQRActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -52,13 +59,14 @@ import java.util.UUID;
  * https://developer.android.com/training/data-storage/shared/photopicker
  */
 
-public class CreateNewEventActivity extends AppCompatActivity {
+public class CreateNewEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
+        DatePickerFragment.DatePickerDialogListener{
     // xml variables
     private EditText eventTitle;
     private EditText eventDescription;
-    private EditText startDate;
+    private TextView startDate;
     private EditText startTime;
-    private EditText endDate;
+    private TextView endDate;
     private EditText endTime;
     private Button generateQRButton;
     private Button cancelButton;
@@ -75,6 +83,8 @@ public class CreateNewEventActivity extends AppCompatActivity {
     private String eventUUID;
     private String parsedTime;
     private String parsedDate;
+    private boolean startDateTextClicked;
+    private boolean endDateTextClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +114,24 @@ public class CreateNewEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 imageChooser();
+            }
+        });
+        startDate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                startDateTextClicked = true;
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "StartDatePicker");
+            }
+        });
+        endDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endDateTextClicked = true;
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "EndDatePicker");
             }
         });
         //creates event
@@ -170,6 +198,10 @@ public class CreateNewEventActivity extends AppCompatActivity {
      * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
      */
 
+    public void setDateClickFalse(){
+        endDateTextClicked = false;
+        startDateTextClicked = false;
+    }
     private void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
@@ -188,13 +220,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
             String parsedTime = DateUtils.formatTime(event.getTime());
 
             String parsedDate = DateUtils.formatDate(event.getDate());
-//            data.put("Event ID", event.getId());
-//            data.put("Event Title", event.getTitle());
-//            data.put("Event Location", event.getLocation());
-//            data.put("Event Time", parsedTime);
-//            data.put("Event Date", parsedDate);
-//            data.put("Event Description", event.getDescription());
-//            data.put("Event Poster", event.getPoster());
+
 
             data.put("organizer",currentUserUID);
             data.put("id", event.getId());
@@ -215,6 +241,26 @@ public class CreateNewEventActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String selectedDateString = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime()); //shows Thursday, March 28, 2024
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        String formatDateString = format1.format(calendar.getTime());
+        if (startDateTextClicked){
+            startDate.setText(formatDateString);
+            startDateTextClicked = false;
+        }else if(endDateTextClicked){
+            endDate.setText(formatDateString);
+            endDateTextClicked = false;
+        }
+
+
+
     }
     private void imageChooser()
     {

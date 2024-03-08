@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class DateUtils {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmaa", Locale.getDefault());
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
     public static Date parseDate(String dateString) {
         try {
             return dateFormat.parse(dateString);
@@ -25,10 +25,11 @@ public class DateUtils {
     public static String formatTime(String timeString){
         try {
             Date time = timeFormat.parse(timeString);
-            String newTime = new SimpleDateFormat("hh:mm a").format(time);
-            Log.d("time", newTime);
+            String newTime = new SimpleDateFormat("h:mm a").format(time);
+
             return newTime;
         } catch (ParseException e) {
+            Log.d("time", "exception");
             e.printStackTrace();
             return null;
         }
