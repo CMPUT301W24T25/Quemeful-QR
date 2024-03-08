@@ -116,6 +116,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // Update UI to reflect that the user has signed up
                     Toast.makeText(EventDetailsActivity.this, "Signed up for event successfully!", Toast.LENGTH_SHORT).show();
                     updateUIBasedOnUserStatus(true, false);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+                            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+                        }
+                    }
                 })
                 .addOnFailureListener(e -> {
                     // Handle the error
@@ -256,5 +262,17 @@ public class EventDetailsActivity extends AppCompatActivity {
     protected void openQRCheckActivity(){
         Intent intent = new Intent(EventDetailsActivity.this, QRCheckActivity.class);
         startActivity(intent);
+    }
+
+        @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
