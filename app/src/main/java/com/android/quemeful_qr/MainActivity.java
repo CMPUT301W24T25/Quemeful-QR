@@ -15,37 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
-<<<<<<< HEAD
-import android.Manifest;
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
-<<<<<<< HEAD
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-=======
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-=======
->>>>>>> Hussain_TestCases
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-<<<<<<< HEAD
->>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
-=======
->>>>>>> Hussain_TestCases
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,22 +28,6 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    // Tag for logging
-    private static final String TAG = "MainActivity";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Retrieve the device's unique ID
-        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        // Get the Firestore database instance
-=======
-=======
->>>>>>> Hussain_TestCases
     private String userFirstName = "";
     private String userLastName = "";
 
@@ -291,66 +250,21 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-<<<<<<< HEAD
->>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
-=======
->>>>>>> Hussain_TestCases
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
-<<<<<<< HEAD
-            if (task.isSuccessful()) {
-                if (task.getResult().exists()) {
-<<<<<<< HEAD
-                    // Document exists, meaning the user is "logged in"
-                    Log.d(TAG, "User exists with ID: " + deviceId);
-                    setContentView(R.layout.activity_main);
-                } else {
-                    // No such document exists, meaning the user is not "logged in"
-                    Log.d(TAG, "No user found with ID: " + deviceId);
-                    // Show the nologin layout for new users
-                    setContentView(R.layout.nologin);
-=======
             if (task.isSuccessful() && task.getResult().exists()) {
                 Log.d(TAG, "User exists with ID: " + deviceId);
                 userFirstName = task.getResult().getString("firstName");
                 userLastName = task.getResult().getString("lastName");
                 isAdmin = Boolean.TRUE.equals(task.getResult().getBoolean("Admin"));
->>>>>>> Hussain_TestCases
 
                 transitionToMainScreen();
             } else {
-<<<<<<< HEAD
-                // Task failed, handle the error
-=======
-                    // Document exists, user "logged in"
-                    Log.d(TAG, "User exists with ID: " + deviceId);
-
-                    userFirstName = task.getResult().getString("firstName");
-                    userLastName = task.getResult().getString("lastName");
-
-                    setContentView(R.layout.activity_main);
-                    initializeBottomNavigation(); // Initialize bottom navigation here
-                } else {
-                    // No such document, user not "logged in"
-                    Log.d(TAG, "No user found with ID: " + deviceId);
-                    setContentView(R.layout.nologin);
-                    handleNewUserInput(db, deviceId); // Handle new user input
-                }
-            } else {
->>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
-                Log.e(TAG, "Error checking user document", task.getException());
-                setContentView(R.layout.nologin);
-            }
-        });
-<<<<<<< HEAD
-=======
-=======
                 Log.d(TAG, "No user found with ID: " + deviceId);
                 promptNewUser(db, deviceId);
             }
         });
->>>>>>> Hussain_TestCases
     }
 
 
@@ -491,9 +405,5 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
             }
         }
-<<<<<<< HEAD
->>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
-=======
->>>>>>> Hussain_TestCases
     }
 }
