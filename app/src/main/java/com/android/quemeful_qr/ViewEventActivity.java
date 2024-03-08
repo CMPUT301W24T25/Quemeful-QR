@@ -34,7 +34,6 @@ public class ViewEventActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Event event = (Event) intent.getSerializableExtra("event");
 
-//        String poster = intent.getStringExtra("key");
         assert event != null;
         String poster = event.getEventPoster();
         String name = event.getEventName();
