@@ -14,8 +14,17 @@ public class EventHelper implements Serializable {
     private String time;
     private String date;
     private String description;
-
+    private String organizer;
     private String poster;
+
+    public String getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(String organizer) {
+        this.organizer = organizer;
+    }
+
     EventHelper(){
 
     }

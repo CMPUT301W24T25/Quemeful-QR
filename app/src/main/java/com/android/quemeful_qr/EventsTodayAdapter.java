@@ -45,7 +45,6 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         holder.eventTitle.setText(event.getTitle());
         holder.eventLocation.setText(event.getLocation());
         holder.eventTime.setText(event.getTime());
-//        holder.eventImage.setImageResource(event.getImageResourceId());
 
         if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
             byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);

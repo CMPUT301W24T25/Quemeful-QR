@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -32,8 +33,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -173,6 +177,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
+        String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         if (eventUUID.matches("") || eventName.matches("") || eventLocation.matches("")
         || eventTime.matches("") || eventDate.matches("")|| eventDescr.matches("")){ //empty string
@@ -180,6 +185,18 @@ public class CreateNewEventActivity extends AppCompatActivity {
             myToast.show();
         } else {
             HashMap<String, Object> data = new HashMap<>();
+            String parsedTime = DateUtils.formatTime(event.getTime());
+
+            String parsedDate = DateUtils.formatDate(event.getDate());
+//            data.put("Event ID", event.getId());
+//            data.put("Event Title", event.getTitle());
+//            data.put("Event Location", event.getLocation());
+//            data.put("Event Time", parsedTime);
+//            data.put("Event Date", parsedDate);
+//            data.put("Event Description", event.getDescription());
+//            data.put("Event Poster", event.getPoster());
+
+            data.put("organizer",currentUserUID);
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
