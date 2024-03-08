@@ -103,6 +103,9 @@ public class announcement extends Fragment {
      * @param title The title of the notification.
      * @param descrtiption The description/body of the notification.
      */
+    /**
+    *https://www.youtube.com/watch?v=YjNZO90yVsE&t=530s&ab_channel=EasyTuto
+    */
     void sendNotification(String title,String descrtiption){
         try{
             JSONObject jsonObject = new JSONObject();
