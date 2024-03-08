@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +30,7 @@ import com.google.zxing.common.BitMatrix;
  */
 public class GenerateNewQRActivity extends AppCompatActivity {
     private ImageView QRImage;
-    private TextInputEditText event;
+    private TextView event;
     private Button generate;
 
     /**
@@ -72,7 +73,7 @@ public class GenerateNewQRActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String text = event.getText().toString();
                 if (text.isEmpty()) {
-                    Toast.makeText(GenerateNewQRActivity.this, "Please enter the Event Name for promotion", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GenerateNewQRActivity.this, "Check in confirmed", Toast.LENGTH_SHORT).show();
                 } else {
                     Bitmap bitmap = createBitmap(text);
                     QRImage.setImageBitmap(bitmap);

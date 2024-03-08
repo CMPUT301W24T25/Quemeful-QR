@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5900C2FF"
+    android:background="@drawable/gradient_background"
     tools:context=".GenerateNewQRActivity">
 
 <!--    reference URL: https://stackoverflow.com/questions/49350686/back-to-previous-activity-arrow-button-->
@@ -23,7 +23,7 @@
         android:fontFamily="serif"
         android:text="@string/new_qr_code"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="30sp" />
 
     <FrameLayout
@@ -42,7 +42,7 @@
 
     </FrameLayout>
 
-    <com.google.android.material.textfield.TextInputEditText
+    <TextView
         android:id="@+id/EnterText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,10 +51,9 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:hint="@string/enter_event_name"
         android:minHeight="48dp"
         android:textAlignment="center"
-        android:textColorHint="#CC000000" />
+        android:textColorHint="@color/white" />
 
     <Button
         android:id="@+id/generate"
@@ -63,7 +62,7 @@
         android:layout_below="@+id/EnterText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="@string/generate"
+        android:text="@string/confirm_checkin"
         android:textAlignment="center"
         android:textSize="20sp"
         android:fontFamily="serif"/>

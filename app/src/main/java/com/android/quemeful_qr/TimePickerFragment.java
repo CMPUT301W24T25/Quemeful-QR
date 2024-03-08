@@ -41,7 +41,7 @@ public class TimePickerFragment extends DialogFragment {
 
 
 
-        TimePickerDialog timePicker = new TimePickerDialog(getActivity(),(TimePickerDialog.OnTimeSetListener) getActivity(), hour, minute, false);
+        TimePickerDialog timePicker = new TimePickerDialog(getActivity(),(TimePickerDialog.OnTimeSetListener) getActivity(), hour, minute, DateFormat.is24HourFormat(getActivity()));
 
         timePicker.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int which){

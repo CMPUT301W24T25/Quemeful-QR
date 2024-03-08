@@ -93,10 +93,12 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         startTime = findViewById(R.id.enter_startTime);
         if (startTimeTextClicked){
-            startTime.setText(hourOfDay + ":" + minute);
+            String startTimeString = String.format("%02d:%02d", hourOfDay, minute);
+            startTime.setText(startTimeString);
             startTimeTextClicked = false;
         }else if (endTimeTextClicked){
-            endTime.setText(hourOfDay + ":" + minute);
+            String endTimeString = String.format("%02d:%02d", hourOfDay, minute);
+            endTime.setText(endTimeString);
             endTimeTextClicked = false;
         }
 
@@ -114,7 +116,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         endDate = findViewById(R.id.enter_endDate);
         endTime = findViewById(R.id.enter_endTime);
         generateQRButton = findViewById(R.id.QR_generate_button_for_createEvent);
-//        generateQRButton.setVisibility();
+
         cancelButton = findViewById(R.id.cancel_button);
         createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
@@ -191,6 +193,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     //create new event
                     EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
+                    generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -27,10 +27,7 @@
         <activity
             android:name=".CreateNewEventActivity"
             android:exported="false" />
-        <activity
-            android:name=".ScanQRActivity"
-            android:exported="false"
-            android:screenOrientation="fullSensor" />
+
         <activity
             android:name=".GenerateNewQRActivity"
             android:exported="false" />

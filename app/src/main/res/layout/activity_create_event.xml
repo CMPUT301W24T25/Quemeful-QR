@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5900C2FF"
+    android:background="@drawable/gradient_background"
     tools:context=".MainActivity">
 
     <TextView
@@ -17,7 +17,7 @@
         android:layout_marginBottom="8dp"
         android:fontFamily="serif"
         android:text="@string/create_event"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="30sp" />
 
     <TextView
@@ -29,6 +29,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
+        android:textColor="@color/white"
         android:text="@string/event_title"
         android:textSize="22sp" />
 
@@ -52,7 +53,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/enter_title"
-        android:layout_margin="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/white"
         android:text="@string/add_poster"
         android:textSize="22sp" />
 
@@ -70,10 +75,14 @@
 
     <TextView
         android:id="@+id/event_details"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/add_poster_button"
-        android:layout_margin="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:text="@string/event_details"
         android:textSize="22sp" />
 
@@ -98,6 +107,7 @@
 
         <TextView
             android:id="@+id/event_start_date"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -106,6 +116,7 @@
 
         <TextView
             android:id="@+id/event_start_time"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -158,6 +169,7 @@
 
         <TextView
             android:id="@+id/event_end_date"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -166,6 +178,7 @@
 
         <TextView
             android:id="@+id/event_end_time"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -209,12 +222,16 @@
 
     <TextView
         android:id="@+id/qr_code_title"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/event_ending_inputs"
-        android:layout_margin="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:text="@string/qr_code"
-        android:textSize="22sp"/>
+        android:textSize="22sp" />
 
     <Button
         android:id="@+id/QR_generate_button_for_createEvent"
@@ -227,6 +244,7 @@
         android:layout_marginBottom="5dp"
         android:backgroundTint="#009688"
         android:text="@string/generate_new_qr"
+        android:visibility="invisible"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -245,6 +263,7 @@
             android:backgroundTint="#E3D39E"
             android:text="@string/cancel"
             android:textSize="16sp"
+
             android:textColor="@color/black"/>
 
         <Button

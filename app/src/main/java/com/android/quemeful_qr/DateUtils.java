@@ -12,7 +12,6 @@ import java.util.Locale;
 
 public class DateUtils {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
     public static Date parseDate(String dateString) {
         try {
             return dateFormat.parse(dateString);
