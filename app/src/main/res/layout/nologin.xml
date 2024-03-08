@@ -12,12 +12,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 <<<<<<< HEAD
+<<<<<<< HEAD
         android:layout_marginTop="36dp"
         android:text="Welcome to"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
 =======
+=======
+>>>>>>> Hussain_TestCases
         android:layout_marginTop="0dp"
         android:text="welcome to"
         android:letterSpacing="0.2"
@@ -25,11 +28,15 @@
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="50sp"
+<<<<<<< HEAD
 >>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
+=======
+>>>>>>> Hussain_TestCases
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     <TextView
         android:id="@+id/queuemfulQrTextView"
@@ -41,6 +48,8 @@
         android:textSize="24sp"
         android:layout_marginTop="8dp"
 =======
+=======
+>>>>>>> Hussain_TestCases
 
     <TextView
         android:id="@+id/quemefulQrTextView"
@@ -53,11 +62,15 @@
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="34sp"
+<<<<<<< HEAD
 >>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
+=======
+>>>>>>> Hussain_TestCases
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/welcomeToTextView" />
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     <Button
@@ -75,10 +88,14 @@
         app:layout_constraintVertical_bias="1.0"
         android:layout_marginBottom="32dp" />
 =======
+=======
+
+>>>>>>> Hussain_TestCases
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/quemefulQrTextView"
@@ -136,6 +153,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+=======
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/scan_logo" />
+>>>>>>> Hussain_TestCases
 
     <Button
         android:id="@+id/getStartedButton"
@@ -154,4 +179,7 @@
         android:layout_marginBottom="32dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+<<<<<<< HEAD
 >>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
+=======
+>>>>>>> Hussain_TestCases

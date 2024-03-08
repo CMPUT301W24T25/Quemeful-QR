@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <<<<<<< HEAD
+<<<<<<< HEAD
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
         android:startColor="#00C2FF"
@@ -7,6 +8,8 @@
         android:angle="270" />
 </shape>
 =======
+=======
+>>>>>>> Hussain_TestCases
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient
@@ -14,4 +17,7 @@
         android:endColor="#ff23729a"
         android:angle="90" />
 </shape>
+<<<<<<< HEAD
 >>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
+=======
+>>>>>>> Hussain_TestCases

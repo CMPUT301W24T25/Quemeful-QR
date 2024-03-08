@@ -1,19 +1,43 @@
+//https://stackoverflow.com/a/60389994
 package com.android.quemeful_qr;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
-public class EventHelper {
+import java.io.Serializable;
+
+public class EventHelper implements Serializable {
     private String id;
     private String title;
     private String location;
     private String time;
     private String date;
     private String description;
-
+    private String organizer;
     private String poster;
 
+    public String getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(String organizer) {
+        this.organizer = organizer;
+    }
+
+    EventHelper(){
+
+    }
+    EventHelper(String id, String title, String location, String time, String date, String description, String poster){
+        this.id = id;
+        this.title = title;
+        this.location = location;
+        this.time = time;
+        this.date = date;
+        this.description = description;
+        this.poster = poster;
+//        this.attendeeList = ArrayList< Attendees >
+    }
     public String getDescription() {
         return description;
     }

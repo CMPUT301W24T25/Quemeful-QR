@@ -53,20 +53,21 @@ public class Home extends Fragment implements EventClickListenerInterface{
                     event.setId(document.getId()); // Set the document ID as the event ID
                     try {
                         Date eventDate = DateUtils.parseDate(event.getDate());
+                        if (eventDate != null) {
+                            if (DateUtils.isToday(eventDate)) {
+                                todayEvents.add(event);
+                            } else if (eventDate.after(new Date())) {
+                                upcomingEvents.add(event);
+                            }
+                        }
                     }
                     catch (Exception e) {
                         Log.e("HomeFragment", "Error parsing event date", e);
 
                     }
-                     Date eventDate = DateUtils.parseDate(event.getDate());
+                     //Date eventDate = DateUtils.parseDate(event.getDate());
 
-                    if (eventDate != null) {
-                        if (DateUtils.isToday(eventDate)) {
-                            todayEvents.add(event);
-                        } else if (eventDate.after(new Date())) {
-                            upcomingEvents.add(event);
-                        }
-                    }
+
                 }
                 System.out.println(todayEvents.toString());
                 System.out.println(upcomingEvents.toString());

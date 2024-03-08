@@ -7,12 +7,12 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+<<<<<<< HEAD
 <<<<<<< HEAD
 .idea/
 =======
@@ -20,3 +20,8 @@ local.properties
 app/google-services.json
 /.idea/
 >>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
+=======
+.gitignore
+app/google-services.json
+/.idea/
+>>>>>>> Hussain_TestCases

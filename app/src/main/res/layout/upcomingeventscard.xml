@@ -12,18 +12,8 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/upcomingeventImage"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="120dp"-->
-<!--            android:scaleType="centerCrop"-->
-<!--            android:src="@drawable/ic_launcher_background"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/upcomingeventImage"
+        <ImageView
+            android:id="@+id/admin_event_image"
             android:layout_width="0dp"
             android:layout_height="120dp"
             android:scaleType="centerCrop"
@@ -34,23 +24,23 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
-            android:id="@+id/upcomingeventTitle"
+            android:id="@+id/event_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:text="Event Title"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/upcomingeventImage" />
+            app:layout_constraintTop_toBottomOf="@id/admin_event_image" />
 
         <TextView
-            android:id="@+id/upcomingeventDate"
+            android:id="@+id/event_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Wednesday, November 10th"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upcomingeventImage" />
+            app:layout_constraintTop_toBottomOf="@+id/admin_event_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

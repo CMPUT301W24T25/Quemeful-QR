@@ -9,8 +9,12 @@ buildscript {
 plugins {
     id("com.android.application") version "8.2.2" apply false
 <<<<<<< HEAD
+<<<<<<< HEAD
     id("com.google.gms.google-services") version "4.4.1" apply false
 =======
     id("com.google.gms.google-services") version "4.4.0" apply false
 >>>>>>> ebe18dae8eade760676aa43dc4e74714d486f381
+=======
+    id("com.google.gms.google-services") version "4.4.1" apply false
+>>>>>>> Hussain_TestCases
 }
