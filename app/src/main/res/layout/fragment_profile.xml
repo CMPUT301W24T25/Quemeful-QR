@@ -130,13 +130,14 @@
         android:id="@+id/notificationSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
         app:layout_constraintBottom_toBottomOf="@id/GeolocationTextView"
         app:layout_constraintEnd_toEndOf="@+id/GeolocationTextView"
         app:layout_constraintHorizontal_bias="0.952"
         app:layout_constraintStart_toStartOf="@+id/GeolocationTextView"
         app:layout_constraintTop_toTopOf="@id/GeolocationTextView"
-        app:layout_constraintVertical_bias="0.4"
-         />
+        app:layout_constraintVertical_bias="0.4" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

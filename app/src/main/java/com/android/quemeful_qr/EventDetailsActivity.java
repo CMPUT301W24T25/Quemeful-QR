@@ -45,12 +45,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         imageViewBackArrow = findViewById(R.id.backArrow);
+        textViewEventLocation = findViewById(R.id.textViewEventLocation);
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
 
 
         textViewEventTitle = findViewById(R.id.textViewEventTitle);
@@ -254,6 +256,10 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
     protected void openQRCheckActivity(){
         Intent intent = new Intent(EventDetailsActivity.this, QRCheckActivity.class);
+        startActivity(intent);
+    }
+    protected void openMapActivity(){
+        Intent intent = new Intent(EventDetailsActivity.this, Map.class);
         startActivity(intent);
     }
 }

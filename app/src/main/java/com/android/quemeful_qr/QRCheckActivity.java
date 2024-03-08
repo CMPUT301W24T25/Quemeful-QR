@@ -85,17 +85,7 @@ public class QRCheckActivity extends AppCompatActivity {
                 integrator.initiateScan();
             }
         });
-        if (savedInstanceState == null){
-            Bundle extras = getIntent().getExtras();
-            if (extras == null){
-                eventPoster = null;
-            } else {
-                eventPoster = extras.getString("event");
-            }
-        } else {
-            eventPoster= (String) savedInstanceState.getSerializable("key");
 
-        }
     }
 
     /**

@@ -35,6 +35,7 @@ public class EventHelper implements Serializable {
         this.time = time;
         this.date = date;
         this.description = description;
+//        this.organizer = organizer;
         this.poster = poster;
 //        this.attendeeList = ArrayList< Attendees >
     }
