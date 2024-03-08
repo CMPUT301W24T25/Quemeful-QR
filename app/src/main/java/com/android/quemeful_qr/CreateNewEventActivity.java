@@ -30,11 +30,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,10 +55,10 @@ public class CreateNewEventActivity extends AppCompatActivity {
 //    private TextInputEditText startTime;
 //    private TextInputEditText endDate;
 //    private TextInputEditText endTime;
-    private EditText eventTitle;
-    private EditText eventDescription;
-    private EditText startDate;
-    private EditText startTime;
+    EditText eventTitle;
+    EditText eventDescription;
+    EditText startDate;
+    EditText startTime;
     private EditText endDate;
     private EditText endTime;
     private Button generateQRButton;
@@ -73,7 +69,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
 //    Calendar calendar = Calendar.getInstance();
 //    Calendar time = Calendar.getInstance();
     private Uri selectedImageUri ;
-    private FirebaseFirestore db;
+    FirebaseFirestore db;
     private CollectionReference eventsRef;
     private String eventUUID;
 
@@ -222,7 +218,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
-    private void addNewEvent(EventHelper event) {
+    void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
         String eventLocation = "location";
@@ -302,6 +298,8 @@ public class CreateNewEventActivity extends AppCompatActivity {
 
                 }
             });
+
+
 
 
 //    private String setDateFormat(){

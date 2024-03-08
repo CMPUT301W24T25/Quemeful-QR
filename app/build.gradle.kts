@@ -7,6 +7,7 @@ android {
     namespace = "com.android.quemeful_qr"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.android.quemeful_qr"
         minSdk = 24
@@ -40,6 +41,7 @@ android {
 
         }
 
+
         dependencies {
             implementation("com.squareup.okhttp3:okhttp:4.10.0")
             implementation("org.apache.directory.studio:org.apache.commons.io:2.4")
@@ -63,11 +65,24 @@ android {
             implementation("com.journeyapps:zxing-android-embedded:4.2.0")
             coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.2") //generate QR
             implementation("androidx.multidex:multidex:2.0.1")
-            testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+            testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
             testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
-
+            androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+            androidTestImplementation("androidx.test:runner:1.5.2")
+            androidTestImplementation("androidx.test:rules:1.5.0")
+            testImplementation("junit:junit:4.13.2")
+            androidTestImplementation("androidx.test.ext:junit:1.1.5")
+            androidTestImplementation("androidx.test:core:1.5.0")
+            testImplementation("junit:junit:4.13.2")
+            androidTestImplementation("androidx.test.ext:junit:1.1.5")
+            androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+            androidTestImplementation("org.mockito:mockito-core:3.12.4")
         }
     }
+}
+dependencies {
+    implementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation("androidx.test.ext:junit:1.1.5")
 }
 
 

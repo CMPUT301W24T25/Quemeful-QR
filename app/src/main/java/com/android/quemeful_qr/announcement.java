@@ -2,7 +2,6 @@ package com.android.quemeful_qr;
 
 
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +10,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.compose.ui.window.Notification;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -102,6 +101,9 @@ public class announcement extends Fragment {
 
 
     void callApi(JSONObject jsonObject){
+        Task<DocumentSnapshot> task = FirebaseFirestore.getInstance().collection("notification").document("key").get();
+        String key = task.getResult().getString("key");
+        Log.d("TAG", "Key: " + key);
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         OkHttpClient okHttpClient = new OkHttpClient();
 
@@ -110,7 +112,7 @@ public class announcement extends Fragment {
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
-                .addHeader("Authorization", "key=")
+                .addHeader("Authorization", "key=" + key)
                 .build();
 
         okHttpClient.newCall(request);

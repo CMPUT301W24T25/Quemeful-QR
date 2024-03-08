@@ -2,7 +2,6 @@ package com.android.quemeful_qr;
 
 import android.content.Intent;
 import android.graphics.drawable.PictureDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -26,7 +25,7 @@ import java.net.URL;
 
 public class Profile extends Fragment {
 
-    private TextView firstNameTextView;
+    TextView firstNameTextView;
     private Button editProfileButton;
     private ImageView avatarImageView;
     private String deviceId;
@@ -64,7 +63,7 @@ public class Profile extends Fragment {
         fetchProfileInfo();
     }
 
-    private void fetchProfileInfo() {
+    void fetchProfileInfo() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(deviceId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {

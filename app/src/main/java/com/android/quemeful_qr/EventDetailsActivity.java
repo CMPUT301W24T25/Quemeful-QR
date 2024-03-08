@@ -20,6 +20,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.List;
@@ -102,14 +103,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void signUpForEvent(String eventId) {
+    void signUpForEvent(String eventId) {
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference eventRef = db.collection("events").document(eventId);
 
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", currentUserUID);
         userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
-
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId);
         eventRef.update("signed_up", FieldValue.arrayUnion(userMap))
                 .addOnSuccessListener(aVoid -> {
                     // Update UI to reflect that the user has signed up
@@ -137,7 +138,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void fetchEventDetails (String eventId) {
+    void fetchEventDetails(String eventId) {
 
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
