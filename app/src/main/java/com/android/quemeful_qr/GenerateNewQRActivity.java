@@ -24,9 +24,6 @@ import com.google.zxing.common.BitMatrix;
 
 /**
  * This is a new activity for Generating QR code.
- * This code is just a check if the QR code generates correctly.
- * For the project, this same piece of code maybe be used for both cases of generating new QR when,
- * new event is created and when event promotion generates a promotion QR.
  * Note: For the purpose of generating and scanning a QR code,
  * zxing library has been implemented in the build.graddle.kts(Module:app)
  */
@@ -74,11 +71,15 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         });
 
         /**
-         * References: URLs (Should specifically add Author, License, Published Date and Access Date: 21.02.2024)
+         * References: URLs (Access Date: 21.02.2024)
          * https://www.youtube.com/watch?v=zHStZwXtbj0
+         * Author- Programmity  , Published Date- Nov 17, 2020
          * https://www.youtube.com/watch?v=5DEHmN4PmA0
+         * Author- GeeksforGeeks  , Published Date- Jul 6, 2021
          * https://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
+         * Author- Enamul Haque , License- CC BY-SA 3.0  , Published Date- Jan 28, 2018
          * https://stackoverflow.com/questions/28232116/android-using-zxing-generate-qr-code
+         * Author- Harpreet , License- CC BY-SA 4.0 , Published Date- Jan 16, 2019
          */
 
     }
