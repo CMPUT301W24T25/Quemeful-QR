@@ -10,8 +10,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * This is a class that has custom made methods for Dates
+ */
 public class DateUtils {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+    /**
+     * parseDate converts string into dates
+     * @param dateString
+     * @return Date
+     */
     public static Date parseDate(String dateString) {
         try {
             return dateFormat.parse(dateString);
@@ -21,7 +30,11 @@ public class DateUtils {
         }
     }
 
-
+    /**
+     * isToday checks whether the given date is today's date
+     * @param date
+     * @return boolean
+     */
     public static boolean isToday(Date date) {
         Calendar today = Calendar.getInstance();
         Calendar targetDate = Calendar.getInstance();

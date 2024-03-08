@@ -35,8 +35,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button buttonCheckIn, buttonSignUp;;
 
 
-
-
+    /**
+     * Sets up interface with event details
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +52,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
+            /**
+             * back arrow closes the page and goes to previous page
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 finish();
@@ -76,6 +85,9 @@ public class EventDetailsActivity extends AppCompatActivity {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
             setupCheckInButton();
+            /**
+             *
+             */
             viewAttendee.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -123,6 +135,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * replace an existing fragment in a container with an instance of a new
+     * fragment class
+     * @param eventId
+     */
     private void navigateToListOfAttendees(String eventId) {
         list_of_attendees attendeesFragment = new list_of_attendees(eventId);
 
@@ -138,7 +155,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-
+    /**
+     * gets event details from the firebase and shows them on this page
+     * @param eventId
+     */
     private void fetchEventDetails (String eventId) {
 
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -198,6 +218,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * changes the UI when attendee signs up
+     */
     private void updateUIForOrganizer() {
         textViewScanQR.setVisibility(View.GONE);
         buttonCheckIn.setVisibility(View.GONE);
@@ -206,6 +229,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         viewAttendee.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * changes the UI when the attendee signs up
+     * @param currentUserUID
+     * @param event
+     * @param documentSnapshot
+     */
     private void updateUIForGeneralUser(String currentUserUID, EventHelper event, DocumentSnapshot documentSnapshot) {
         // Your existing logic to check if the user is signed up or checked in...
         List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) documentSnapshot.get("signed_up");
@@ -227,6 +256,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         updateUIBasedOnUserStatus(isUserSignedUp, isUserCheckedIn);
     }
 
+    /**
+     * if user signed up, changes the interface element visibility
+     * @param isUserSignedUp
+     * @param isUserCheckedIn
+     */
     private void updateUIBasedOnUserStatus(boolean isUserSignedUp, boolean isUserCheckedIn) {
         TextView textViewScanQR = findViewById(R.id.scanQRTitle);
         Button buttonCheckIn = findViewById(R.id.scanQRButton);
@@ -254,12 +288,13 @@ public class EventDetailsActivity extends AppCompatActivity {
             buttonSignUp.setVisibility(View.VISIBLE);
         }
     }
+
+    /**
+     * switches from eventdetailsactivity to QRcheckactivity when button is pressed
+     */
     protected void openQRCheckActivity(){
         Intent intent = new Intent(EventDetailsActivity.this, QRCheckActivity.class);
         startActivity(intent);
-    }
-    protected void openMapActivity(){
-        Intent intent = new Intent(EventDetailsActivity.this, Map.class);
-        startActivity(intent);
+
     }
 }

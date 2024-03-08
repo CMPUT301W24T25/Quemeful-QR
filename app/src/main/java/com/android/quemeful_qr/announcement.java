@@ -30,11 +30,17 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
+/**
+ * contains list of all announcements
+ */
 public class announcement extends Fragment {
 
     private String Eventid;
 
+    /**
+     * constructor
+     * @param Eventid is the QR code
+     */
     public announcement(String Eventid) {
         this.Eventid = Eventid;
     }
@@ -43,11 +49,28 @@ public class announcement extends Fragment {
         return new announcement(Eventid);
     }
 
+    /**
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * sets up view for creating new notifications
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,6 +106,11 @@ public class announcement extends Fragment {
         return view;
     }
 
+    /**
+     * sends notification to all who are subscribed to the event id
+     * @param title
+     * @param descrtiption
+     */
     void sendNotification(String title,String descrtiption){
         try{
             JSONObject jsonObject = new JSONObject();
@@ -100,7 +128,9 @@ public class announcement extends Fragment {
         }
     }
 
-
+    /**
+     * sends message to a server
+     */
     void callApi(JSONObject jsonObject){
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -115,11 +145,22 @@ public class announcement extends Fragment {
 
         okHttpClient.newCall(request);
         okHttpClient.newCall(request).enqueue(new Callback() {
+            /**
+             * throws exception when failed to send notification
+             * @param call
+             * @param e
+             */
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
 
+            /**
+             * notifies user that the notification was sent/ failed to send
+             * @param call
+             * @param response
+             * @throws IOException
+             */
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {

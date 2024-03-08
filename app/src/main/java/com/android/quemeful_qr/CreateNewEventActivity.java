@@ -5,6 +5,8 @@
 //https://firebase.google.com/docs/firestore/query-data/queries#java
 //https://stackoverflow.com/q/41396194
 //https://www.youtube.com/watch?v=33BFCdL0Di0
+//https://www.youtube.com/watch?v=cxEb4IafzZU
+// https://developer.android.com/training/data-storage/shared/photopicker
 package com.android.quemeful_qr;
 
 import android.annotation.SuppressLint;
@@ -33,15 +35,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.android.quemeful_qr.DatePickerFragment;
-import com.android.quemeful_qr.DateUtils;
-import com.android.quemeful_qr.EventHelper;
-import com.android.quemeful_qr.GenerateNewQRActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,15 +48,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * Draft copy, code to be reviewed again.
- * This activity creates and new event.
- * Yet to do: 1. add firebase to store the new event.
- *            2. add the "Use Existing QR Code" part (see mockup create event page).
- *            3. write test cases
- *           (4) needs to handle empty field cases by displaying a toast "please fill all fields" before creating event.
- * Reference URLs (yet to specify author, license,... will add them later. This is just a record.)
- * https://www.youtube.com/watch?v=cxEb4IafzZU
- * https://developer.android.com/training/data-storage/shared/photopicker
+ * This class has an interface for user/organizer to create new event and enter details for new event
+ * implements DatePickerDialog and TimerPickerDialog which are on the interface
  */
 
 public class CreateNewEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
@@ -90,6 +79,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean startTimeTextClicked;
     private boolean endTimeTextClicked;
     private EventHelper event;
+
+    /**
+     * sets time in a certain format after user picks a time from the pop out window
+     * @param view the view associated with this listener
+     * @param hourOfDay the hour that was set
+     * @param minute the minute that was set
+     */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         startTime = findViewById(R.id.enter_startTime);
@@ -104,6 +100,14 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         }
 
     }
+
+    /**
+     * Sets up the clickable buttons and textboxes so user can enter event details
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,13 +132,20 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         //displays selected pic on app
         uploadPoster.setOnClickListener(new View.OnClickListener() {
-
+            /**
+             * picks an image to display onto the screen
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 imageChooser();
             }
         });
         startTime.setOnClickListener(new View.OnClickListener() {
+            /**
+             * opens fragment for timepicker
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 startTimeTextClicked = true;
@@ -144,6 +155,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             }
         });
         endTime.setOnClickListener(new View.OnClickListener() {
+            /**
+             * opens fragment for datepicker
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 endTimeTextClicked = true;
@@ -153,7 +168,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             }
         });
         startDate.setOnClickListener(new View.OnClickListener() {
-
+            /**
+             * opens fragment for datepicker
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
 
@@ -163,6 +181,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             }
         });
         endDate.setOnClickListener(new View.OnClickListener() {
+            /**
+             * opens fragment for datepicker
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 endDateTextClicked = true;
@@ -173,6 +195,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         //creates event
         createButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * takes all the information user/organizer entered and puts all
+             * attributes to event class
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 //generates random id which is the QR code
@@ -205,6 +232,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
 
         generateQRButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * goes to next page that shows the QR code
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CreateNewEventActivity.this, GenerateNewQRActivity.class);
@@ -213,7 +244,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
             }
         });
-
+        /**
+         * closes the window and goes back to previous page
+         */
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -224,19 +257,26 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     }
 
     /**
-     * This method is to get the start and the end date from user.
-     * selectDate() allows user to pick date.
-     * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
+     * this is to tell which textview (end time or start time) is pressed
      */
     public void setTimeClickFalse(){
         endTimeTextClicked = false;
         startTimeTextClicked = false;
 
     }
+
+    /**
+     * this is to tell which textview (end time or start time) is pressed
+     */
     public void setDateClickFalse(){
         endDateTextClicked = false;
         startDateTextClicked = false;
     }
+
+    /**
+     * adds new event with the attributes to the firebase
+     * @param event
+     */
     private void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
@@ -246,8 +286,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventUUID.matches("") || eventName.matches("") || eventLocation.matches("")
-        || eventTime.matches("") || eventDate.matches("")|| eventDescr.matches("")){ //empty string
+        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){ //empty string
             Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
             myToast.show();
         } else {
@@ -274,6 +313,16 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     });
         }
     }
+
+    /**
+     * sets date and displays the time selected on the textviews
+     * @param view the picker associated with the dialog
+     * @param year the selected year
+     * @param month the selected month (0-11 for compatibility with
+     *              {@link Calendar#MONTH})
+     * @param dayOfMonth the selected day of the month (1-31, depending on
+     *                   month)
+     */
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar calendar = Calendar.getInstance();
@@ -294,6 +343,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
 
     }
+
+    /**
+     * pick a pic to display on app and save the Uri in a variable
+     */
     private void imageChooser()
     {
         Intent i = new Intent();

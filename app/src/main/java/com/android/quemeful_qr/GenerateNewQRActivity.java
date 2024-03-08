@@ -62,6 +62,10 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         Bitmap bitmap = createBitmap(event.getId());
         QRImage.setImageBitmap(bitmap);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            /**
+             * clicking on back button on top toolbar goes back to the previous screen
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 // back clicked

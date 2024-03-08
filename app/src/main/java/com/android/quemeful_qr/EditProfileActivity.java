@@ -48,6 +48,13 @@ public class EditProfileActivity extends AppCompatActivity {
             }
     );
 
+    /**
+     * sets up the view for editing profile names, pictures, buttons
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +115,9 @@ public class EditProfileActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> onBackPressed());
     }
 
+    /**
+     * picture selection
+     */
     private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -115,6 +125,10 @@ public class EditProfileActivity extends AppCompatActivity {
         getContent.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
+    /**
+     * loads image from uri to imageview on the app
+     * @param uri
+     */
     private void loadFromUri(Uri uri) {
         if (uri.toString().contains("avataaars.io")) {
             loadSvgFromUrl(uri.toString());
@@ -128,6 +142,12 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * gets fileextension from uri of image
+     * splits it at / into an array then gets the 2nd part
+     * @param uri
+     * @return String
+     */
     private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = getContentResolver();
         String type = contentResolver.getType(uri);
@@ -137,6 +157,10 @@ public class EditProfileActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * gets image in SVG format from url
+     * @param url
+     */
     private void loadSvgFromUrl(String url) {
         new Thread(() -> {
             try {

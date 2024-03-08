@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * shows admin view event details
+ */
 public class Admin_Event_Detail_Activity extends AppCompatActivity {
 
     private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription;
@@ -15,6 +18,13 @@ public class Admin_Event_Detail_Activity extends AppCompatActivity {
     private ImageView imageViewBackArrow;
     private TextView viewAttendee;
 
+    /**
+     * gets events from the firebase
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +53,12 @@ public class Admin_Event_Detail_Activity extends AppCompatActivity {
         }
     }
 
+    /**
+     * create new fragment and transaction
+     * replace whatever is in fragment container view with this fragment
+     * and saves the changes
+     * @param eventId
+     */
     private void navigateToListOfAttendees(String eventId) {
         list_of_attendees attendeesFragment = new list_of_attendees(eventId);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -51,6 +67,9 @@ public class Admin_Event_Detail_Activity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /** takes events from firebase and brings them to the app
+     * @param eventId
+     */
     private void fetchEventDetails(String eventId) {
         db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {

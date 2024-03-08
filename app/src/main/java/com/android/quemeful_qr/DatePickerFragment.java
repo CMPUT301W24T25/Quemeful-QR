@@ -14,6 +14,9 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * contains pop up window that allows user to pick a date from a calendar
+ */
 public class DatePickerFragment extends DialogFragment{
     // Use the current date as the default date in the picker.
     interface DatePickerDialogListener{
@@ -21,6 +24,12 @@ public class DatePickerFragment extends DialogFragment{
 
     }
     private DatePickerDialogListener listener;
+
+    /**
+     * attaches the fragment to the host activity
+     * DatePickerDialogListener listener is started so functions from other classes can be used here
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context){
 //        this will help set the buttons
@@ -31,6 +40,15 @@ public class DatePickerFragment extends DialogFragment{
             throw new RuntimeException(context + "must implement DatePickerDialogListener");
         }
     }
+
+    /**
+     * Create a new instance of DatePickerDialog and return it.
+     * If user clicks cancel, clears boolean values that shows which textview is pressed
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Dialog
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -40,7 +58,7 @@ public class DatePickerFragment extends DialogFragment{
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog datePicker = new DatePickerDialog(requireContext(), (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
-        // Create a new instance of DatePickerDialog and return it.
+
         datePicker.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int which){
                 if (which == DialogInterface.BUTTON_NEGATIVE){

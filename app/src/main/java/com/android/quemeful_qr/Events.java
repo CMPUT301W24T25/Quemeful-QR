@@ -15,9 +15,25 @@ public class Events extends Fragment {
 
     Button createEventButton;
 
+    /**
+     * constructor
+     */
     public Events
             () {
     }
+
+    /**
+     * sets up create event button to open a new activity
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -27,7 +43,7 @@ public class Events extends Fragment {
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // allow user to select image from gallery
+
                 openCreateNewEventActivity();
             }
         });
@@ -35,6 +51,10 @@ public class Events extends Fragment {
         return view;
 
     }
+
+    /**
+     * opens createneweventactivity when button is pressed
+     */
     protected void openCreateNewEventActivity(){
         Intent intent = new Intent(Events.this.getActivity(), CreateNewEventActivity.class);
         startActivity(intent);

@@ -18,19 +18,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * contains the admin view's dashboard
+ */
 public class AdminDashboardFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private admin_dashboard_adapter adapter;
 
+    /**
+     * constructor with empty parameters
+     */
     public AdminDashboardFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * creates new instance of the class
+     * @return AdminDashboardFragment
+     */
     public static AdminDashboardFragment newInstance() {
         return new AdminDashboardFragment();
     }
 
+    /**
+     * shows recyclerview for admin dashboard and takes all nonadmin users and keeps track of count
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,6 +71,9 @@ public class AdminDashboardFragment extends Fragment {
         return view;
     }
 
+    /**
+     * gets all users from firebase that are not admins
+     */
     private void fetchUsers() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").get().addOnCompleteListener(task -> {

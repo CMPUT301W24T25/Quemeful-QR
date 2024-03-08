@@ -74,33 +74,45 @@
         android:src="@android:drawable/ic_menu_add" />
 
     <TextView
-        android:id="@+id/event_details"
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_poster_button"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="94dp"
+        android:text="@string/Location"
         android:textColor="@color/white"
-        android:layout_width="match_parent"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/event_details"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/add_poster_button"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="13dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:text="@string/event_details"
+        android:textColor="@color/white"
         android:textSize="22sp" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/enter_event_details"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/event_details"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="220dp"
         android:layout_marginBottom="5dp"
         android:background="@drawable/rounded_background"
-        app:cornerRadius="10dp"
         android:hint="@string/event_description"
         android:inputType="text"
         android:padding="4dp"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        app:cornerRadius="10dp" />
 
     <LinearLayout
         android:id="@+id/event_starting"
@@ -251,6 +263,8 @@
         android:visibility="invisible"
         android:textSize="16sp" />
 
+
+
     <LinearLayout
         android:id="@+id/buttons_onTaskbar"
         android:layout_width="match_parent"
@@ -279,6 +293,7 @@
             android:text="@string/create"
             android:textColor="@color/black"
             android:textSize="16sp" />
+
 
     </LinearLayout>
 
