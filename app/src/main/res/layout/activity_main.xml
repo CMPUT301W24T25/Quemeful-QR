@@ -33,6 +33,16 @@
         app:mbn_shadowColor="#1f212121"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/plswork"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="plswork"
+            android:gravity="center"
+            android:paddingTop="50dp"
+            android:layout_gravity="center"/>
+    </com.etebarian.meowbottomnavigation.MeowBottomNavigation>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
