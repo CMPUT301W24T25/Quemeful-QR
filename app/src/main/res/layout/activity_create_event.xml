@@ -135,7 +135,7 @@
             android:drawableRight="@android:drawable/ic_menu_my_calendar"/>
 
 
-        <com.google.android.material.textfield.TextInputEditText
+        <TextView
             android:id="@+id/enter_startTime"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
@@ -193,7 +193,7 @@
             android:inputType="date"
             android:drawableRight="@android:drawable/ic_menu_my_calendar"/>
 
-        <com.google.android.material.textfield.TextInputEditText
+        <TextView
             android:id="@+id/enter_endTime"
             android:layout_width="130dp"
             android:layout_height="wrap_content"

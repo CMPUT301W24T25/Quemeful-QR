@@ -10,6 +10,7 @@ package com.android.quemeful_qr;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,6 +40,8 @@ import com.android.quemeful_qr.GenerateNewQRActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -60,14 +64,14 @@ import java.util.UUID;
  */
 
 public class CreateNewEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
-        DatePickerFragment.DatePickerDialogListener{
+        DatePickerFragment.DatePickerDialogListener, TimePickerDialog.OnTimeSetListener, TimePickerFragment.TimePickerDialogListener{
     // xml variables
     private EditText eventTitle;
     private EditText eventDescription;
     private TextView startDate;
-    private EditText startTime;
+    private TextView startTime;
     private TextView endDate;
-    private EditText endTime;
+    private TextView endTime;
     private Button generateQRButton;
     private Button cancelButton;
     private Button createButton;
@@ -81,11 +85,22 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private CollectionReference eventsRef;
     // attributes for event class
     private String eventUUID;
-    private String parsedTime;
-    private String parsedDate;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
+    private boolean startTimeTextClicked;
+    private boolean endTimeTextClicked;
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        startTime = findViewById(R.id.enter_startTime);
+        if (startTimeTextClicked){
+            startTime.setText(hourOfDay + ":" + minute);
+            startTimeTextClicked = false;
+        }else if (endTimeTextClicked){
+            endTime.setText(hourOfDay + ":" + minute);
+            endTimeTextClicked = false;
+        }
 
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +129,24 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             @Override
             public void onClick(View v) {
                 imageChooser();
+            }
+        });
+        startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startTimeTextClicked = true;
+                DialogFragment timePicker = new TimePickerFragment();
+                timePicker.show(getSupportFragmentManager(), "start time picker");
+
+            }
+        });
+        endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endTimeTextClicked = true;
+                DialogFragment timePicker = new TimePickerFragment();
+                timePicker.show(getSupportFragmentManager(), "end time picker");
+
             }
         });
         startDate.setOnClickListener(new View.OnClickListener() {
@@ -146,13 +179,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 String eventTime = startTime.getText().toString();
                 String eventDate = startDate.getText().toString();
 
-                //formats time for display
-                parsedTime = DateUtils.formatTime(eventTime);
-                Log.d("check time", parsedTime);
-
-                //formats date for display
-                parsedDate = DateUtils.formatDate(eventDate);
-
                 String eventDescr = eventDescription.getText().toString();
                 try {
                     // converts uri to bitmap
@@ -163,7 +189,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     //create new event
-                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, parsedTime, parsedDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -197,7 +223,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
      * selectDate() allows user to pick date.
      * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
      */
+    public void setTimeClickFalse(){
+        endTimeTextClicked = false;
+        startTimeTextClicked = false;
 
+    }
     public void setDateClickFalse(){
         endDateTextClicked = false;
         startDateTextClicked = false;
@@ -217,17 +247,14 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             myToast.show();
         } else {
             HashMap<String, Object> data = new HashMap<>();
-            String parsedTime = DateUtils.formatTime(event.getTime());
-
-            String parsedDate = DateUtils.formatDate(event.getDate());
 
 
             data.put("organizer",currentUserUID);
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
-            data.put("time", parsedTime);
-            data.put("date", parsedDate);
+            data.put("time", event.getTime());
+            data.put("date", event.getDate());
             data.put("description", event.getDescription());
             data.put("poster", event.getPoster());
             eventsRef

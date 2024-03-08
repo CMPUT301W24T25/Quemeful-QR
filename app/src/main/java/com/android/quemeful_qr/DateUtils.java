@@ -22,29 +22,6 @@ public class DateUtils {
         }
     }
 
-    public static String formatTime(String timeString){
-        try {
-            Date time = timeFormat.parse(timeString);
-            String newTime = new SimpleDateFormat("h:mm a").format(time);
-
-            return newTime;
-        } catch (ParseException e) {
-            Log.d("time", "exception");
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-    public static String formatDate(String dateString){
-        try {
-            Date date = dateFormat.parse(dateString);
-            String newDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
-            return newDate;
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     public static boolean isToday(Date date) {
         Calendar today = Calendar.getInstance();
