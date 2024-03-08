@@ -71,9 +71,14 @@ android {
             testImplementation ("androidx.test.ext:junit:1.1.2")
             testImplementation("org.mockito:mockito-core:3.3.3")
             testImplementation("androidx.fragment:fragment-testing:1.3.6")
+            androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
 
         }
     }
+}
+dependencies {
+    implementation("androidx.test.espresso:espresso-intents:3.5.1")
 }
 
 
