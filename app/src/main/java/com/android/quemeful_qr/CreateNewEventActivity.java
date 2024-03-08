@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Draft copy, code to be reviewed again.
  * This activity creates and new event.
  * Yet to do: 1. add firebase to store the new event.
  *            2. add the "Use Existing QR Code" part (see mockup create event page).

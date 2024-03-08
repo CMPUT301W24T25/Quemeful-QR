@@ -27,9 +27,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 
-/**
- * This code here is the MainActivity code of the QRScanner project done locally.
- */
 public class QRCheckActivity extends AppCompatActivity {
     //scan and generate QR
     private ImageButton scan;

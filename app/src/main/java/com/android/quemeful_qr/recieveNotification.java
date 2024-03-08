@@ -2,6 +2,8 @@
 package com.android.quemeful_qr;
 
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
