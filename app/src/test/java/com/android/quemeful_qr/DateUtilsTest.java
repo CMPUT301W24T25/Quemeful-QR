@@ -23,12 +23,6 @@ public class DateUtilsTest {
         assertEquals("The formatted date should match the input date", inputDate, formattedDate);
     }
 
-    @Test
-    public void testFormatDate() {
-        String inputDate = "2023-03-15";
-        String result = DateUtils.formatDate(inputDate);
-        assertEquals("The formatted date should match the input date", inputDate, result);
-    }
 
     @Test
     public void testIsToday() {
