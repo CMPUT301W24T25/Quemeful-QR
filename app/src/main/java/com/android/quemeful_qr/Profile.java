@@ -63,7 +63,11 @@ public class Profile extends Fragment {
         fetchProfileInfo();
     }
 
-    void fetchProfileInfo() {
+    /**
+     * get profile info from firebase
+     * load the picture into an imageview
+     */
+    private void fetchProfileInfo() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(deviceId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -84,6 +88,10 @@ public class Profile extends Fragment {
         });
     }
 
+    /**
+     * take url convert to svg and put it onto imageview
+     * @param url
+     */
     private void loadSvgFromUrl(String url) {
         new Thread(() -> {
             try {

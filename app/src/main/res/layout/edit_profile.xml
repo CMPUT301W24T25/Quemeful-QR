@@ -31,9 +31,10 @@
         android:clickable="true"
         android:drawablePadding="8dp"
         android:focusable="true"
+        android:minHeight="48dp"
         android:padding="8dp"
-        android:text="Edit Avatar"
 
+        android:text="Edit Avatar"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="@id/avatarImageView"

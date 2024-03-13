@@ -3,17 +3,20 @@ package com.android.quemeful_qr;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -29,8 +32,8 @@ import com.google.zxing.common.BitMatrix;
  */
 public class GenerateNewQRActivity extends AppCompatActivity {
     private ImageView QRImage;
-    private TextInputEditText event;
-    private Button generate;
+    private TextView eventTitle;
+    private ImageView poster;
 
     /**
      * This onCreate method is only used to setOnClickListener to the generate button and displays the QR code as image.
@@ -44,15 +47,25 @@ public class GenerateNewQRActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_new_qractivity);
-
-        QRImage = findViewById(R.id.QR);
-        event = findViewById(R.id.EnterText);
-        generate = findViewById(R.id.generate);
-
+        eventTitle = findViewById(R.id.eventName_text);
+        poster = findViewById(R.id.posterImage);
+        QRImage = findViewById(R.id.QRImage);
         // navigating back to the previous activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
-
+        Intent intent = getIntent();
+        EventHelper event = (EventHelper) intent.getSerializableExtra("event");
+        assert event != null;
+        eventTitle.setText(event.getTitle());
+        assert event.getPoster() != null;
+        byte[] imageAsBytes = Base64.decode(event.getPoster().getBytes(), Base64.DEFAULT);
+        poster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        Bitmap bitmap = createBitmap(event.getId());
+        QRImage.setImageBitmap(bitmap);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            /**
+             * clicking on back button on top toolbar goes back to the previous screen
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 // back clicked
@@ -67,18 +80,7 @@ public class GenerateNewQRActivity extends AppCompatActivity {
          * https://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
          * https://stackoverflow.com/questions/28232116/android-using-zxing-generate-qr-code
          */
-        generate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String text = event.getText().toString();
-                if (text.isEmpty()) {
-                    Toast.makeText(GenerateNewQRActivity.this, "Please enter the Event Name for promotion", Toast.LENGTH_SHORT).show();
-                } else {
-                    Bitmap bitmap = createBitmap(text);
-                    QRImage.setImageBitmap(bitmap);
-                }
-            }
-        });
+
     }
 
     /**

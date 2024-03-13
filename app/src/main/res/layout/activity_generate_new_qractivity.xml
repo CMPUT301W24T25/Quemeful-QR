@@ -1,71 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5900C2FF"
+    android:background="@drawable/gradient_background"
     tools:context=".GenerateNewQRActivity">
 
 <!--    reference URL: https://stackoverflow.com/questions/49350686/back-to-previous-activity-arrow-button-->
+
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/backTool"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
-        app:navigationIcon="?attr/homeAsUpIndicator" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/baseline_arrow_back_24" />
 
     <TextView
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="serif"
         android:text="@string/new_qr_code"
         android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="30sp" />
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="@+id/backTool"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
-        android:id="@+id/QRCode"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/header"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="90dp">
+    <ImageView
+        android:id="@+id/posterImage"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="64dp"
+        android:background="@null"
+        app:layout_constraintBottom_toTopOf="@+id/QRImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
-            android:id="@+id/QR"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:background="@null" />
+    <TextView
+        android:id="@+id/eventName_text"
+        android:layout_width="350dp"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/posterImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.636" />
 
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/QRImage"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="88dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/EnterText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/QRCode"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:hint="@string/enter_event_name"
-        android:minHeight="48dp"
-        android:textAlignment="center"
-        android:textColorHint="#CC000000" />
 
-    <Button
-        android:id="@+id/generate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/EnterText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/generate"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:fontFamily="serif"/>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

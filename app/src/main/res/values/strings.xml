@@ -39,8 +39,10 @@
     <string name="create">Create</string>
     <string name="create_new_event_check">Create New Event (check)</string>
     <string name="new_qr_code">New QR Code</string>
-=======
+    =======
     <string name="edit_profile" />
     <string name="save">Save</string>
->>>>>>> 835b82b (Admin and new no login requirement, and profile)
+    <string name="confirm_checkin">Confirm Check in</string>
+    <string name="Location">Location</string>
+    >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>

@@ -15,11 +15,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * make new fragment that contains admin view's event list
+ */
 public class admin_event_list_fragment extends Fragment {
     private RecyclerView recyclerView;
     private admin_event_adapter adapter;
     private List<Map<String, Object>> events;
 
+    /**
+     * takes events and puts them in recycler view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.admin_events, container, false);
@@ -39,6 +54,9 @@ public class admin_event_list_fragment extends Fragment {
         return view;
     }
 
+    /**
+     * gets events from firebase
+     */
     private void fetchEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events")

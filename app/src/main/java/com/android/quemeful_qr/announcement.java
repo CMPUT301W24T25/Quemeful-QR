@@ -53,6 +53,11 @@ public class announcement extends Fragment {
         return new announcement(Eventid);
     }
 
+    /**
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,11 +153,22 @@ public class announcement extends Fragment {
 
         okHttpClient.newCall(request);
         okHttpClient.newCall(request).enqueue(new Callback() {
+            /**
+             * throws exception when failed to send notification
+             * @param call
+             * @param e
+             */
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
 
+            /**
+             * notifies user that the notification was sent/ failed to send
+             * @param call
+             * @param response
+             * @throws IOException
+             */
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {

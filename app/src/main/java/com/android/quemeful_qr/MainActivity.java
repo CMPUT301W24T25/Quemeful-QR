@@ -242,7 +242,13 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isAdmin = false;
 
-
+    /**
+     * check if user with a specific id exists in the firebase
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,7 +273,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * selects random first name and last name and selects random appearance types
+     * generates a random avatar
+     * @param db
+     * @param deviceId
+     */
 
 
     private void promptNewUser(FirebaseFirestore db, String deviceId) {
@@ -321,14 +332,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
+    /**
+     * selects random name
+     * @param names
+     * @return
+     */
     private String getRandomName(String[] names) {
         Random random = new Random();
         return names[random.nextInt(names.length)];
     }
 
+    /**
+     * switch to main screen
+     */
     private void transitionToMainScreen() {
         setContentView(R.layout.activity_main);
         initializeBottomNavigation();
@@ -371,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
+
                     @Override
                     public void onComplete(@NonNull Task<String> task) {
                         if (!task.isSuccessful()) {
@@ -383,9 +400,32 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }
+
+    /**
+     * request permissions
+     * @param requestCode The request code passed in {@link #requestPermissions(
+     * android.app.Activity, String[], int)}
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
+    // @Override
+    // public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    //     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    //     if (requestCode == 1 && grantResults.length > 0) {
+    //         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    //             Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
+    //         } else {
+    //             Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
+    //         }
+    //     }
+    // }
 }
