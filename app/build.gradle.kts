@@ -66,6 +66,13 @@ android {
             testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
             testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
             implementation ("org.osmdroid:osmdroid-wms:6.1.1")
+            testImplementation ("junit:junit:4.13.2")
+            testImplementation ("androidx.test:core:1.3.0")
+            testImplementation ("androidx.test.ext:junit:1.1.2")
+            testImplementation("org.mockito:mockito-core:3.3.3")
+            testImplementation("androidx.fragment:fragment-testing:1.3.6")
+            androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
 
         }
     }
@@ -74,6 +81,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.test.espresso:espresso-intents:3.5.1")
 }
 
 

@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -300,7 +301,15 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
-            data.put("poster", event.getPoster());
+            if (event.getPoster() != null) {
+                data.put("poster", event.getPoster());
+            }
+            else {
+                data.put("poster", "");
+            }
+            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+            data.put("signed_up", emptySignUpList);
+
             eventsRef
                     .document(db.collection("events").document().getId())
                     .set(data)
@@ -370,6 +379,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         uploadPoster.setImageURI(selectedImageUri);
 
                     }
+
                 }
             });
 

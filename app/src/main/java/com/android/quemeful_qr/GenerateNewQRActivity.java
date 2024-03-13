@@ -88,6 +88,17 @@ public class GenerateNewQRActivity extends AppCompatActivity {
      * @param text Takes input text (e.g. the event name) to create a QR code based on that
      * @return Returns BitMap map
      */
+    /**
+     * References: URLs (Access Date: 21.02.2024)
+     * https://www.youtube.com/watch?v=zHStZwXtbj0
+     * Author- Programmity  , Published Date- Nov 17, 2020
+     * https://www.youtube.com/watch?v=5DEHmN4PmA0
+     * Author- GeeksforGeeks  , Published Date- Jul 6, 2021
+     * https://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
+     * Author- Enamul Haque , License- CC BY-SA 3.0  , Published Date- Jan 28, 2018
+     * https://stackoverflow.com/questions/28232116/android-using-zxing-generate-qr-code
+     * Author- Harpreet , License- CC BY-SA 4.0 , Published Date- Jan 16, 2019
+     */
 
     private Bitmap createBitmap(String text) {
         BitMatrix matrix;

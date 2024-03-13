@@ -2,7 +2,6 @@ package com.android.quemeful_qr;
 
 
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +10,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.compose.ui.window.Notification;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
-
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,20 +29,26 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * contains list of all announcements
+ * A Fragment class representing an announcement posting feature.
+ * Users can input a title and description for an announcement and post it, triggering a notification to be sent to a specific topic.
  */
 public class announcement extends Fragment {
-
-    private String Eventid;
-
     /**
-     * constructor
-     * @param Eventid is the QR code
+     * The ID of the event/topic to which the notification will be sent.
+     */
+    private String Eventid;
+    /**
+     * Constructs a new instance of the announcement Fragment with the specified event ID.
+     * @param Eventid The ID of the event/topic to which the notification will be sent.
      */
     public announcement(String Eventid) {
         this.Eventid = Eventid;
     }
-
+    /**
+     * Creates a new instance of the announcement Fragment with the specified event ID.
+     * @param Eventid The ID of the event/topic to which the notification will be sent.
+     * @return A new instance of the announcement Fragment.
+     */
     public static announcement newInstance(String Eventid) {
         return new announcement(Eventid);
     }
@@ -58,18 +62,12 @@ public class announcement extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     /**
-     * sets up view for creating new notifications
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return View
+     * Called to create the view hierarchy associated with the fragment.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState This fragment's previously saved state, if any.
+     * @return The View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,12 +103,14 @@ public class announcement extends Fragment {
 
         return view;
     }
-
     /**
-     * sends notification to all who are subscribed to the event id
-     * @param title
-     * @param descrtiption
+     * Sends a notification with the specified title and description to the event/topic.
+     * @param title The title of the notification.
+     * @param descrtiption The description/body of the notification.
      */
+    /**
+    *https://www.youtube.com/watch?v=YjNZO90yVsE&t=530s&ab_channel=EasyTuto
+    */
     void sendNotification(String title,String descrtiption){
         try{
             JSONObject jsonObject = new JSONObject();
@@ -129,9 +129,17 @@ public class announcement extends Fragment {
     }
 
     /**
-     * sends message to a server
+     * Calls the API to send the notification using the provided JSON object.
+     * @param jsonObject The JSON object containing the notification details.
      */
     void callApi(JSONObject jsonObject){
+        FirebaseFirestore.getInstance().collection("notification").document("key").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            String key = document.getString("key");
+                            Log.d("TAG", "Key: " + key);
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         OkHttpClient okHttpClient = new OkHttpClient();
 
@@ -140,7 +148,7 @@ public class announcement extends Fragment {
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
-                .addHeader("Authorization", "key=")
+                .addHeader("Authorization", "key=" + key)
                 .build();
 
         okHttpClient.newCall(request);
@@ -174,6 +182,9 @@ public class announcement extends Fragment {
                 }
             }
         });
+    }
+                    }
+                });
     }
 
 

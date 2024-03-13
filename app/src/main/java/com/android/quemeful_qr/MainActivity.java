@@ -2,19 +2,18 @@ package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -253,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splashscreen);
+        setContentView(R.layout.nologin);
         FirebaseApp.initializeApp(this);
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -385,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomNavigation.show(1, true);
-        FirebaseMessaging.getInstance().subscribeToTopic("events");
+
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
 
@@ -399,12 +398,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "FCM Token: " + token);
                     }
                 });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-            }
-        }
     }
 
 
@@ -424,15 +417,15 @@ public class MainActivity extends AppCompatActivity {
      *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
      *
      */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1 && grantResults.length > 0) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+    // @Override
+    // public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    //     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    //     if (requestCode == 1 && grantResults.length > 0) {
+    //         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    //             Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
+    //         } else {
+    //             Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
+    //         }
+    //     }
+    // }
 }

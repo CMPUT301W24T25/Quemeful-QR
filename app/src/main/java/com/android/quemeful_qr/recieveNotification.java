@@ -3,34 +3,40 @@ package com.android.quemeful_qr;
 
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
 /**
- * receiving notifications through firebase
+ * A service class responsible for handling Firebase Cloud Messaging (FCM) notifications.
+ * It extends FirebaseMessagingService to receive and process incoming messages.
  */
+/**
+https://www.youtube.com/watch?v=2xoJi-ZHmNI&t=1915s&ab_channel=GeeksforGeeks
+*/
 public class recieveNotification extends FirebaseMessagingService {
-
+    /**
+     * Called when a new token is generated for the device.
+     * @param token The new token generated for the device.
+     */
     @Override
     public void onNewToken(@NonNull String token) {
 
         super.onNewToken(token);
     }
 
+    /**
+     * Called when a new FCM message is received.
+     * @param message The incoming FCM message.
+     */
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         if (message.getNotification() != null) {
@@ -39,7 +45,12 @@ public class recieveNotification extends FirebaseMessagingService {
             handleMessage(title, body);
         }
     }
-
+    /**
+     * Constructs a RemoteViews object for the custom notification layout.
+     * @param title The title of the notification.
+     * @param message The body/message of the notification.
+     * @return A RemoteViews object containing the custom notification layout.
+     */
     public RemoteViews getRemoteView(String title, String message) {
         @SuppressLint("RemoteViewLayout") RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification);
         remoteViews.setTextViewText(R.id.notificaiton_title, title);
@@ -49,9 +60,9 @@ public class recieveNotification extends FirebaseMessagingService {
     }
 
     /**
-     * phone receives a notification message
-     * @param title
-     * @param message
+     * Handles the incoming FCM message by creating and displaying a custom notification.
+     * @param title The title of the notification.
+     * @param message The body/message of the notification.
      */
     public void handleMessage(String title,String  message) {
         String CHANNEL_ID = "MESSAGE";
