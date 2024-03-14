@@ -1,7 +1,7 @@
 //https://github.com/osmdroid/osmdroid/issues/1304#issuecomment-477920497
-//https://medium.com/@mr.appbuilder/how-to-integrate-and-work-with-open-street-map-osm-in-an-android-app-kotlin-564b38590bfe
-//https://stackoverflow.com/questions/48848801/cannot-add-my-location-overlay-to-osmdroid-map
-//https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime
+//https://github.com/osmdroid/osmdroid/wiki/How-to-use-the-osmdroid-library-(Java)
+//https://stackoverflow.com/a/34139211
+//https://stackoverflow.com/a/63456832
 //https://stackoverflow.com/a/71698834
 package com.android.quemeful_qr;
 
