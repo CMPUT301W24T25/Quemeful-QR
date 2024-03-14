@@ -5,6 +5,9 @@
 //https://stackoverflow.com/a/71698834
 package com.android.quemeful_qr;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static java.sql.DriverManager.println;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -38,8 +41,11 @@ import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    private MapView map = null;
+
     private ImageView backButton;
+
+    private MapView map = null;
+    private IMapController mapController;
 
     private MyLocationNewOverlay mLocationOverlay;
     private CompassOverlay mCompassOverlay;
@@ -49,17 +55,15 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //handle permissions first, before map is created. not depicted here
-        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-        requestPermissionsIfNecessary(strArray);
 
 
 
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
+
         //setting this before the layout is inflated is a good idea
         //it 'should' ensure that the map has a writable location for the map cache, even without permissions
         //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
@@ -81,16 +85,84 @@ public class MapActivity extends AppCompatActivity {
                 finish();
             }
         });
+//        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+//        requestPermissionsIfNecessary(strArray);
+
+
+        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+        // Request Location permission
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+            println("Location Permission GRANTED");
+        } else {
+            println("Location Permission DENIED");
+            ActivityCompat.requestPermissions(
+                    this,
+                    strArray,
+                    1
+            );
+        }
+
+
+        // Create MapView
+        map = findViewById(R.id.map);
+        // Set tile source + display settings
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setMultiTouchControls(true);
+        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
+
+        // Create MapController and set starting location
+        mapController = map.getController();
+
+        GpsMyLocationProvider prov = new GpsMyLocationProvider(ctx);
+        prov.addLocationSource(LocationManager.NETWORK_PROVIDER);
+        // Create location overlay
+        this.mLocationOverlay = new MyLocationNewOverlay(prov,map);
+        this.mLocationOverlay.enableMyLocation();
+        this.mLocationOverlay.enableFollowLocation();
+        this.mLocationOverlay.setDrawAccuracyEnabled(true);
+
+        mLocationOverlay.runOnFirstFix(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mapController.animateTo(mLocationOverlay.getMyLocation());
+                        mapController.setZoom(15.5);
+                    }
+                });
+            }
+        });
+
+        map.getOverlays().add(this.mLocationOverlay);
+
+        // Set user agent
+        Configuration.getInstance().setUserAgentValue("RossMaps");
+
+        println(String.valueOf(mLocationOverlay.getMyLocation()));
+        println("Create done");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         map.setTileSource(TileSourceFactory.MAPNIK);
         IMapController mapController = map.getController();
-
-
-        GpsMyLocationProvider prov = new GpsMyLocationProvider(ctx);
-        prov.addLocationSource(LocationManager.NETWORK_PROVIDER);
-
-
 
         this.mLocationOverlay = new MyLocationNewOverlay(prov,map);
         this.mLocationOverlay.enableMyLocation();
@@ -171,7 +243,7 @@ public class MapActivity extends AppCompatActivity {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(this, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
+                    != PERMISSION_GRANTED) {
                 // Permission is not granted
                 permissionsToRequest.add(permission);
             }
