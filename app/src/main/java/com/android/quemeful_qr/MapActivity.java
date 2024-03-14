@@ -1,16 +1,16 @@
 //https://github.com/osmdroid/osmdroid/issues/1304#issuecomment-477920497
 package com.android.quemeful_qr;
 
+import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import org.osmdroid.api.IMapController;
@@ -20,7 +20,6 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
-import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -81,10 +80,12 @@ public class MapActivity extends AppCompatActivity{
         this.mLocationOverlay.enableMyLocation();
         map.getOverlays().add(this.mLocationOverlay);
 
+        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-
-
+        requestPermissionsIfNecessary(strArray);
 //        requestPermissionsIfNecessary(arrayOf(
+//
 ////                // if you need to show the current location, uncomment the line below
 //                Manifest.permission.ACCESS_FINE_LOCATION,
 ////                // WRITE_EXTERNAL_STORAGE is required in order to show the map
@@ -113,19 +114,22 @@ public class MapActivity extends AppCompatActivity{
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        ArrayList<String> permissionsToRequest = new ArrayList<>();
-//        for (int i = 0; i < grantResults.length; i++) {
-//            permissionsToRequest.add(permissions[i]);
-//        }
-//        if (permissionsToRequest.size > 0) {
-//            ActivityCompat.requestPermissions(
-//                    this,
-//                    permissionsToRequest.toArray(new String[0]),
-//                    REQUEST_PERMISSIONS_REQUEST_CODE);
-//        }
-//    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ArrayList<String> permissionsToRequest = new ArrayList<>();
+        for (int i = 0; i < grantResults.length; i++) {
+            permissionsToRequest.add(permissions[i]);
+        }
+        if (permissionsToRequest.size() > 0) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_PERMISSIONS_REQUEST_CODE);
+
+        }
+    }
+
 
     private void requestPermissionsIfNecessary(String[] permissions) {
         ArrayList<String> permissionsToRequest = new ArrayList<>();
@@ -136,12 +140,12 @@ public class MapActivity extends AppCompatActivity{
                 permissionsToRequest.add(permission);
             }
         }
-//        if (permissionsToRequest.size > 0) {
-//            ActivityCompat.requestPermissions(
-//                    this,
-//                    permissionsToRequest.toArray(new String[0]),
-//                    REQUEST_PERMISSIONS_REQUEST_CODE);
-//        }
+        if (permissionsToRequest.size() > 0) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
 
 
 
