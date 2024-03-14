@@ -40,6 +40,9 @@
             android:name=".QRCheckActivity"
             android:exported="false" />
         <activity
+            android:name=".ViewEventActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -58,13 +61,16 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/button_green" />
-
+        <service
+            android:name=".MapActivity"
+            android:foregroundServiceType="location"/>
         <service
             android:name=".recieveNotification"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.GET_NOTIFICATION" />
             </intent-filter>
+
         </service>
     </application>
 

@@ -38,9 +38,9 @@ public class ViewEventActivity extends AppCompatActivity {
 
         assert event != null;
         String poster = event.getPoster();
-        String name = event.getTitle();
+        String title = event.getTitle();
         String uuid = event.getId();
-        textview_EventName.setText(poster);
+        textview_EventName.setText(title);
         assert poster != null;
         byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
         posterView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
