@@ -1,8 +1,6 @@
 package com.android.quemeful_qr;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -18,16 +16,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -43,7 +35,9 @@ public class EditProfileActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     imageUri = result.getData().getData();
-                    loadFromUri(imageUri); // Load and display the new image based on its type
+                    Glide.with(this)
+                            .load(imageUri)
+                            .into(avatarImageView); // Display the selected image.
                 }
             }
     );
@@ -59,6 +53,7 @@ public class EditProfileActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.editProfileButton);
         avatarImageView = findViewById(R.id.avatarImageView);
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         changeAvatarTextView.setOnClickListener(v -> openFileChooser());
@@ -71,9 +66,14 @@ public class EditProfileActivity extends AppCompatActivity {
                 firstNameEditText.setText(firstName);
                 lastNameEditText.setText(lastName);
 
+                // Load existing profile image with cache invalidation
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                    loadFromUri(Uri.parse(avatarUrl));
+                    Glide.with(this)
+                            .load(avatarUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)  // <- This will force Glide to re-fetch the image
+                            .skipMemoryCache(true)  // <- This skips memory cache
+                            .into(avatarImageView);
                 }
             }
         });
@@ -90,8 +90,13 @@ public class EditProfileActivity extends AppCompatActivity {
                         db.collection("users").document(deviceId)
                                 .update("firstName", updatedFirstName, "lastName", updatedLastName, "avatarUrl", profileImageUrl)
                                 .addOnSuccessListener(aVoid -> {
-                                    loadFromUri(Uri.parse(profileImageUrl)); // Reload using the correct format
-                                    onBackPressed();
+                                    // After successful upload and Firestore update, reload the image with updated URL
+                                    Glide.with(this)
+                                            .load(profileImageUrl)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)  // This forces Glide to re-fetch the image
+                                            .skipMemoryCache(true)  // This skips the memory cache
+                                            .into(avatarImageView);
+                                    finish(); // Successfully updated profile, go back to the Profile fragment
                                 })
                                 .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
                     });
@@ -99,7 +104,7 @@ public class EditProfileActivity extends AppCompatActivity {
             } else {
                 db.collection("users").document(deviceId)
                         .update("firstName", updatedFirstName, "lastName", updatedLastName)
-                        .addOnSuccessListener(aVoid -> onBackPressed())
+                        .addOnSuccessListener(aVoid -> finish()) // No new image to upload; just finish activity
                         .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
             }
         });
@@ -113,41 +118,5 @@ public class EditProfileActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         getContent.launch(Intent.createChooser(intent, "Select Picture"));
-    }
-
-    private void loadFromUri(Uri uri) {
-        if (uri.toString().contains("avataaars.io")) {
-            loadSvgFromUrl(uri.toString());
-        } else {
-            String fileExtension = getFileExtension(uri);
-            if ("svg".equalsIgnoreCase(fileExtension)) {
-                loadSvgFromUrl(uri.toString());
-            } else {
-                Glide.with(this).load(uri).into(avatarImageView);
-            }
-        }
-    }
-
-    private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = getContentResolver();
-        String type = contentResolver.getType(uri);
-        if (type != null) {
-            return type.split("/")[1];
-        }
-        return null;
-    }
-
-    private void loadSvgFromUrl(String url) {
-        new Thread(() -> {
-            try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                InputStream inputStream = connection.getInputStream();
-                SVG svg = SVG.getFromInputStream(inputStream);
-                final PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
-                runOnUiThread(() -> avatarImageView.setImageDrawable(drawable));
-            } catch (IOException | SVGParseException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }

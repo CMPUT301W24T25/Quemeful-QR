@@ -8,7 +8,14 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -16,7 +23,6 @@ import android.util.Log;
 
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,9 +30,13 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -248,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAdmin = false;
 
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
@@ -272,66 +281,100 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
-
     private void promptNewUser(FirebaseFirestore db, String deviceId) {
         setContentView(R.layout.nologin);
         userFirstName = getRandomName(firstNames);
         userLastName = getRandomName(lastNames);
 
         findViewById(R.id.getStartedButton).setOnClickListener(view -> {
-            // Variables for random selection - No changes needed here
-            String[] topTypes = {"NoHair", "Eyepatch", "Hat", "Hijab", "Turban", "WinterHat1", "WinterHat2", "WinterHat3", "WinterHat4", "LongHairBigHair", "LongHairBob", "LongHairBun", "LongHairCurly", "LongHairCurvy", "LongHairDreads", "LongHairFrida", "LongHairFro", "LongHairFroBand", "LongHairNotTooLong", "LongHairShavedSides", "LongHairMiaWallace", "LongHairStraight", "LongHairStraight2", "LongHairStraightStrand", "ShortHairDreads01", "ShortHairDreads02", "ShortHairFrizzle", "ShortHairShaggyMullet", "ShortHairShortCurly", "ShortHairShortFlat", "ShortHairShortRound", "ShortHairShortWaved", "ShortHairSides", "ShortHairTheCaesar", "ShortHairTheCaesarSidePart"};
-            String[] accessoriesTypes = {"Blank", "Kurt", "Prescription01", "Prescription02", "Round", "Sunglasses", "Wayfarers"};
-            String[] hairColors = {"Auburn", "Black", "Blonde", "BlondeGolden", "Brown", "BrownDark", "PastelPink", "Platinum", "Red", "SilverGray"};
-            String[] facialHairTypes = {"Blank", "BeardMedium", "BeardLight", "BeardMajestic", "MoustacheFancy", "MoustacheMagnum"};
-            String[] clothesTypes = {"BlazerShirt", "BlazerSweater", "CollarSweater", "GraphicShirt", "Hoodie", "Overall", "ShirtCrewNeck", "ShirtScoopNeck", "ShirtVNeck"};
-            String[] eyeTypes = {"Close", "Cry", "Default", "Dizzy", "EyeRoll", "Happy", "Hearts", "Side", "Squint", "Surprised", "Wink", "WinkWacky"};
-            String[] eyebrowTypes = {"Angry", "AngryNatural", "Default", "DefaultNatural", "FlatNatural", "RaisedExcited", "RaisedExcitedNatural", "SadConcerned", "SadConcernedNatural", "UnibrowNatural", "UpDown", "UpDownNatural"};
-            String[] mouthTypes = {"Concerned", "Default", "Disbelief", "Eating", "Grimace", "Sad", "ScreamOpen", "Serious", "Smile", "Tongue", "Twinkle", "Vomit"};
-            String[] skinColors = {"Tanned", "Yellow", "Pale", "Light", "Brown", "DarkBrown", "Black"};
+            Bitmap avatarBitmap = generateAvatar(256, 256);
 
-            Random random = new Random();
-            String topType = topTypes[random.nextInt(topTypes.length)];
-            String accessoriesType = accessoriesTypes[random.nextInt(accessoriesTypes.length)];
-            String hairColor = hairColors[random.nextInt(hairColors.length)];
-            String facialHairType = facialHairTypes[random.nextInt(facialHairTypes.length)];
-            String clothesType = clothesTypes[random.nextInt(clothesTypes.length)];
-            String eyeType = eyeTypes[random.nextInt(eyeTypes.length)];
-            String eyebrowType = eyebrowTypes[random.nextInt(eyebrowTypes.length)];
-            String mouthType = mouthTypes[random.nextInt(mouthTypes.length)];
-            String skinColor = skinColors[random.nextInt(skinColors.length)];
-
-            // Generate the avatar URL - No changes needed here
-            String baseUrl = "https://avataaars.io/";
-            String avatarParameters = String.format("?avatarStyle=Circle&topType=%s&accessoriesType=%s&hairColor=%s&facialHairType=%s&clotheType=%s&eyeType=%s&eyebrowType=%s&mouthType=%s&skinColor=%s",
-                    topType, accessoriesType, hairColor, facialHairType, clothesType, eyeType, eyebrowType, mouthType, skinColor);
-            String imageUrl = baseUrl + avatarParameters;
+            // Save the bitmap to internal storage and get the path
+            String avatarPath = saveToInternalStorage(avatarBitmap, deviceId);
 
             // Create a new user object including the Admin field set to false
             Map<String, Object> newUser = new HashMap<>();
             newUser.put("uid", deviceId);
             newUser.put("firstName", userFirstName);
             newUser.put("lastName", userLastName);
-            newUser.put("avatarUrl", imageUrl);
-            newUser.put("Admin", false); // Here's the addition of the Admin field
+            // Store the path to the avatar bitmap
+            newUser.put("avatarUrl", avatarPath);
+            newUser.put("Admin", false);
 
-            // Add the new user to Firestore - No changes needed here
+            // Add the new user to Firestore
             db.collection("users").document(deviceId).set(newUser).addOnSuccessListener(aVoid -> {
-                Log.d(TAG, "New user added with name: " + userFirstName + " " + userLastName + " and avatar URL: " + imageUrl);
+                Log.d(TAG, "New user added with name: " + userFirstName + " " + userLastName + " and avatar path: " + avatarPath);
                 transitionToMainScreen();
             }).addOnFailureListener(e -> Log.e(TAG, "Error adding new user", e));
         });
+    }
+
+    private String getRandomName(String[] names) {
+        Random random = new Random();
+        return names[random.nextInt(names.length)];
+    }
+    private Bitmap generateAvatar(int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        Random random = new Random();
+
+        // Defining more options
+        String[] skinColors = {"#FAD7A0", "#E0AC69", "#C68642", "#8D5524", "#F3C3B4", "#5C3836"};
+        String[] eyeColors = {"#6B4226", "#487EB0", "#1B1464", "#23A455", "#723E98", "#50C878"};
+        String[] shirtColors = {"#3498DB", "#E74C3C", "#2ECC71", "#F1C40F", "#8E44AD", "#D35400"};
+        String[] hairColors = {"#A52A2A", "#000000", "#FFFFFF", "#808080", "#FFFF31", "#24FE41"};
+        String[] backgroundColors = {"#FFFFFF", "#FFEE58", "#B2EBF2", "#FFAB91", "#EBDEF0", "#AED6F1"};
+
+        // Background
+        paint.setColor(Color.parseColor(backgroundColors[random.nextInt(backgroundColors.length)]));
+        canvas.drawRect(0, 0, width, height, paint);
+
+        // Skin (Head)
+        paint.setColor(Color.parseColor(skinColors[random.nextInt(skinColors.length)]));
+        canvas.drawOval(new RectF(width * 0.2f, height * 0.1f, width * 0.8f, height * 0.6f), paint);
+
+        // Eyes
+        paint.setColor(Color.parseColor(eyeColors[random.nextInt(eyeColors.length)]));
+        canvas.drawCircle(width * 0.35f, height * 0.35f, width * 0.1f, paint);
+        canvas.drawCircle(width * 0.65f, height * 0.35f, width * 0.1f, paint);
+
+        // Shirt
+        paint.setColor(Color.parseColor(shirtColors[random.nextInt(shirtColors.length)]));
+        canvas.drawRect(new RectF(width * 0.1f, height * 0.6f, width * 0.9f, height * 0.9f), paint);
+
+        // Hair
+        paint.setColor(Color.parseColor(hairColors[random.nextInt(hairColors.length)]));
+        canvas.drawRect(new RectF(width * 0.2f, height * 0.05f, width * 0.8f, height * 0.2f), paint);
+
+        return bitmap;
     }
 
 
 
 
 
-    private String getRandomName(String[] names) {
-        Random random = new Random();
-        return names[random.nextInt(names.length)];
+    private String saveToInternalStorage(Bitmap bitmapImage, String imageName) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File directory = cw.getDir("avatarDir", Context.MODE_PRIVATE);
+        File myPath = new File(directory, imageName + ".jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return myPath.getAbsolutePath();
     }
 
     private void transitionToMainScreen() {
@@ -349,7 +392,6 @@ public class MainActivity extends AppCompatActivity {
             // Handle click
         });
 
-
         bottomNavigation.setOnShowListener(item -> {
             Fragment fragment = null;
             switch (item.getId()) {
@@ -360,8 +402,6 @@ public class MainActivity extends AppCompatActivity {
                     fragment = isAdmin ? new admin_event_list_fragment() : new Events();
                     break;
                 case 3:
-
-
                     fragment = Profile.newInstance();
                     break;
             }

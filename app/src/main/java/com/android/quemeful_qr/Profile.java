@@ -1,7 +1,7 @@
 package com.android.quemeful_qr;
 
 import android.content.Intent;
-import android.graphics.drawable.PictureDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -15,14 +15,9 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.File;
 
 public class Profile extends Fragment {
 
@@ -70,35 +65,24 @@ public class Profile extends Fragment {
             if (documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("firstName");
                 String lastName = documentSnapshot.getString("lastName");
-                String avatarUrl = documentSnapshot.getString("avatarUrl");
+                String avatarPath = documentSnapshot.getString("avatarUrl");
 
                 firstNameTextView.setText(String.format("%s %s", firstName, lastName));
 
-                if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                    if (avatarUrl.endsWith(".svg") || avatarUrl.contains("avataaars.io")) {
-                        loadSvgFromUrl(avatarUrl);
+                if (avatarPath != null && !avatarPath.isEmpty()) {
+                    if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
+                        // Avatar path is a remote URL
+                        Glide.with(this).load(avatarPath).into(avatarImageView);
                     } else {
-                        Glide.with(this).load(avatarUrl).into(avatarImageView);
+                        // Avatar path is a local file path
+                        File imgFile = new File(avatarPath);
+                        if (imgFile.exists()) {
+                            Drawable drawable = Drawable.createFromPath(imgFile.getAbsolutePath());
+                            avatarImageView.setImageDrawable(drawable);
+                        }
                     }
                 }
             }
         });
-    }
-
-    private void loadSvgFromUrl(String url) {
-        new Thread(() -> {
-            try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                InputStream inputStream = connection.getInputStream();
-                SVG svg = SVG.getFromInputStream(inputStream);
-                final PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
-
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> avatarImageView.setImageDrawable(drawable));
-                }
-            } catch (IOException | SVGParseException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }
