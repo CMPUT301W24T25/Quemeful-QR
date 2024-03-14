@@ -41,6 +41,7 @@ android {
         }
 
         dependencies {
+            compileOnly(files("C:/Users/v-tra/AppData/Local/Android/Sdk/platforms/android-34/android.jar"))
             implementation("com.squareup.okhttp3:okhttp:4.10.0")
             implementation("org.apache.directory.studio:org.apache.commons.io:2.4")
             implementation("com.google.firebase:firebase-messaging:23.4.1")
@@ -82,6 +83,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
+    implementation ("androidx.preference:preference:1.2.0")
 }
 
 
