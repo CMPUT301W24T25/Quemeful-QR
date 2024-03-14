@@ -69,5 +69,8 @@ android {
         }
     }
 }
+dependencies {
+    implementation("com.google.firebase:firebase-auth:22.3.1")
+}
 
 

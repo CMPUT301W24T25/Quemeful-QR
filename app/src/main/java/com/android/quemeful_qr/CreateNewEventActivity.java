@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
@@ -143,48 +144,51 @@ public class CreateNewEventActivity extends AppCompatActivity {
      * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
      */
     private void addNewEvent(EventHelper event) {
-
         String eventName = eventTitle.getText().toString();
-        String eventLocation = "location";
+        String eventLocation = "location"; // This should be dynamic or user-defined in the actual implementation.
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventUUID.matches("") || eventName.matches("") || eventLocation.matches("")
-        || eventTime.matches("") || eventDate.matches("")|| eventDescr.matches("")){ //empty string
-            Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
-            myToast.show();
+        if (eventUUID.isEmpty() || eventName.isEmpty() || eventLocation.isEmpty()
+                || eventTime.isEmpty() || eventDate.isEmpty() || eventDescr.isEmpty()) {
+            Toast.makeText(CreateNewEventActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
         } else {
+            final String eventId = db.collection("events").document().getId();
             HashMap<String, Object> data = new HashMap<>();
-            String parsedTime = DateUtils.formatTime(event.getTime());
-
-            String parsedDate = DateUtils.formatDate(event.getDate());
-
-
-            data.put("organizer",currentUserUID);
-            data.put("id", event.getId());
-            data.put("title", event.getTitle());
-            data.put("location", event.getLocation());
-            data.put("time", parsedTime);
-            data.put("date", parsedDate);
-            data.put("description", event.getDescription());
+            data.put("organizer", currentUserUID);
+            data.put("id", eventId);
+            data.put("title", eventName);
+            data.put("location", eventLocation);
+            data.put("time", eventTime);
+            data.put("date", eventDate);
+            data.put("description", eventDescr);
             data.put("poster", event.getPoster());
-            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
-            data.put("signed_up", emptySignUpList);
 
-            eventsRef
-                    .document(db.collection("events").document().getId())
-                    .set(data)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("Firestore", "DocumentSnapshot successfully written!");
-                            Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            eventsRef.document(eventId).set(data).addOnSuccessListener(aVoid -> {
+                Log.d("Firestore", "DocumentSnapshot successfully written!");
+                updateUserEvents(currentUserUID, eventId);
+            }).addOnFailureListener(e -> {
+                Log.e("Firestore", "Error writing document", e);
+                Toast.makeText(CreateNewEventActivity.this, "Failed to create event", Toast.LENGTH_SHORT).show();
+            });
         }
     }
+
+    private void updateUserEvents(String userId, String eventId) {
+        CollectionReference usersRef = db.collection("users");
+        usersRef.document(userId)
+                .update("events_organized", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating user", e);
+                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void imageChooser()
     {
         Intent i = new Intent();
