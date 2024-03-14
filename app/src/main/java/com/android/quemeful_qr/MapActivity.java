@@ -1,9 +1,16 @@
 //https://github.com/osmdroid/osmdroid/issues/1304#issuecomment-477920497
+//https://medium.com/@mr.appbuilder/how-to-integrate-and-work-with-open-street-map-osm-in-an-android-app-kotlin-564b38590bfe
+//https://stackoverflow.com/questions/48848801/cannot-add-my-location-overlay-to-osmdroid-map
+//https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime
+//https://stackoverflow.com/a/71698834
 package com.android.quemeful_qr;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -19,13 +26,17 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
+import org.osmdroid.views.overlay.gridlines.LatLonGridlineOverlay2;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 
-public class MapActivity extends AppCompatActivity{
+public class MapActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView map = null;
     private ImageView backButton;
@@ -38,6 +49,13 @@ public class MapActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
 
         //handle permissions first, before map is created. not depicted here
+        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        requestPermissionsIfNecessary(strArray);
+
+
+
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
@@ -56,41 +74,59 @@ public class MapActivity extends AppCompatActivity{
         backButton = (ImageView) findViewById(R.id.backArrow);
 
 
-
-        backButton.setOnClickListener(new View.OnClickListener(){
+        backButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
+
         map.setTileSource(TileSourceFactory.MAPNIK);
+        IMapController mapController = map.getController();
+
+
+        GpsMyLocationProvider prov = new GpsMyLocationProvider(ctx);
+        prov.addLocationSource(LocationManager.NETWORK_PROVIDER);
+
+
+
+        this.mLocationOverlay = new MyLocationNewOverlay(prov,map);
+        this.mLocationOverlay.enableMyLocation();
+        this.mLocationOverlay.enableFollowLocation();
+        this.mLocationOverlay.setDrawAccuracyEnabled(true);
+
+
+
+        mapController.setCenter(mLocationOverlay.getMyLocation());
+        mapController.animateTo(mLocationOverlay.getMyLocation());
+
+
+
+
+        map.getOverlays().add(this.mLocationOverlay);
+
+
+
+
+        this.mCompassOverlay = new CompassOverlay(getApplicationContext(), new InternalCompassOrientationProvider(getApplicationContext()), map);
+        this.mCompassOverlay.enableCompass();
+        map.getOverlays().add(this.mCompassOverlay);
+
+        LatLonGridlineOverlay2 overlay = new LatLonGridlineOverlay2();
+        map.getOverlays().add(overlay);
+
 
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
         map.setMultiTouchControls(true);
 
-        IMapController mapController = map.getController();
+
         mapController.setZoom(9.5);
-        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
-        mapController.setCenter(startPoint);
+//        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
+//        mapController.setCenter(startPoint);
 
 
-
-        this.mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()),map);
-        this.mLocationOverlay.enableMyLocation();
-        map.getOverlays().add(this.mLocationOverlay);
-
-        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-        requestPermissionsIfNecessary(strArray);
-//        requestPermissionsIfNecessary(arrayOf(
-//
-////                // if you need to show the current location, uncomment the line below
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-////                // WRITE_EXTERNAL_STORAGE is required in order to show the map
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//        ));
     }
 
 
