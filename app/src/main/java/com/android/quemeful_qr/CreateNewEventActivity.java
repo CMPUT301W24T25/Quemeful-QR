@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -148,6 +149,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
+        String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         if (eventUUID.matches("") || eventName.matches("") || eventLocation.matches("")
         || eventTime.matches("") || eventDate.matches("")|| eventDescr.matches("")){ //empty string
@@ -160,6 +162,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
             String parsedDate = DateUtils.formatDate(event.getDate());
 
 
+            data.put("organizer",currentUserUID);
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());

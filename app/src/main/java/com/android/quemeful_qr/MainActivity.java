@@ -30,6 +30,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -37,9 +38,6 @@ import java.util.Random;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -406,6 +404,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
             loadFragment(fragment);
+        });
+
+        bottomNavigation.setOnReselectListener(item -> {
+            // Implement reselection logic here if needed, otherwise leave as no-op to prevent NullPointerException
         });
 
         bottomNavigation.show(1, true);
