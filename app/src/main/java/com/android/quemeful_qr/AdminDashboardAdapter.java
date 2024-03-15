@@ -20,32 +20,32 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
 /**
- * puts administrator view dashboard list in recyclerview
- * recyclerview puts data into rows on the screen
- * recyclerview reuses old rows that disappears off screen when scrolling
+ * This adapter class is used to put administrator view dashboard list in recyclerview.
+ * Recyclerview puts data into rows on the screen,
+ * reusing old rows that disappears off screen when scrolling.
  */
-public class admin_dashboard_adapter extends RecyclerView.Adapter<admin_dashboard_adapter.ViewHolder> {
+public class AdminDashboardAdapter extends RecyclerView.Adapter<AdminDashboardAdapter.ViewHolder> {
     private List<Map<String, Object>> dataList;
     private Context context;
 
     /**
-     * constructor
-     * @param context
-     * @param dataList
+     *  This is a constructor with parameters.
+     * @param context AdminDashboardAdapter context
+     * @param dataList initializing the dataList instance
      */
-    public admin_dashboard_adapter(Context context, List<Map<String, Object>> dataList) {
+    public AdminDashboardAdapter(Context context, List<Map<String, Object>> dataList) {
         this.context = context;
         this.dataList = dataList;
     }
+
     /**
-     * recyclerview calls this method when it needs to create a new viewholder
-     * viewholder has not filled in the view's contents yet
-     * @param parent The ViewGroup into which the new View will be added after it is bound to
-     *               an adapter position.
+     * This method is used by the recyclerview when it needs to create a new view holder.
+     * (view holder has not filled in the view's contents yet)
+     * @param parent The ViewGroup into which the new View will be added after it is bound to an adapter position.
      * @param viewType The view type of the new View.
-     *
-     * @return ViewHolder
+     * @return the new ViewHolder view.
      */
     @NonNull
     @Override
@@ -53,10 +53,10 @@ public class admin_dashboard_adapter extends RecyclerView.Adapter<admin_dashboar
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_dashboard_content, parent, false);
         return new ViewHolder(view);
     }
+
     /**
-     * recycles old rows to replace old data with new data (associates viewholder with data)
-     * @param holder The ViewHolder which should be updated to represent the contents of the
-     *        item at the given position in the data set.
+     * This method is used to recycle old rows to replace old data with new data (associates view holder with data)
+     * @param holder The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
     @Override
@@ -131,16 +131,16 @@ public class admin_dashboard_adapter extends RecyclerView.Adapter<admin_dashboar
     }
 
     /**
-     *  recyclerview calls this to get size of dataset
-     * @return int
+     * This method is used by the recyclerview to get size of dataset.
+     * @return the size (Integer)
      */
     @Override
     public int getItemCount() {
         return dataList.size();
     }
+
     /**
-     * updates dataList after changes
-     * @return int
+     * This method is used to notify the admin dashboard adapter that the data has changed with new data.
      */
     public void updateDataList(List<Map<String, Object>> newDataList) {
         this.dataList = newDataList;
@@ -148,7 +148,7 @@ public class admin_dashboard_adapter extends RecyclerView.Adapter<admin_dashboar
     }
 
     /**
-     * describes the view of the administrator
+     * This method is used to create the administrator dashboard view.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;
@@ -164,9 +164,9 @@ public class admin_dashboard_adapter extends RecyclerView.Adapter<admin_dashboar
     }
 
     /**
-     * loads SVG image from its URL into the app
-     * @param imageView
-     * @param urlString
+     * This method is used to load SVG image from its URL into the app.
+     * @param imageView the field where the image is to be loaded.
+     * @param urlString the url of the image to be converted to svg image.
      */
     private void loadSvgFromUrl(final ImageView imageView, final String urlString) {
         new Thread(() -> {
@@ -181,4 +181,4 @@ public class admin_dashboard_adapter extends RecyclerView.Adapter<admin_dashboar
             }
         }).start();
     }
-}
+} // class closing

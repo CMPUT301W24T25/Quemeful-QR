@@ -5,28 +5,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class attendeeAdapter extends RecyclerView.Adapter<attendeeAdapter.AttendeeViewHolder> {
+/**
+ * This is an attendee adapter class used to handle attendee view data.
+ */
+public class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.AttendeeViewHolder> {
     private List<Attendee> attendees = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
-     * takes takes all the attendees that are checked in for a specific event
-     * and puts them in a list
-     * @param eventId
+     * This method is used to fetch all the attendees that are checked in for a specific event and put them in a list
+     * @param eventId The checked in event with the specific Id.
      */
-    public attendeeAdapter(String eventId) {
+    public AttendeeAdapter(String eventId) {
         DocumentReference eventRef = db.collection("events").document(eventId);
 
         eventRef.get().addOnCompleteListener(task -> {
@@ -56,8 +55,7 @@ public class attendeeAdapter extends RecyclerView.Adapter<attendeeAdapter.Attend
     }
 
     /**
-     * recyclerview calls this method when it needs to create a new viewholder
-     * viewholder has not filled in the view's contents yet
+     * This method is used by recyclerview when it creates a new view.
      * @param parent The ViewGroup into which the new View will be added after it is bound to
      *               an adapter position.
      * @param viewType The view type of the new View.
@@ -70,10 +68,10 @@ public class attendeeAdapter extends RecyclerView.Adapter<attendeeAdapter.Attend
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_view_attendee, parent, false);
         return new AttendeeViewHolder(itemView);
     }
+
     /**
-     * recycles old rows to replace old data with new data (associates viewholder with data)
-     * @param holder The ViewHolder which should be updated to represent the contents of the
-     *        item at the given position in the data set.
+     * This method binds the view with their respective data.
+     * @param holder The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
     @Override
@@ -95,24 +93,22 @@ public class attendeeAdapter extends RecyclerView.Adapter<attendeeAdapter.Attend
     }
 
     /**
-     *  recyclerview calls this to get size of dataset
-     * @return int
+     * This method is used to count the attendees.
+     * @return int size (count of attendees)
      */
     @Override
     public int getItemCount() {
         return attendees.size();
     }
 
+    /**
+     * AttendeeViewHolder(child) does not have a parameterless constructor,
+     * so it needs to call superclass constructors (parent)
+     */
     static class AttendeeViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView;
         TextView times_checked_in;
         ImageView logo_checked_in;
-
-        /**
-         * AttendeeViewHolder(child) does not have a parameterless constructor
-         * so it needs to call superclass constructors (parent)
-         * @param view
-         */
         AttendeeViewHolder(View view) {
             super(view);
             nameTextView = view.findViewById(R.id.name_of_attendee);
@@ -120,4 +116,4 @@ public class attendeeAdapter extends RecyclerView.Adapter<attendeeAdapter.Attend
             logo_checked_in = view.findViewById(R.id.checkin_icon);
         }
     }
-}
+} // AttendeeAdapter class closing

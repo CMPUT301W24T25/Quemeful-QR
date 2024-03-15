@@ -152,7 +152,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param eventId
      */
     private void navigateToListOfAttendees(String eventId) {
-        list_of_attendees attendeesFragment = new list_of_attendees(eventId);
+        AttendeesList attendeesFragment = new AttendeesList(eventId);
 
         // Begin a transaction
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

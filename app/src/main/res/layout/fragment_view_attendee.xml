@@ -9,7 +9,7 @@
     android:background="#FFFFFF"
     app:cardCornerRadius="10dp"
     app:cardElevation="10dp"
-    tools:context=".view_attendee"> <!-- Set background color if needed -->
+    tools:context=".ViewAttendee"> <!-- Set background color if needed -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -14,32 +14,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * puts administrator view event list in recyclerview
- * recyclerview puts data into rows on the screen
- * recyclerview reuses old rows that disappears off screen when scrolling
+ * This adapter class is used to put all administrator's view events list in recyclerview.
  */
-public class admin_event_adapter extends RecyclerView.Adapter<admin_event_adapter.ViewHolder> {
+public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.ViewHolder> {
     private Context context;
     private List<Map<String, Object>> events;
 
     /**
-     * constructor
-     * @param context
-     * @param events
+     * This is a constructor with parameters.
+     * @param context Context of this class.
+     * @param events list/array of events.
      */
-    public admin_event_adapter(Context context, List<Map<String, Object>> events) {
+    public AdminEventAdapter(Context context, List<Map<String, Object>> events) {
         this.context = context;
         this.events = events;
     }
 
     /**
-     * recyclerview calls this method when it needs to create a new viewholder
-     * viewholder has not filled in the view's contents yet
+     * This onCreateViewHolder() is used to create admin event view.
      * @param parent The ViewGroup into which the new View will be added after it is bound to
      *               an adapter position.
      * @param viewType The view type of the new View.
      *
-     * @return ViewHolder
+     * @return the admin event view
      */
     @NonNull
     @Override
@@ -49,7 +46,7 @@ public class admin_event_adapter extends RecyclerView.Adapter<admin_event_adapte
     }
 
     /**
-     * recycles old rows to replace old data with new data (associates viewholder with data)
+     * This method binds the admin event view with their respective event data.
      * @param holder The ViewHolder which should be updated to represent the contents of the
      *        item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
@@ -61,26 +58,22 @@ public class admin_event_adapter extends RecyclerView.Adapter<admin_event_adapte
     }
 
     /**
-     * recyclerview calls this to get size of dataset
-     * @return int
+     * This method is used to count the events.
+     * @return int size (count of events)
      */
     @Override
     public int getItemCount() {
         return events.size();
     }
 
-    /** provides a reference to the type of views that are being used
-     * (custom ViewHolder)
+    /**
+     * This class is used to create the administrator event view with the event details.
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView eventNameTextView;
         private TextView eventDateTextView;
         private ImageView eventImageView;
 
-        /**
-         * // Define click listener for the ViewHolder's View
-         * @param itemView
-         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             eventNameTextView = itemView.findViewById(R.id.event_title);
@@ -91,7 +84,7 @@ public class admin_event_adapter extends RecyclerView.Adapter<admin_event_adapte
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     Map<String, Object> event = events.get(position);
-                    Intent intent = new Intent(context, Admin_Event_Detail_Activity.class);
+                    Intent intent = new Intent(context, AdminEventDetailsActivity.class);
                     // Ensure you use the same key ("eventId") as expected in Admin_Event_Detail_Activity
                     intent.putExtra("eventId", (String) event.get("eventId"));
                     context.startActivity(intent);
@@ -100,8 +93,8 @@ public class admin_event_adapter extends RecyclerView.Adapter<admin_event_adapte
         }
 
         /**
-         * load image from URL to the event imageview in the recyclerview of the app
-         * @param event
+         * This method is used to bind the event data including its poster onto the attributes respective fields.
+         * @param event the event clicked on by admin.
          */
         public void bindEventData(Map<String, Object> event) {
             eventNameTextView.setText((String) event.get("title"));
@@ -114,5 +107,5 @@ public class admin_event_adapter extends RecyclerView.Adapter<admin_event_adapte
 
             }
         }
-    }
-}
+    } // ViewHolder class closing
+} // AdminEventAdapter class closing

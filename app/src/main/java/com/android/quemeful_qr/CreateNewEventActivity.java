@@ -1,14 +1,26 @@
-//https://www.geeksforgeeks.org/how-to-select-an-image-from-gallery-in-android/
-//https://www.youtube.com/watch?v=CQ5qcJetYAI
-//https://www.youtube.com/watch?v=_mo0vPfOaAQ
-//https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
-//https://firebase.google.com/docs/firestore/query-data/queries#java
-//https://stackoverflow.com/q/41396194
-//https://www.youtube.com/watch?v=33BFCdL0Di0
-//https://www.youtube.com/watch?v=cxEb4IafzZU
-// https://developer.android.com/training/data-storage/shared/photopicker
 package com.android.quemeful_qr;
 
+/**
+ * References:
+ *  URL- https://www.geeksforgeeks.org/how-to-select-an-image-from-gallery-in-android/
+ *  Author- GeeksforGeeks, Published Date- May 17, 2022
+ *  URL- https://www.youtube.com/watch?v=CQ5qcJetYAI
+ *  Author- Ben O'Brien, Published Date- Apr 20, 2020
+ *  URL- https://www.youtube.com/watch?v=_mo0vPfOaAQ
+ *  Author- Everyday Programmer, Published Date- Jul 11, 2023
+ *  URL- https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
+ *  Author- Oğuzhan Döngül, License- CC BY-SA 3.0, Published Date- Apr 14, 2018
+ *  URL- https://firebase.google.com/docs/firestore/query-data/queries#java
+ *  Author- Firebase Documentation, License- CC BY 4.0 and Apache 2.0, Published Date- 2024-03-14 UTC.
+ *  URL- https://stackoverflow.com/questions/41396194/how-to-convert-image-to-string-in-android
+ *  Author- Dilip Ati, License- CC BY-SA 3.0, Published Date- Nov 28, 2017
+ *  URL- https://www.youtube.com/watch?v=cxEb4IafzZU
+ *  Author- KD Techs, Published Date- Jun 1, 2022.
+ *  URL- https://developer.android.com/training/data-storage/shared/photopicker
+ *  Author- Android Developers, License- CC BY 2.5 and Apache 2.0, Published Date- 2024-03-12 UTC.
+ */
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -29,16 +41,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -56,7 +65,9 @@ import java.util.UUID;
  */
 
 public class CreateNewEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
-        DatePickerFragment.DatePickerDialogListener, TimePickerDialog.OnTimeSetListener, TimePickerFragment.TimePickerDialogListener{
+        DatePickerFragment.DatePickerDialogListener,
+        TimePickerDialog.OnTimeSetListener,
+        TimePickerFragment.TimePickerDialogListener{
     // xml variables
     private EditText eventTitle;
     private EditText eventDescription;
@@ -75,6 +86,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     //firebase
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+
     // attributes for event class
     private String eventUUID;
     private boolean startDateTextClicked;
@@ -84,7 +96,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private EventHelper event;
 
     /**
-     * sets time in a certain format after user picks a time from the pop out window
+     * This method sets time in a certain format after user picks a time from the pop out window.
      * @param view the view associated with this listener
      * @param hourOfDay the hour that was set
      * @param minute the minute that was set
@@ -105,11 +117,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     }
 
     /**
-     * Sets up the clickable buttons and textboxes so user can enter event details
+     * This method sets the clickable property of the buttons and text boxes for user to enter event details.
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,22 +144,20 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
 
-        //displays selected pic on app
+        /**
+         * This method calls the imageChooser() to upload an image/poster for the event, when clicked on the plus icon under 'Add Poster'.
+         */
         uploadPoster.setOnClickListener(new View.OnClickListener() {
-            /**
-             * picks an image to display onto the screen
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 imageChooser();
             }
         });
+
+        /**
+         * This method to set the start time opens a fragment to pick the starting time of the event.
+         */
         startTime.setOnClickListener(new View.OnClickListener() {
-            /**
-             * opens fragment for timepicker
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 startTimeTextClicked = true;
@@ -157,11 +166,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
             }
         });
+
+        /**
+         * This method to set the end time opens a fragment to pick the ending time of the event.
+         */
         endTime.setOnClickListener(new View.OnClickListener() {
-            /**
-             * opens fragment for datepicker
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 endTimeTextClicked = true;
@@ -170,11 +179,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
             }
         });
+
+        /**
+         * This method to set the start date opens a fragment to pick the starting date of the event.
+         */
         startDate.setOnClickListener(new View.OnClickListener() {
-            /**
-             * opens fragment for datepicker
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
 
@@ -183,11 +192,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 newFragment.show(getSupportFragmentManager(), "StartDatePicker");
             }
         });
+
+        /**
+         * This method to set the end date opens a fragment to pick the ending date of the event.
+         */
         endDate.setOnClickListener(new View.OnClickListener() {
-            /**
-             * opens fragment for datepicker
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 endDateTextClicked = true;
@@ -196,13 +205,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             }
         });
 
-        //creates event
+        /**
+         * This method after taking user input for a new event, creates the new event using the create button, and
+         * reports all those attributes to the event class.
+         */
         createButton.setOnClickListener(new View.OnClickListener() {
-            /**
-             * takes all the information user/organizer entered and puts all
-             * attributes to event class
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 //generates random id which is the QR code
@@ -233,12 +240,12 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
               }
         });
 
-
+        /**
+         * This method helps to use the generate button which on click generates a new QR code when required for the new event created.
+         * Since, for generating a QR code there exists a separate activity,
+         * on clicking on this generate button it starts the GenerateNewQRActivity.
+         */
         generateQRButton.setOnClickListener(new View.OnClickListener() {
-            /**
-             * goes to next page that shows the QR code
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CreateNewEventActivity.this, GenerateNewQRActivity.class);
@@ -247,8 +254,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
             }
         });
+
         /**
-         * closes the window and goes back to previous page
+         * This method is used when the user decides not to create a new event and wants to cancel, and go back to the previous page.
+         * On clicking the cancel button, it finishes this activity.
          */
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,25 +269,24 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     }
 
     /**
-     * this is to tell which textview (end time or start time) is pressed
+     * This method is used to tell which time textview (start time or end time) is pressed/clicked on.
      */
     public void setTimeClickFalse(){
-        endTimeTextClicked = false;
         startTimeTextClicked = false;
-
+        endTimeTextClicked = false;
     }
 
     /**
-     * this is to tell which textview (end time or start time) is pressed
+     * This method is used to tell which date textview (start date or end date) is pressed/clicked on.
      */
     public void setDateClickFalse(){
-        endDateTextClicked = false;
         startDateTextClicked = false;
+        endDateTextClicked = false;
     }
 
     /**
-     * adds new event with the attributes to the firebase
-     * @param event
+     * This method is used to add the new event created with all its attributes to the firebase collection db.
+     * @param event The new event created that is to be added to the firebase.
      */
     private void addNewEvent(EventHelper event) {
 
@@ -289,13 +297,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){ //empty string
+        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
+            //empty string check
             Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
             myToast.show();
-        } else {
+        }
+        else {
             HashMap<String, Object> data = new HashMap<>();
-
-
             data.put("organizer",currentUserUID);
             data.put("id", event.getId());
             data.put("title", event.getTitle());
@@ -326,13 +334,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     }
 
     /**
-     * sets date and displays the time selected on the textviews
+     * This method sets date and displays the time selected on the text views.
      * @param view the picker associated with the dialog
      * @param year the selected year
-     * @param month the selected month (0-11 for compatibility with
-     *              {@link Calendar#MONTH})
-     * @param dayOfMonth the selected day of the month (1-31, depending on
-     *                   month)
+     * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
+     * @param dayOfMonth the selected day of the month (1-31, depending on month)
      */
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -346,45 +352,31 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         if (startDateTextClicked){
             startDate.setText(formatDateString);
             startDateTextClicked = false;
-        }else if(endDateTextClicked){
+        }
+        else if(endDateTextClicked){
             endDate.setText(formatDateString);
             endDateTextClicked = false;
         }
-
-
-
     }
 
     /**
-     * pick a pic to display on app and save the Uri in a variable
+     * This method selects an image for the event poster and saves the uri to a variable.
      */
-    private void imageChooser()
-    {
+    private void imageChooser() {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
-
         launchSomeActivity.launch(i);
-
     }
-    ActivityResultLauncher<Intent> launchSomeActivity
-            = registerForActivityResult(
-            new ActivityResultContracts
-                    .StartActivityForResult(),
+
+    ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode()
-                        == Activity.RESULT_OK) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
-                    if (data != null
-                            && data.getData() != null) {
+                    if (data != null && data.getData() != null) {
                         selectedImageUri = data.getData();
                         uploadPoster.setImageURI(selectedImageUri);
-
                     }
-
                 }
             });
-
-
-
-}
+} // closing CreateNewEventActivity

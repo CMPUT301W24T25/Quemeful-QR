@@ -1,7 +1,6 @@
 package com.android.quemeful_qr;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,21 +8,19 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * shows admin view event details
+ * This activity class is used to display the admin view event details.
  */
-public class Admin_Event_Detail_Activity extends AppCompatActivity {
-
+public class AdminEventDetailsActivity extends AppCompatActivity {
     private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow;
     private TextView viewAttendee;
 
     /**
-     * gets events from the firebase
+     * The onCreate() initializes the above declared instances and retrieves the eventID.
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,21 +51,20 @@ public class Admin_Event_Detail_Activity extends AppCompatActivity {
     }
 
     /**
-     * create new fragment and transaction
-     * replace whatever is in fragment container view with this fragment
-     * and saves the changes
-     * @param eventId
+     * This method is used to go to the list of attendees signed up for that event with the eventId and replace the fragment.
+     * @param eventId the event with that specific Id.
      */
     private void navigateToListOfAttendees(String eventId) {
-        list_of_attendees attendeesFragment = new list_of_attendees(eventId);
+        AttendeesList attendeesFragment = new AttendeesList(eventId);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, attendeesFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
-    /** takes events from firebase and brings them to the app
-     * @param eventId
+    /**
+     * This method is used to fetch the event details for the event with that specific eventId from the firebase collection.
+     * @param eventId the event with that specific Id.
      */
     private void fetchEventDetails(String eventId) {
         db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
@@ -88,4 +84,4 @@ public class Admin_Event_Detail_Activity extends AppCompatActivity {
             // Log the error or inform the user
         });
     }
-}
+} // AdminEventDetailsActivity closing

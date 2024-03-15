@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,24 +14,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * make new fragment that contains admin view's event list
+ * This class is a new fragment that contains admin view's event list.
  */
-public class admin_event_list_fragment extends Fragment {
+public class AdminEventFragment extends Fragment {
     private RecyclerView recyclerView;
-    private admin_event_adapter adapter;
+    private AdminEventAdapter adapter;
     private List<Map<String, Object>> events;
 
     /**
-     * takes events and puts them in recycler view
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
+     * This method retrieves the events from the firebase collection by calling fetchEvents() and,
+     * sets them to the recyclerview.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's
      * UI should be attached to.  The fragment should not add the view itself,
      * but this can be used to generate the LayoutParams of the view.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return View
+     * @return view
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,14 +46,13 @@ public class admin_event_list_fragment extends Fragment {
         // Fetch events from Firebase
         fetchEvents();
 
-        adapter = new admin_event_adapter(getContext(), events);
+        adapter = new AdminEventAdapter(getContext(), events);
         recyclerView.setAdapter(adapter);
-
         return view;
     }
 
     /**
-     * gets events from firebase
+     * This method is used to fetch events from the firebase collection.
      */
     private void fetchEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -74,4 +71,5 @@ public class admin_event_list_fragment extends Fragment {
                     }
                 });
     }
-}
+
+} // class fragment closing
