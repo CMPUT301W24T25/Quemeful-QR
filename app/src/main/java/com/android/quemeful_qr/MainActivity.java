@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 promptNewUser(db, deviceId);
             }
         });
+        FirebaseMessaging.getInstance().subscribeToTopic("events");
     }
 
     /**
