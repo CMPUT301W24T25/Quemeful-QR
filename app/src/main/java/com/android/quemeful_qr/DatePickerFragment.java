@@ -1,4 +1,3 @@
-//https://stackoverflow.com/a/7030149
 package com.android.quemeful_qr;
 
 import android.app.DatePickerDialog;
@@ -6,16 +5,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-
 import java.util.Calendar;
-import java.util.Date;
 
 /**
- * contains pop up window that allows user to pick a date from a calendar
+ * This is a fragment class used to create a pop up window that allows user to pick a date from calendar.
+ * Reference URL- https://stackoverflow.com/questions/3125879/how-to-make-a-listener-for-a-datepickers-cancel-button-in-android/7030149#7030149
+ * Author- Amir, License- CC BY-SA 3.0, Published Date- 29 April, 2018
  */
 public class DatePickerFragment extends DialogFragment{
     // Use the current date as the default date in the picker.
@@ -26,9 +23,9 @@ public class DatePickerFragment extends DialogFragment{
     private DatePickerDialogListener listener;
 
     /**
-     * attaches the fragment to the host activity
+     * This method is used to attach the fragment to the host activity.
      * DatePickerDialogListener listener is started so functions from other classes can be used here
-     * @param context
+     * @param context Context
      */
     @Override
     public void onAttach(@NonNull Context context){
@@ -42,10 +39,9 @@ public class DatePickerFragment extends DialogFragment{
     }
 
     /**
-     * Create a new instance of DatePickerDialog and return it.
-     * If user clicks cancel, clears boolean values that shows which textview is pressed
-     * @param savedInstanceState The last saved instance state of the Fragment,
-     * or null if this is a freshly created Fragment.
+     * This method is used to create a new instance of DatePickerDialog and return it.
+     * If user clicks cancel, clears boolean values that shows which textview is clicked on.
+     * @param savedInstanceState The last saved instance state of the Fragment, or null if this is a freshly created Fragment.
      *
      * @return Dialog
      */
@@ -67,9 +63,6 @@ public class DatePickerFragment extends DialogFragment{
 
             }
         });
-
-
         return datePicker;
     }
-
-}
+} // class closing

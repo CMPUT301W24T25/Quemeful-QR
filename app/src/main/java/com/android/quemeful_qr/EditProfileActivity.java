@@ -6,31 +6,29 @@ import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * This is a class activity that handles the profile editing functionality for a user.
+ */
 public class EditProfileActivity extends AppCompatActivity {
-
     private EditText firstNameEditText;
     private EditText lastNameEditText;
     private TextView changeAvatarTextView;
@@ -49,11 +47,10 @@ public class EditProfileActivity extends AppCompatActivity {
     );
 
     /**
-     * sets up the view for editing profile names, pictures, buttons
+     * This onCreate method is used to create the view for editing profile names, pictures, buttons.
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +113,7 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * picture selection
+     * This method is used to select picture/image.
      */
     private void openFileChooser() {
         Intent intent = new Intent();
@@ -126,8 +123,8 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * loads image from uri to imageview on the app
-     * @param uri
+     * This method is used to load the selected image from uri and display it in the imageview.
+     * @param uri the selected image's URI.
      */
     private void loadFromUri(Uri uri) {
         if (uri.toString().contains("avataaars.io")) {
@@ -143,9 +140,9 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * gets fileextension from uri of image
-     * splits it at / into an array then gets the 2nd part
-     * @param uri
+     * This method is used to fetch the file extension from uri of the selected image.
+     * It works by splitting the uri at '/' into an array then fetches the remaining part.
+     * @param uri the selected image's URI.
      * @return String
      */
     private String getFileExtension(Uri uri) {
@@ -158,8 +155,8 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * gets image in SVG format from url
-     * @param url
+     * This method is used to retrieve the image in SVG format from its url.
+     * @param url the url of the image in svg format.
      */
     private void loadSvgFromUrl(String url) {
         new Thread(() -> {
@@ -174,4 +171,4 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }).start();
     }
-}
+} // class closing
