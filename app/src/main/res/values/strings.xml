@@ -1,12 +1,19 @@
 <resources>
     <string name="app_name">Quemeful-QR</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+
+    <style name="RoundedImageView">
+        <item name="cornerSize">8dp</item>
+    </style>
+
     <string name="check_in">Check In</string>
     <string name="generate_new_qr">Generate New QR</string>
     <string name="you_don_t_have_any_promotion_qr_code_for_this_event">You don\'t have any promotion QR code for this event</string>
     <string name="event_promotion">Event Promotion</string>
     <string name="enter_event_name">Enter Event Name</string>
     <string name="generate">Generate</string>
-    <string name="scan_qr_code">Scan QR Code</string>
     <string name="quemeful_qr">Quemeful QR</string>
     <string name="welcome_to">Welcome to</string>
     <string name="enter_first_name">Enter First Name</string>
@@ -22,14 +29,20 @@
     <string name="event_description">Event Description ...</string>
     <string name="start_date">Start Date</string>
     <string name="start_time">Start Time</string>
-    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
-    <string name="_16_00">16:00</string>
+    <string name="dd_mm_yyyy">yyyy-MM-dd</string>
+    <string name="_16_00">230pm</string>
     <string name="end_date">End Date</string>
     <string name="end_time">End Time</string>
-    <string name="_20_00">20:00</string>
+    <string name="_20_00">530pm</string>
     <string name="qr_code">QR Code</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
     <string name="create_new_event_check">Create New Event (check)</string>
     <string name="new_qr_code">New QR Code</string>
+    =======
+    <string name="edit_profile" />
+    <string name="save">Save</string>
+    <string name="confirm_checkin">Confirm Check in</string>
+    <string name="Location">Location</string>
+    >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>
