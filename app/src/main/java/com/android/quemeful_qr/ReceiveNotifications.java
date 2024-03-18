@@ -1,6 +1,4 @@
-
 package com.android.quemeful_qr;
-
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -15,26 +13,26 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
 /**
- * A service class responsible for handling Firebase Cloud Messaging (FCM) notifications.
+ * This is a service class responsible for handling Firebase Cloud Messaging (FCM) notifications.
  * It extends FirebaseMessagingService to receive and process incoming messages.
+ * Reference URL- https://www.youtube.com/watch?v=2xoJi-ZHmNI&t=1915s&ab_channel=GeeksforGeeks
+ * Author- GeeksforGeeks, Published Date- 30 Aug, 2021
  */
-/**
-https://www.youtube.com/watch?v=2xoJi-ZHmNI&t=1915s&ab_channel=GeeksforGeeks
-*/
-public class recieveNotification extends FirebaseMessagingService {
+public class ReceiveNotifications extends FirebaseMessagingService {
+
     /**
-     * Called when a new token is generated for the device.
+     * This method is called when a new token is generated for the device.
      * @param token The new token generated for the device.
      */
     @Override
     public void onNewToken(@NonNull String token) {
-
         super.onNewToken(token);
     }
 
     /**
-     * Called when a new FCM message is received.
+     * This method is called when a new FCM message is received.
      * @param message The incoming FCM message.
      */
     @Override
@@ -45,8 +43,9 @@ public class recieveNotification extends FirebaseMessagingService {
             handleMessage(title, body);
         }
     }
+
     /**
-     * Constructs a RemoteViews object for the custom notification layout.
+     * This method is used to construct a RemoteViews object for the custom notification layout.
      * @param title The title of the notification.
      * @param message The body/message of the notification.
      * @return A RemoteViews object containing the custom notification layout.
@@ -60,18 +59,17 @@ public class recieveNotification extends FirebaseMessagingService {
     }
 
     /**
-     * Handles the incoming FCM message by creating and displaying a custom notification.
+     * This method is used to handle the incoming FCM message by creating and displaying a custom notification.
      * @param title The title of the notification.
      * @param message The body/message of the notification.
      */
     public void handleMessage(String title,String  message) {
         String CHANNEL_ID = "MESSAGE";
-        String channename = "NOTIFICATION MESSAGE";
+        String channelName = "NOTIFICATION MESSAGE";
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
-
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.qrcode_solid)
@@ -80,8 +78,10 @@ public class recieveNotification extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channename, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
         notificationManager.notify(0, notification.build());
-    } }
+    }
+
+} // class closing

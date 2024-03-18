@@ -67,7 +67,7 @@ public class AdminEventAdapter extends RecyclerView.Adapter<AdminEventAdapter.Vi
     }
 
     /**
-     * This class is used to create the administrator event view with the event details.
+     * This view holder child class is used to create the administrator event view holder with the event details.
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView eventNameTextView;

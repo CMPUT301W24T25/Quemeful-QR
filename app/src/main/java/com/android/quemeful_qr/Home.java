@@ -15,13 +15,16 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * This class is used to handle view shown on clicking on Home button in the app,
+ * that displays events occurring on that day and other upcoming events in any.
+ */
 public class Home extends Fragment implements EventClickListenerInterface{
+
     /**
-     * constructor
+     * This is a default Home constructor (no parameters).
      */
-    public Home() {
-    }
+    public Home() {}
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView eventsRecyclerView;
@@ -29,14 +32,12 @@ public class Home extends Fragment implements EventClickListenerInterface{
     Date eventDate;
 
     /**
-     * gets all events and displays them on the screen
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
+     * This method is used to initialize the declared instances and call the fetchEvents() to fetch events from firebase.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's
      * UI should be attached to.  The fragment should not add the view itself,
      * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      *
      * @return View
      */
@@ -55,7 +56,7 @@ public class Home extends Fragment implements EventClickListenerInterface{
     }
 
     /**
-     * get events from firebase and order them by date
+     * This method is used to fetch events from the firebase collection and sort them by their dates.
      */
     private void fetchEvents() {
         System.out.println(db.collection("events").toString());
@@ -97,29 +98,27 @@ public class Home extends Fragment implements EventClickListenerInterface{
     }
 
     /**
-     * updates the interface with today events and upcoming events if there are any
-     * @param todayEvents
-     * @param upcomingEvents
+     * This method is used to update the interface with events on that day and the upcoming events if any.
+     * @param todayEvents the events on that day.
+     * @param upcomingEvents the upcoming events.
      */
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
         if (!todayEvents.isEmpty()) {
             EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this);
             eventsRecyclerView.setAdapter(todayEventAdapter);
-        } else {
-
         }
+        else {}
 
         if (!upcomingEvents.isEmpty()) {
             UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this);
             upcomingEventsRecyclerView.setAdapter(upcomingEventAdapter);
-        } else {
-
         }
+        else {}
     }
 
     /**
-     * goes to event details after clicking the event
-     * @param event
+     * This method is used to navigate to the event details when an event is clicked in the list of events.
+     * @param event the event clicked.
      */
     @Override
     public void onEventClick(EventHelper event) {
@@ -129,4 +128,4 @@ public class Home extends Fragment implements EventClickListenerInterface{
         startActivity(intent);
     }
 
-}
+} // class closing

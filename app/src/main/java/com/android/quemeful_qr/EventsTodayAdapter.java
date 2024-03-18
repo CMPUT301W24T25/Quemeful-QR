@@ -83,7 +83,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     }
 
     /**
-     * This method is used to create the new view for events with its details.
+     * This event view holder child class is used to create the new view holder for events with its details.
      */
     public static class EventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView eventImage;
@@ -91,7 +91,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
 
         /**
          * Defining a click listener for the ViewHolder's View.
-         * @param itemView to initialize the event attributes.
+         * @param itemView used to initialize the event attributes.
          */
         public EventViewHolder(View itemView) {
             super(itemView);

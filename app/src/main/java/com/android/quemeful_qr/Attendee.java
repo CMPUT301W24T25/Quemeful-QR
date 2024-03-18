@@ -1,5 +1,8 @@
 package com.android.quemeful_qr;
 
+/**
+ * This class is used to add setter and getter methods for the attendees attributes.
+ */
 public class Attendee {
     private String id;
     private String firstName;

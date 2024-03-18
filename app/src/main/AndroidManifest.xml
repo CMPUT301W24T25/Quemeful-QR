@@ -37,7 +37,7 @@
             android:name=".GenerateNewQRActivity"
             android:exported="false" />
         <activity
-            android:name=".QRCheckActivity"
+            android:name=".ScanQRActivity"
             android:exported="false" />
         <activity
             android:name=".ViewEventActivity"
@@ -65,7 +65,7 @@
             android:name=".MapActivity"
             android:foregroundServiceType="location"/>
         <service
-            android:name=".recieveNotification"
+            android:name=".ReceiveNotifications"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.GET_NOTIFICATION" />

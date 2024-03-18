@@ -1,5 +1,3 @@
-//https://firebase.google.com/docs/firestore/query-data/queries#java
-//https://stackoverflow.com/a/8638723
 package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
@@ -26,9 +24,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-
-
-public class QRCheckActivity extends AppCompatActivity {
+/**
+ * This is an activity class used to handle the scanning of a QR and,
+ * its results, to fetch the right event data from the firebase.
+ * Reference URLs:
+ * https://firebase.google.com/docs/firestore/query-data/queries#java
+ * Author- Firebase Documentation, License- Apache 2.0, Published Date- 14 Mar, 2024
+ * https://stackoverflow.com/a/8638723/remove-leading-and-trailing-brackets-in-a-string
+ * Author- James Raitsev, License- CC BY-SA 3.0, Published Date- 26 Dec, 2011
+ */
+public class ScanQRActivity extends AppCompatActivity {
     //scan and generate QR
     private ImageButton scan;
     private TextView confirm;
@@ -50,15 +55,13 @@ public class QRCheckActivity extends AppCompatActivity {
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qrcheck);
+        setContentView(R.layout.activity_qrscan);
 
         scan = findViewById(R.id.buttonCam);
         confirm = findViewById(R.id.camera_frame);
-
 
         // navigates back to the previous page on clicking the back arrow
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
@@ -75,7 +78,7 @@ public class QRCheckActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // create object of IntentIntegrator class of the QR library
-                IntentIntegrator integrator = new IntentIntegrator(QRCheckActivity.this);
+                IntentIntegrator integrator = new IntentIntegrator(ScanQRActivity.this);
                 integrator.setPrompt("Scan a QR code");
                 integrator.setCameraId(0);
                 integrator.setOrientationLocked(false);
@@ -97,7 +100,6 @@ public class QRCheckActivity extends AppCompatActivity {
      *               (various data can be attached to Intent "extras").
      *
      */
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -116,12 +118,16 @@ public class QRCheckActivity extends AppCompatActivity {
                 // check if a document exists with the id and name we scanned
                 //if exists, display it
                 //if not exist, error message
-                db.collection("events").whereEqualTo("id", result.getContents()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    /**
-                     * compare id from QR code and ids in firebase, and if find a match, then
-                     * get data and switch to next page
-                     * @param task
-                     */
+                db.collection("events")
+                        .whereEqualTo("id", result
+                        .getContents()).get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                            /**
+                             * This method is used to compare id from QR code with the ids in firebase,
+                             * and if finds a match, then fetches the data and switch to next page.
+                             * @param task the task to be done on complete.
+                             */
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -138,7 +144,7 @@ public class QRCheckActivity extends AppCompatActivity {
                                 confirm.setText(eventPoster);
 
                                 EventHelper event = new EventHelper(eventUUID, eventName, "location", eventTime, eventDate, eventDescription, eventPoster);
-                                Intent intent = new Intent(QRCheckActivity.this, ViewEventActivity.class);
+                                Intent intent = new Intent(ScanQRActivity.this, ViewEventActivity.class);
 
                                 intent.putExtra("event", event);
                                 startActivity(intent);
@@ -149,11 +155,8 @@ public class QRCheckActivity extends AppCompatActivity {
                             confirm.setText("QR code not recognized");
                             //set the error message onto the camera textview "QR code not recognized"
                         }
-
                     }
                 });
-
-
             }
 
         }
@@ -163,4 +166,4 @@ public class QRCheckActivity extends AppCompatActivity {
         }
     }
 
-}
+} // activity class closing

@@ -148,7 +148,7 @@ public class AdminDashboardAdapter extends RecyclerView.Adapter<AdminDashboardAd
     }
 
     /**
-     * This method is used to create the administrator dashboard view.
+     * This view holder child class is used to create the administrator dashboard view.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewName;

@@ -14,24 +14,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
+
 /**
- * puts upcoming event list in recyclerview
- * recyclerview puts data into rows on the screen
- * recyclerview reuses old rows that disappears off screen when scrolling
+ * This is an adapter class used to put all upcoming events in a recycler view.
  */
 public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAdapter.ViewHolder>{
-
     private static List<EventHelper> events;
     private Context context;
     private static EventClickListenerInterface mClickListener;
 
     /**
-     * constructor
-     * @param events
-     * @param clickListener
+     * This is a UpcomingEventsAdapter constructor with following parameters.
+     * @param events the upcoming events
+     * @param clickListener listener
      */
     public UpcomingEventsAdapter(List<EventHelper> events, EventClickListenerInterface clickListener){
         this.events = events;
@@ -39,13 +35,12 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
     }
 
     /**
-     * * recyclerview calls this method when it needs to create a new viewholder
-     *      * viewholder has not filled in the view's contents yet
+     * This method is used to inflate the upcoming events view to update the view.
      * @param parent The ViewGroup into which the new View will be added after it is bound to
      *               an adapter position.
      * @param viewType The view type of the new View.
      *
-     * @return
+     * @return view
      */
     @NonNull
     @Override
@@ -56,8 +51,7 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
     }
 
     /**
-     *  /**
-     *      * recycles old rows to replace old data with new data (associates viewholder with data)
+     * This method is used to bind the updated view with associated data (the events title and date).
      * @param holder The ViewHolder which should be updated to represent the contents of the
      *        item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
@@ -78,28 +72,42 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
 
     }
 
+    /**
+     * This method is used to pass the size of the dataset to the recyclerview.
+     * @return int size (count of events)
+     */
     @Override
     public int getItemCount() {
         return events.size();
     }
 
+    /**
+     * This view holder child class is used to create the new view holder for the upcoming events.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView title, date;
         ImageView image;
 
+        /**
+         * Defining a click listener for the ViewHolder's View.
+         * @param itemView used to initialize the event attributes.
+         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.event_title);
             date = itemView.findViewById(R.id.event_date);
             image = itemView.findViewById(R.id.admin_event_image);
-
             itemView.setOnClickListener(this);
         }
 
+        /**
+         * This method is used to find the upcoming event position in the upcoming events list, that was clicked.
+         * @param view The view that was clicked.
+         */
         @Override
         public void onClick(View view) {
             Log.d("EventsTodayAdapter", "Item clicked");
             if (mClickListener != null) mClickListener.onEventClick(events.get(getAdapterPosition()));
         }
     }
-}
+} // adapter class closing

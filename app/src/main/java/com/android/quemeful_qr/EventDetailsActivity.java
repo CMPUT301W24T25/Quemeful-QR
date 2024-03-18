@@ -288,7 +288,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * It works by starting another activity that handles QR code scanning.
      */
     protected void openQRCheckActivity(){
-        Intent intent = new Intent(EventDetailsActivity.this, QRCheckActivity.class);
+        Intent intent = new Intent(EventDetailsActivity.this, ScanQRActivity.class);
         startActivity(intent);
 
     }
