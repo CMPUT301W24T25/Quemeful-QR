@@ -37,7 +37,7 @@
             android:name=".GenerateNewQRActivity"
             android:exported="false" />
         <activity
-            android:name=".QRCheckActivity"
+            android:name=".ScanQRActivity"
             android:exported="false" />
         <activity
             android:name=".ViewEventActivity"
@@ -53,7 +53,7 @@
         </activity>
         <activity android:name=".EventDetailsActivity" />
         <activity android:name=".EditProfileActivity" />
-        <activity android:name=".Admin_Event_Detail_Activity" />
+        <activity android:name=".AdminEventDetailsActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -65,7 +65,7 @@
             android:name=".MapActivity"
             android:foregroundServiceType="location"/>
         <service
-            android:name=".recieveNotification"
+            android:name=".ReceiveNotifications"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.GET_NOTIFICATION" />

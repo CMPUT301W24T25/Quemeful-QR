@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is a class activity that handles the event details view for specific user type.
+ */
 public class EventDetailsActivity extends AppCompatActivity {
-
 
     private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription;
     private FirebaseFirestore db;
@@ -41,7 +43,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
 
     /**
-     * Sets up interface with event details
+     * This onCreate method is used to set up an interface with all event details.
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
@@ -56,18 +58,14 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
+
+        // navigate back to previous page on clicking the back arrow.
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
-            /**
-             * back arrow closes the page and goes to previous page
-             * @param v The view that was clicked.
-             */
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-
-
 
         textViewEventTitle = findViewById(R.id.textViewEventTitle);
         textViewEventDate = findViewById(R.id.textViewEventDate);
@@ -82,17 +80,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
 
-
-
         String eventId = getIntent().getStringExtra("event_id");
 
         if (eventId != null) {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
             setupCheckInButton();
-            /**
-             *
-             */
+
+            // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -104,6 +99,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method is used to set the button to sign up for an event.
+     * @param eventId the event being signed up for (identified with its specific id).
+     */
     private void setupSignUpButton(String eventId) {
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +111,10 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * This method is used to set the button to check-in to an event using the QR code.
+     */
     private void setupCheckInButton(){
         buttonCheckIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +124,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method is used to sign up for an event.
+     * @param eventId the event being signed up for (identified with its specific id).
+     */
     private void signUpForEvent(String eventId) {
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference eventRef = db.collection("events").document(eventId);
@@ -147,12 +154,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * replace an existing fragment in a container with an instance of a new
-     * fragment class
-     * @param eventId
+     * This method is used to navigate to the list of attendees attending a specific event.
+     * @param eventId the event being attended (identified with its specific id).
      */
     private void navigateToListOfAttendees(String eventId) {
-        list_of_attendees attendeesFragment = new list_of_attendees(eventId);
+        AttendeesList attendeesFragment = new AttendeesList(eventId);
 
         // Begin a transaction
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -167,8 +173,9 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * gets event details from the firebase and shows them on this page
-     * @param eventId
+     * This method is used to fetch the event details with its specific id from the firebase,
+     * and display them to the user.
+     * @param eventId the event being attended/signed up/checked in (identified with its specific id).
      */
     private void fetchEventDetails (String eventId) {
 
@@ -183,7 +190,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     textViewEventTime.setText(event.getTime());
                     textViewEventLocation.setText(event.getLocation());
                     textViewEventDescription.setText(event.getDescription());
-
 
                     // Update UI for organizer or general user
                     if (currentUserUID.equals(event.getOrganizer())) {
@@ -200,37 +206,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                     } else {
                         imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
                     }
-
-                    // Now, check if the user is signed up and/or checked in
-//                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) documentSnapshot.get("signed_up");
-//                    boolean isUserSignedUp = false;
-//                    boolean isUserCheckedIn = false;
-//
-//                    if (signedUpUsers != null) {
-//                        for (Map<String, Object> userMap : signedUpUsers) {
-//                            String uid = (String) userMap.get("uid");
-//                            String checkedIn = (String) userMap.get("checked_in");
-//                            if (currentUserUID.equals(uid)) {
-//                                isUserSignedUp = true;
-//                                isUserCheckedIn = "1".equals(checkedIn);
-//                                break;
-//                            }
-//                        }
-//                    }
-
-                    // Check if user is signed up or not and display UI accordingly
-//                    updateUIBasedOnUserStatus(isUserSignedUp, isUserCheckedIn);
-
                 }
-            } else {
-
-            }
+            } else {}
         }).addOnFailureListener(e -> {
         });
     }
 
     /**
-     * changes the UI when attendee signs up
+     * This method is used to change the UI when an attendee signs up for an event.
      */
     private void updateUIForOrganizer() {
         textViewScanQR.setVisibility(View.GONE);
@@ -241,10 +224,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * changes the UI when the attendee signs up
-     * @param currentUserUID
-     * @param event
-     * @param documentSnapshot
+     * This method is used to update the UI for a non-attendee.
+     * @param currentUserUID the id to identify the current user (attendee/organiser/admin).
+     * @param event the event in concern.
+     * @param documentSnapshot the list that records events,
+     *                        used to fetch status of whether the user is signed up to the event or not.
      */
     private void updateUIForGeneralUser(String currentUserUID, EventHelper event, DocumentSnapshot documentSnapshot) {
         // Your existing logic to check if the user is signed up or checked in...
@@ -263,14 +247,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             }
         }
-
         updateUIBasedOnUserStatus(isUserSignedUp, isUserCheckedIn);
     }
 
     /**
-     * if user signed up, changes the interface element visibility
-     * @param isUserSignedUp
-     * @param isUserCheckedIn
+     * This method is used to change the visibility when a user is signed up.
+     * @param isUserSignedUp checks the status whether the user is signed-up or not.
+     * @param isUserCheckedIn checks the status whether the user is checked-in or not.
      */
     private void updateUIBasedOnUserStatus(boolean isUserSignedUp, boolean isUserCheckedIn) {
         TextView textViewScanQR = findViewById(R.id.scanQRTitle);
@@ -301,14 +284,24 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * switches from eventdetailsactivity to QRcheckactivity when button is pressed
+     * This method is used when the user clicks on the check-in button to scan the QR code.
+     * It works by starting another activity that handles QR code scanning.
      */
     protected void openQRCheckActivity(){
-        Intent intent = new Intent(EventDetailsActivity.this, QRCheckActivity.class);
+        Intent intent = new Intent(EventDetailsActivity.this, ScanQRActivity.class);
         startActivity(intent);
 
     }
 
+    /**
+     * This method is used to handle permission from user on receiving notifications about the specific event.
+     * @param requestCode The request code passed.
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -320,4 +313,4 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         }
     }
-}
+} // class closing

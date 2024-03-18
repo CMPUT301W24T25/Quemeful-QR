@@ -43,7 +43,7 @@ public class UnitTest {
     private EventsTodayAdapter.EventViewHolder viewHolder;
     private EventHelper event;
 
-    private admin_dashboard_adapter adapter;
+    private AdminDashboardAdapter adapter;
     private List<Map<String, Object>> dataList;
     private String testDeviceId;
 
@@ -75,7 +75,7 @@ public class UnitTest {
         data.put("avatarUrl", "https://example.com/avatar.png");
         dataList.add(data);
 
-        adapter = new admin_dashboard_adapter(ApplicationProvider.getApplicationContext(), dataList);
+        adapter = new AdminDashboardAdapter(ApplicationProvider.getApplicationContext(), dataList);
 
 
         testDeviceId = "test_device_id";
@@ -198,7 +198,7 @@ public class UnitTest {
             protected void onLayout(boolean changed, int l, int t, int r, int b) {}
         };
         View itemView = LayoutInflater.from(ApplicationProvider.getApplicationContext()).inflate(R.layout.admin_dashboard_content, parent, false);
-        admin_dashboard_adapter.ViewHolder viewHolder = new admin_dashboard_adapter.ViewHolder(itemView);
+        AdminDashboardAdapter.ViewHolder viewHolder = new AdminDashboardAdapter.ViewHolder(itemView);
 
         assertNotNull(viewHolder);
         assertNotNull(viewHolder.textViewName);
@@ -213,7 +213,7 @@ public class UnitTest {
         String description = "Test Description";
 
         // Call the method under test
-        announcement fragment = new announcement("events");
+        Announcement fragment = new Announcement("events");
         fragment.sendNotification(title, description);
 
 

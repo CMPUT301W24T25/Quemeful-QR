@@ -1,8 +1,5 @@
-//https://stackoverflow.com/a/2660148
-//https://www.youtube.com/watch?v=QMwaNN_aM3U
 package com.android.quemeful_qr;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -15,7 +12,17 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
 
+/**
+ * This is a fragment class used to create a pop up window that allows user to pick a time from a clock.
+ * Reference URLs:
+ * https://stackoverflow.com/a/2660148/timepickerdialog-and-am-or-pm
+ * Author- CommonsWare, License- CC BY-SA 2.5, Published Date- 17 Apr, 2010
+ * https://www.youtube.com/watch?v=QMwaNN_aM3U
+ * Author- Coding in Flow, Published Date- 30 Oct, 2017
+ */
 public class TimePickerFragment extends DialogFragment {
+
+    // interface
     interface TimePickerDialogListener{
         void setTimeClickFalse();
 
@@ -23,8 +30,8 @@ public class TimePickerFragment extends DialogFragment {
     private TimePickerFragment.TimePickerDialogListener listener;
 
     /**
-     * attaches the timepickerfragment to the host activity
-     * @param context
+     * This method is used to attach the time picker fragment to the host activity.
+     * @param context Context
      */
     @Override
     public void onAttach(@NonNull Context context){
@@ -38,11 +45,11 @@ public class TimePickerFragment extends DialogFragment {
     }
 
     /**
-     * calendar pop up to select dates
+     * This method is used to create a pop up window displaying the clock to select the time in it.
      * @param savedInstanceState The last saved instance state of the Fragment,
      * or null if this is a freshly created Fragment.
      *
-     * @return
+     * @return time picker dialog pop up
      */
     @NonNull
     @Override
@@ -51,29 +58,16 @@ public class TimePickerFragment extends DialogFragment {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-
-
-
         TimePickerDialog timePicker = new TimePickerDialog(getActivity(),(TimePickerDialog.OnTimeSetListener) getActivity(), hour, minute, DateFormat.is24HourFormat(getActivity()));
 
+        // when clicked 'cancel' button, it clears out the time picked previously by the user.
         timePicker.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener(){
-            /**
-             * if user clicks cancel it will clear out which time textview is clicked
-             * @param dialog the dialog that received the click
-             * @param which the button that was clicked (ex.
-             *              {@link DialogInterface#BUTTON_POSITIVE}) or the position
-             *              of the item clicked
-             */
             public void onClick(DialogInterface dialog, int which){
                 if (which == DialogInterface.BUTTON_NEGATIVE){
                     listener.setTimeClickFalse();
                 }
-
             }
         });
-
-
         return timePicker;
-
     }
-}
+} // fragment class closing

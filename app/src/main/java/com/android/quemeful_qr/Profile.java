@@ -23,6 +23,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * This class is used to handle user profile's editing functionality.
+ */
 public class Profile extends Fragment {
 
     TextView firstNameTextView;
@@ -30,14 +33,35 @@ public class Profile extends Fragment {
     private ImageView avatarImageView;
     private String deviceId;
 
+    /**
+     * Profile default constructor (no parameters)
+     */
     public Profile() {
         // Required empty public constructor
     }
 
+    /**
+     * This method is used to create a new instance of the Profile class.
+     * @return a new Profile instance
+     */
     public static Profile newInstance() {
         return new Profile();
     }
 
+    /**
+     * This method is used to create the view for user profile editing.
+     * It retrieves the user by its device id and sets a listener on the edit profile button,
+     * which starts the EditProfileActivity.java.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
@@ -57,6 +81,9 @@ public class Profile extends Fragment {
         return view;
     }
 
+    /**
+     * This onResume method is used to call the method for fetching the updated profile details, on resuming.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -64,8 +91,8 @@ public class Profile extends Fragment {
     }
 
     /**
-     * get profile info from firebase
-     * load the picture into an imageview
+     * This method is used to fetch user profile details from the firebase and,
+     * also to load the avatar/profile picture into the ImageView.
      */
     private void fetchProfileInfo() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -89,8 +116,8 @@ public class Profile extends Fragment {
     }
 
     /**
-     * take url convert to svg and put it onto imageview
-     * @param url
+     * This method is used to convert the image url to SVG and display it in the imageview.
+     * @param url the url of the image
      */
     private void loadSvgFromUrl(String url) {
         new Thread(() -> {
@@ -108,4 +135,4 @@ public class Profile extends Fragment {
             }
         }).start();
     }
-}
+} // class closing

@@ -1,36 +1,27 @@
 package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
-
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-
     private String userFirstName = "";
     private String userLastName = "";
 
+    // array of first names later used to select at random
     private String[] firstNames = {"Adaptable", "Adventurous", "Affectionate", "Agile", "Alert",
             "Altruistic", "Ambitious", "Amiable", "Amicable", "Amusing",
             "Articulate", "Assertive", "Astute", "Attentive", "Authentic",
@@ -151,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
             "Well-made", "Well-rounded", "Well-spoken", "Well-thought-of", "Well-timed",
             "Whimsical", "Wholehearted", "Willing", "Wise", "Witty",
             "Wonderful", "Worldly", "Worthy", "Youthful", "Zealous"};
+
+    // array of last names later used to select at random
     private String[] lastNames = {"Aardvark", "Albatross", "Alligator", "Alpaca", "Ant",
             "Anteater", "Antelope", "Ape", "Armadillo", "Donkey",
             "Baboon", "Badger", "Barracuda", "Bat", "Bear",
@@ -240,14 +233,14 @@ public class MainActivity extends AppCompatActivity {
             "Poodle", "Porcupine", "Porpoise", "Possum", "Prairie Dog",
             "Prawn", "Puffin", "Puma", "Quail"};
 
+    // not an admin case
     private boolean isAdmin = false;
 
     /**
-     * check if user with a specific id exists in the firebase
+     * This onCreate method checks whether user with a unique id already exists in the firebase collection.
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -275,16 +268,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * selects random first name and last name and selects random appearance types
-     * generates a random avatar
-     * @param db
-     * @param deviceId
+     * This method is used to generate random profile pictures on start of app (login)
+     * The method selects random first name and last name from the arrays defined above (as login),
+     * then selects a random appearance type from the below defined arrays and generates a random avatar.
+     * @param db The firebase collection for users
+     * @param deviceId The user existing with unique id (the unique id is the device id for this project's case)
      */
-
-
     private void promptNewUser(FirebaseFirestore db, String deviceId) {
         setContentView(R.layout.nologin);
-        userFirstName = getRandomName(firstNames);
+        userFirstName = getRandomName(firstNames); // calling getRandomName method
         userLastName = getRandomName(lastNames);
 
         findViewById(R.id.getStartedButton).setOnClickListener(view -> {
@@ -334,9 +326,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * selects random name
-     * @param names
-     * @return
+     * This method is used to get a random name from the array
+     * @param names String array of names
+     * @return Randomly selected name
      */
     private String getRandomName(String[] names) {
         Random random = new Random();
@@ -344,13 +336,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * switch to main screen
+     * This method on clicking on the custom navigation taskbar for the app screen and functions,
+     * sets the contents to the layout in the activity_main which is the base layout.
      */
     private void transitionToMainScreen() {
         setContentView(R.layout.activity_main);
         initializeBottomNavigation();
     }
 
+    /**
+     * This method is used to create the customized bottom navigation bar.
+     */
     private void initializeBottomNavigation() {
         MeowBottomNavigation bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.baseline_dashboard_24));
@@ -361,7 +357,6 @@ public class MainActivity extends AppCompatActivity {
             // Handle click
         });
 
-
         bottomNavigation.setOnShowListener(item -> {
             Fragment fragment = null;
             switch (item.getId()) {
@@ -369,11 +364,9 @@ public class MainActivity extends AppCompatActivity {
                     fragment = isAdmin ? AdminDashboardFragment.newInstance() : new Home();
                     break;
                 case 2:
-                    fragment = isAdmin ? new admin_event_list_fragment() : new Events();
+                    fragment = isAdmin ? new AdminEventFragment() : new Events();
                     break;
                 case 3:
-
-
                     fragment = Profile.newInstance();
                     break;
             }
@@ -388,7 +381,6 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
-
                     @Override
                     public void onComplete(@NonNull Task<String> task) {
                         if (!task.isSuccessful()) {
@@ -402,6 +394,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This method is used for fragment transitions.
+     * @param fragment The fragment to be replaced with.
+     */
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -409,14 +405,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * request permissions
-     * @param requestCode The request code passed in {@link #requestPermissions(
-     * android.app.Activity, String[], int)}
+     * This method is used to check whether the user permits/allows notifications from this app or not.
+     * @param requestCode The request code passed in {@link #requestPermissions(android.app.Activity, String[], int)}
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
      *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
      *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
-     *
      */
     // @Override
     // public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -429,4 +423,5 @@ public class MainActivity extends AppCompatActivity {
     //         }
     //     }
     // }
-}
+
+} // class closing

@@ -14,26 +14,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
+
 /**
- * puts event list organized by today and upcoming events in recyclerview
- * recyclerview puts data into rows on the screen
- * recyclerview reuses old rows that disappears off screen when scrolling
+ * This is an adapter class used to put the events list organized that day, and
+ * all the upcoming events in recyclerview.
  */
-
-
 public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.EventViewHolder>{
-
     private static List<EventHelper> events;
     private Context context;
     private static EventClickListenerInterface mClickListener;
 
     /**
-     * constructor
-     * @param context
-     * @param events
+     * EventsTodayAdapter constructor with parameters.
+     * @param context Context
+     * @param events All events on that day or upcoming.
      */
     public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener){
         this.context = context;
@@ -42,8 +37,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     }
 
     /**
-     * recyclerview calls this method when it needs to create a new viewholder
-     * viewholder has not filled in the view's contents yet
+     * This method is called by the recyclerview it creates a new view.
      * @param parent The ViewGroup into which the new View will be added after it is bound to
      *               an adapter position.
      * @param viewType The view type of the new View.
@@ -58,7 +52,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     }
 
     /**
-     * recycles old rows to replace old data with new data (associates viewholder with data)
+     * This method is used to bind the new view with its data (the event attributes).
      * @param holder The ViewHolder which should be updated to represent the contents of the
      *        item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
@@ -77,26 +71,27 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         } else {
             holder.eventImage.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
         }
-
-
     }
 
     /**
-     * recyclerview calls this to get size of dataset
-     * @return int
+     * This method is used to pass the size of the dataset to the recyclerview.
+     * @return int size (count of events)
      */
     @Override
     public int getItemCount() {
         return events.size();
     }
 
+    /**
+     * This event view holder child class is used to create the new view holder for events with its details.
+     */
     public static class EventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView eventImage;
         TextView eventTitle, eventLocation, eventTime;
 
         /**
-         * // Define click listener for the ViewHolder's View
-         * @param itemView
+         * Defining a click listener for the ViewHolder's View.
+         * @param itemView used to initialize the event attributes.
          */
         public EventViewHolder(View itemView) {
             super(itemView);
@@ -108,7 +103,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         }
 
         /**
-         * finds position on the event that was clicked
+         * This method is used to find the event position in the events list, that was clicked.
          * @param view The view that was clicked.
          */
         @Override
@@ -117,4 +112,5 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
             if (mClickListener != null) mClickListener.onEventClick(events.get(getAdapterPosition()));
         }
     }
-}
+    
+} // adapter class closing

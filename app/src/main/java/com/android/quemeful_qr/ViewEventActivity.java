@@ -4,22 +4,21 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * This is an activity class used to handle the view for the user after scanning an event QR code.
+ */
 public class ViewEventActivity extends AppCompatActivity {
     private ImageView posterView;
     private TextView textview_EventName;
 
     /**
-     * gets the poster ana name from the page QR check activity
+     * This onCreate method is used to create the view that appears after scanning a QR code.
+     * It displays the event title and its poster.
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
@@ -47,4 +46,4 @@ public class ViewEventActivity extends AppCompatActivity {
 
     }
 
-}
+} // activity class closing

@@ -71,14 +71,14 @@ loadScripts(document, 'script');</script>
 <h1 title="Class attendeeAdapter" class="title">Class attendeeAdapter</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&gt;
-<div class="inheritance">com.android.quemeful_qr.attendeeAdapter</div>
+<div class="inheritance">androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&gt;
+<div class="inheritance">com.android.quemeful_qr.AttendeeAdapter</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">attendeeAdapter</span>
-<span class="extends-implements">extends androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&gt;</span></div>
+<span class="extends-implements">extends androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&gt;</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -115,12 +115,12 @@ loadScripts(document, 'script');</script>
 <div class="block">recyclerview calls this to get size of dataset</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onBindViewHolder(com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder,int)" class="member-name-link">onBindViewHolder</a><wbr>(com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&nbsp;holder,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onBindViewHolder(com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder,int)" class="member-name-link">onBindViewHolder</a><wbr>(com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&nbsp;holder,
  int&nbsp;position)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">recycles old rows to replace old data with new data (associates viewholder with data)</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onCreateViewHolder(android.view.ViewGroup,int)" class="member-name-link">onCreateViewHolder</a><wbr>(android.view.ViewGroup&nbsp;parent,
  int&nbsp;viewType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -171,14 +171,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="onCreateViewHolder(android.view.ViewGroup,int)">
 <h3>onCreateViewHolder</h3>
 <div class="member-signature"><span class="annotations">@NonNull
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder</span>&nbsp;<span class="element-name">onCreateViewHolder</span><wbr><span class="parameters">(@NonNull
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder</span>&nbsp;<span class="element-name">onCreateViewHolder</span><wbr><span class="parameters">(@NonNull
  android.view.ViewGroup&nbsp;parent,
  int&nbsp;viewType)</span></div>
 <div class="block">recyclerview calls this method when it needs to create a new viewholder
  viewholder has not filled in the view's contents yet</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>onCreateViewHolder</code>&nbsp;in class&nbsp;<code>androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&gt;</code></dd>
+<dd><code>onCreateViewHolder</code>&nbsp;in class&nbsp;<code>androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>parent</code> - The ViewGroup into which the new View will be added after it is bound to
                an adapter position.</dd>
@@ -189,15 +189,15 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="onBindViewHolder(com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder,int)">
+<section class="detail" id="onBindViewHolder(com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder,int)">
 <h3>onBindViewHolder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">onBindViewHolder</span><wbr><span class="parameters">(@NonNull
- com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&nbsp;holder,
+ com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&nbsp;holder,
  int&nbsp;position)</span></div>
 <div class="block">recycles old rows to replace old data with new data (associates viewholder with data)</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>onBindViewHolder</code>&nbsp;in class&nbsp;<code>androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&gt;</code></dd>
+<dd><code>onBindViewHolder</code>&nbsp;in class&nbsp;<code>androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&gt;</code></dd>
 <dt>Parameters:</dt>
 <dd><code>holder</code> - The ViewHolder which should be updated to represent the contents of the
         item at the given position in the data set.</dd>
@@ -212,7 +212,7 @@ loadScripts(document, 'script');</script>
 <div class="block">recyclerview calls this to get size of dataset</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>getItemCount</code>&nbsp;in class&nbsp;<code>androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.attendeeAdapter.AttendeeViewHolder&gt;</code></dd>
+<dd><code>getItemCount</code>&nbsp;in class&nbsp;<code>androidx.recyclerview.widget.RecyclerView.Adapter&lt;com.android.quemeful_qr.AttendeeAdapter.AttendeeViewHolder&gt;</code></dd>
 <dt>Returns:</dt>
 <dd>int</dd>
 </dl>

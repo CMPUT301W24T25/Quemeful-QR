@@ -1,12 +1,13 @@
-//https://stackoverflow.com/a/60389994
 package com.android.quemeful_qr;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
 
 import java.io.Serializable;
 
+/**
+ * This class is used to add setter and getter methods for the events and its attributes,
+ * (for functionality of an organizer)
+ * Reference URL- https://stackoverflow.com/questions/60389906/could-not-deserialize-object-does-not-define-a-no-argument-constructor-if-you/60389994#60389994
+ * Author- Royal Tiger, License- CC BY-SA 4.0, Published Date- 25 Feb, 2020.
+ */
 public class EventHelper implements Serializable {
     private String id;
     private String title;
@@ -17,38 +18,31 @@ public class EventHelper implements Serializable {
     private String organizer;
     private String poster;
 
-    /**
-     * get organizer of event
-     * @return String
-     */
+    // event organizer getter
     public String getOrganizer() {
         return organizer;
     }
 
-    /**
-     * sets the organizer for an event
-     * @param organizer
-     */
+   // event organizer setter
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
 
     /**
-     * EventHelper is sometimes called without parameters so this constructor is added
+     * EventHelper default constructor (no parameters)
      */
-    EventHelper(){
-
-    }
+    EventHelper(){}
 
     /**
-     * event attributes
-     * @param id
-     * @param title
-     * @param location
-     * @param time
-     * @param date
-     * @param description
-     * @param poster
+     * EventHelper constructor with its attributes as parameters,
+     * which is used to initialize all the event attributes.
+     * @param id the event with the specific id.
+     * @param title the name of the event.
+     * @param location the location where the event will take place.
+     * @param time the time at which the event will start and end.
+     * @param date the date when the event will start and end.
+     * @param description the purpose or abouts of the event.
+     * @param poster the event poster.
      */
     EventHelper(String id, String title, String location, String time, String date, String description, String poster){
         this.id = id;
@@ -62,92 +56,74 @@ public class EventHelper implements Serializable {
 //        this.attendeeList = ArrayList< Attendees >
     }
 
-    /**
-     * gets description of event
-     * @return String
-     */
+    // event description getter
     public String getDescription() {
         return description;
     }
 
-    /**
-     * sets description of event
-     * @param description
-     */
+    // event description setter
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * gets id of event(QR code)
-     * @return String
-     */
+    // event id getter
     public String getId() {
         return id;
     }
 
-    /**
-     * sets id of event
-     * @param id
-     */
+    // event id setter
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * gets title of event
-     * @return String
-     */
+    // event title getter
     public String getTitle() {
         return title;
     }
 
-    /**
-     * sets title of event
-     * @param title
-     */
+    // event title setter
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * get location of event
-     * @return String
-     */
+    // event location getter
     public String getLocation() {
         return location;
     }
 
-    /**
-     * sets the location of the event
-     * @param location
-     */
+    // event location setter
     public void setLocation(String location) {
         this.location = location;
     }
 
+    // event time getter
     public String getTime() {
         return time;
     }
 
+    // event time setter
     public void setTime(String time) {
         this.time = time;
     }
 
+    // event date getter
     public String getDate() {
         return date;
     }
 
+    // event date setter
     public void setDate(String date) {
         this.date = date;
     }
 
+    // event poster getter
     public String getPoster() {
         return poster;
     }
 
+    // event poster setter
     public void setPoster(String poster) {
         this.poster = poster;
     }
-}
+} // class closing
 
