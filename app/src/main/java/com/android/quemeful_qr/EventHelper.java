@@ -17,6 +17,7 @@ public class EventHelper implements Serializable {
     private String description;
     private String organizer;
     private String poster;
+//    private Boolean promotion;
 
     // event organizer getter
     public String getOrganizer() {
@@ -54,7 +55,14 @@ public class EventHelper implements Serializable {
 //        this.organizer = organizer;
         this.poster = poster;
 //        this.attendeeList = ArrayList< Attendees >
+//        this.promotion = promotion;
     }
+
+//    // event promotion getter
+//    public Boolean getPromotion() { return promotion; }
+//
+//    // event promotion setter
+//    public void setPromotion(Boolean promotion) { this.promotion = promotion; }
 
     // event description getter
     public String getDescription() {

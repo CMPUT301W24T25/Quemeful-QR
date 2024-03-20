@@ -83,7 +83,8 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
-    implementation ("androidx.preference:preference:1.2.0") //
+    implementation ("androidx.preference:preference:1.2.0")
+    implementation("androidx.activity:activity:1.8.0") //
 }
 
 

@@ -29,7 +29,7 @@
                 android:text="Event Details"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
-                android:textStyle="bold"
+                android:fontFamily="serif"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.036"
                 app:layout_constraintStart_toEndOf="@+id/backArrow"
@@ -213,6 +213,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scanQRTitle" />
             <!-- Remaining layout elements... -->
+
+            <Button
+                android:id="@+id/promotionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="@color/white"
+                android:gravity="center"
+                android:drawableLeft="@drawable/baseline_barcode_reader_24"
+                android:textColor="@color/black"
+                android:text="Promotion"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/scanQRTitle" />
 
             <TextView
                 android:id="@+id/signUpTitle"

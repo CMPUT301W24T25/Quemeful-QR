@@ -112,7 +112,7 @@
         android:inputType="text"
         android:padding="4dp"
         android:textSize="20sp"
-        app:cornerRadius="10dp" />
+        app:cornerRadius="10dp"/>
 
     <LinearLayout
         android:id="@+id/event_starting"
@@ -149,7 +149,7 @@
         android:layout_below="@+id/event_starting"
         android:orientation="horizontal" >
 
-        <TextView
+        <EditText
             android:id="@+id/enter_startDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -159,10 +159,10 @@
             android:hint="@string/dd_mm_yyyy"
             android:textSize="20sp"
             android:inputType="date"
-            android:drawableRight="@android:drawable/ic_menu_my_calendar"/>
+            android:drawableEnd="@android:drawable/ic_menu_my_calendar"/>
 
 
-        <TextView
+        <EditText
             android:id="@+id/enter_startTime"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
@@ -173,7 +173,7 @@
             android:hint="@string/_16_00"
             android:textSize="20sp"
             android:inputType="time"
-            android:drawableRight="@android:drawable/ic_menu_recent_history"/>
+            android:drawableEnd="@android:drawable/ic_menu_recent_history"/>
     </LinearLayout>
 
     <LinearLayout
@@ -210,7 +210,7 @@
         android:layout_below="@+id/event_ending"
         android:orientation="horizontal" >
 
-        <TextView
+        <EditText
             android:id="@+id/enter_endDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -220,9 +220,9 @@
             android:hint="@string/dd_mm_yyyy"
             android:textSize="20sp"
             android:inputType="date"
-            android:drawableRight="@android:drawable/ic_menu_my_calendar"/>
+            android:drawableEnd="@android:drawable/ic_menu_my_calendar"/>
 
-        <TextView
+        <EditText
             android:id="@+id/enter_endTime"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
@@ -233,7 +233,7 @@
             android:hint="@string/_20_00"
             android:textSize="20sp"
             android:inputType="time"
-            android:drawableRight="@android:drawable/ic_menu_recent_history"/>
+            android:drawableEnd="@android:drawable/ic_menu_recent_history"/>
     </LinearLayout>
 
     <TextView
@@ -254,15 +254,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/qr_code_title"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        android:backgroundTint="#009688"
-        android:text="@string/generate_new_qr"
+        android:layout_margin="3dp"
+        android:background="@drawable/rounded_background"
+        android:text="@string/generate_new"
+        android:textAlignment="center"
         android:visibility="invisible"
         android:textSize="16sp" />
-
 
 
     <LinearLayout

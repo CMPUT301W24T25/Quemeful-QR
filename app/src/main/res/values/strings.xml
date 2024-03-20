@@ -44,5 +44,7 @@
     <string name="save">Save</string>
     <string name="confirm_checkin">Confirm Check in</string>
     <string name="Location">Location</string>
+    <string name="generate_new">Generate New</string>
+    <string name="share">Share</string>
     >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>
