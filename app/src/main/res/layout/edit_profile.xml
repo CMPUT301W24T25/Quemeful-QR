@@ -27,8 +27,6 @@
         android:id="@+id/profilePicDelete"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
         android:clickable="true"
         android:elevation="10dp"
         android:src="@drawable/bin"

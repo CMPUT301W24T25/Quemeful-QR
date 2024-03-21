@@ -6,6 +6,7 @@ import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +35,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText firstNameEditText;
     private EditText lastNameEditText;
     private TextView changeAvatarTextView;
+    private ImageView deletePic;
     private Button saveButton;
     private ImageView avatarImageView;
     private Uri imageUri;
@@ -65,6 +67,7 @@ public class EditProfileActivity extends AppCompatActivity {
         changeAvatarTextView = findViewById(R.id.editAvatarTextView);
         saveButton = findViewById(R.id.editProfileButton);
         avatarImageView = findViewById(R.id.avatarImageView);
+        deletePic = findViewById(R.id.profilePicDelete);
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -108,6 +111,19 @@ public class EditProfileActivity extends AppCompatActivity {
                         .update("firstName", updatedFirstName, "lastName", updatedLastName)
                         .addOnSuccessListener(aVoid -> onBackPressed())
                         .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
+            }
+        });
+
+        deletePic.setOnClickListener(v -> {
+            String newAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/quemeful-qr-8e3a2.appspot.com/o/avatars%2Fe4a01d113899a8fc?alt=media&token=33555359-6857-41a5-9078-eaff94876979";
+
+            if (deviceId != null) {
+                db.collection("users").document(deviceId).update("avatarUrl", newAvatarUrl)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("EditProfileActivity", "Profile picture successfully updated for user: " + deviceId);
+                            Glide.with(this).load(newAvatarUrl).into(avatarImageView);
+                        })
+                        .addOnFailureListener(e -> Log.e("EditProfileActivity", "Error deleting profile picture", e));
             }
         });
 
