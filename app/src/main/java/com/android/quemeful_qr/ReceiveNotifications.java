@@ -1,87 +1,110 @@
-package com.android.quemeful_qr;
+    package com.android.quemeful_qr;
 
-import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.os.Build;
-import android.widget.RemoteViews;
+    import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
+    import android.annotation.SuppressLint;
+    import android.app.NotificationChannel;
+    import android.app.NotificationManager;
+    import android.app.PendingIntent;
+    import android.content.Context;
+    import android.content.Intent;
+    import android.content.SharedPreferences;
+    import android.net.Uri;
+    import android.os.Build;
+    import android.os.SystemClock;
+    import android.util.Log;
+    import android.widget.RemoteViews;
 
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
+    import androidx.annotation.NonNull;
+    import androidx.core.app.NotificationCompat;
 
-/**
- * This is a service class responsible for handling Firebase Cloud Messaging (FCM) notifications.
- * It extends FirebaseMessagingService to receive and process incoming messages.
- * Reference URL- https://www.youtube.com/watch?v=2xoJi-ZHmNI&t=1915s&ab_channel=GeeksforGeeks
- * Author- GeeksforGeeks, Published Date- 30 Aug, 2021
- */
-public class ReceiveNotifications extends FirebaseMessagingService {
+    import com.google.firebase.messaging.FirebaseMessagingService;
+    import com.google.firebase.messaging.RemoteMessage;
 
-    /**
-     * This method is called when a new token is generated for the device.
-     * @param token The new token generated for the device.
-     */
-    @Override
-    public void onNewToken(@NonNull String token) {
-        super.onNewToken(token);
-    }
+    import java.time.LocalDateTime;
+    import java.time.format.DateTimeFormatter;
+    import java.util.Map;
 
     /**
-     * This method is called when a new FCM message is received.
-     * @param message The incoming FCM message.
+     * This is a service class responsible for handling Firebase Cloud Messaging (FCM) notifications.
+     * It extends FirebaseMessagingService to receive and process incoming messages.
+     * Reference URL- https://www.youtube.com/watch?v=2xoJi-ZHmNI&t=1915s&ab_channel=GeeksforGeeks
+     * Author- GeeksforGeeks, Published Date- 30 Aug, 2021
      */
-    @Override
-    public void onMessageReceived(@NonNull RemoteMessage message) {
-        if (message.getNotification() != null) {
-            String title = message.getData().get("title");
-            String body = message.getData().get("body");
-            handleMessage(title, body);
+    public class ReceiveNotifications extends FirebaseMessagingService {
+
+        /**
+         * This method is called when a new token is generated for the device.
+         * @param token The new token generated for the device.
+         */
+        @Override
+        public void onNewToken(@NonNull String token) {
+            super.onNewToken(token);
         }
-    }
 
-    /**
-     * This method is used to construct a RemoteViews object for the custom notification layout.
-     * @param title The title of the notification.
-     * @param message The body/message of the notification.
-     * @return A RemoteViews object containing the custom notification layout.
-     */
-    public RemoteViews getRemoteView(String title, String message) {
-        @SuppressLint("RemoteViewLayout") RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification);
-        remoteViews.setTextViewText(R.id.notificaiton_title, title);
-        remoteViews.setTextViewText(R.id.notificaiton_description, message);
-        remoteViews.setImageViewResource(R.id.notification_image,R.drawable.qrcode_solid);
-        return remoteViews;
-    }
+        /**
+         * This method is called when a new FCM message is received.
+         * @param message The incoming FCM message.
+         */
+        @Override
+        public void onMessageReceived(@NonNull RemoteMessage message) {
+            if (message.getNotification() != null) {
+                String title = message.getNotification().getTitle();
+                String body = message.getNotification().getBody();
+                String Name= message.getNotification().getIcon();
 
-    /**
-     * This method is used to handle the incoming FCM message by creating and displaying a custom notification.
-     * @param title The title of the notification.
-     * @param message The body/message of the notification.
-     */
-    public void handleMessage(String title,String  message) {
-        String CHANNEL_ID = "MESSAGE";
-        String channelName = "NOTIFICATION MESSAGE";
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                //String image = message.getNotification().getImageUrl();
+                String title_to_send = "From " + Name + ": " + title;
+                handleMessage(title_to_send, body);
+                Log.d(TAG, "onMessageReceived: " + title + " " + body + " " );
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.qrcode_solid)
-                .setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(pendingIntent);
-        notification = notification.setContent( getRemoteView(title, message));
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(channel);
+            }
         }
-        notificationManager.notify(0, notification.build());
-    }
 
-} // class closing
+        /**
+         * This method is used to construct a RemoteViews object for the custom notification layout.
+         * @param title The title of the notification.
+         * @param message The body/message of the notification.
+         * @return A RemoteViews object containing the custom notification layout.
+         */
+        public RemoteViews getRemoteView(String title, String message) {
+            @SuppressLint("RemoteViewLayout") RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification);
+            remoteViews.setTextViewText(R.id.notification_title, title);
+            remoteViews.setTextViewText(R.id.notification_description, message);
+
+            return remoteViews;
+        }
+
+        /**
+         * This method is used to handle the incoming FCM message by creating and displaying a custom notification.
+         * @param title The title of the notification.
+         * @param message The body/message of the notification.
+         */
+        public void handleMessage(String title,String  message) {
+            String CHANNEL_ID = "MESSAGE";
+            String channelName = "NOTIFICATION MESSAGE";
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle(title).setContentText(message)
+                    .setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(pendingIntent);
+            notification = notification.setContent(getRemoteView(title, message));
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
+                notificationManager.createNotificationChannel(channel);
+            }
+
+
+                notification.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
+
+            notificationManager.notify(0, notification.build());
+        }
+
+
+
+    } // class closing

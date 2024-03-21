@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.List;
@@ -135,7 +136,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", currentUserUID);
         userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
-
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId);
+        DocumentReference user = db.collection("users").document(currentUserUID);
+        user.update("events", FieldValue.arrayUnion(eventId));
         eventRef.update("signed_up", FieldValue.arrayUnion(userMap))
                 .addOnSuccessListener(aVoid -> {
                     // Update UI to reflect that the user has signed up

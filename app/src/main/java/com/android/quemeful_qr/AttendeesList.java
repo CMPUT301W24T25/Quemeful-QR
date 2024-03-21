@@ -60,7 +60,7 @@ public class AttendeesList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_of_attendees, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.list_of_attendees_recycleView);
+        RecyclerView recyclerView = view.findViewById(R.id.Show_Notification_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // replace "eventId" with the actual event id

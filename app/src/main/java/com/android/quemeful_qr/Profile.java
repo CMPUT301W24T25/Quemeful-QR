@@ -1,5 +1,7 @@
 package com.android.quemeful_qr;
 
+import static android.app.PendingIntent.getActivity;
+
 import android.content.Intent;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.caverock.androidsvg.SVG;
@@ -30,6 +33,8 @@ public class Profile extends Fragment {
 
     TextView firstNameTextView;
     private Button editProfileButton;
+
+    private Button showNotificationsButton;
     private ImageView avatarImageView;
     private String deviceId;
 
@@ -69,6 +74,7 @@ public class Profile extends Fragment {
         firstNameTextView = view.findViewById(R.id.firstNameTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
+        showNotificationsButton = view.findViewById(R.id.Notification_button);
 
         deviceId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         fetchProfileInfo();
@@ -77,6 +83,25 @@ public class Profile extends Fragment {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             startActivity(intent);
         });
+
+        showNotificationsButton.setOnClickListener(v -> {
+            Fragment show_notificationsFragment = new show_notifications();
+
+            // Use the FragmentManager to start a FragmentTransaction
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            // Replace the current fragment with the new announcement fragment
+            transaction.replace(R.id.fragment_container, show_notificationsFragment);
+
+            // Add the transaction to the back stack so the user can navigate back
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
+        });
+
+
+
 
         return view;
     }
