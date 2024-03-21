@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.android.quemeful_qr"
-        minSdk = 24
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -41,7 +41,7 @@ android {
         }
 
         dependencies {
-            compileOnly(files("C:/Users/v-tra/AppData/Local/Android/Sdk/platforms/android-34/android.jar"))
+            compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
             implementation("com.squareup.okhttp3:okhttp:4.10.0")
             implementation("org.apache.directory.studio:org.apache.commons.io:2.4")
             implementation("com.google.firebase:firebase-messaging:23.4.1")
