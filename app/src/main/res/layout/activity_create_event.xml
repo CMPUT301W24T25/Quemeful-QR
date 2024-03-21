@@ -115,7 +115,7 @@
         app:cornerRadius="10dp" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/enter_event_details"
+        android:id="@+id/enter_location"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/event_details"
