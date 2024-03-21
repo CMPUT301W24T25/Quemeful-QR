@@ -1,5 +1,6 @@
 package com.android.quemeful_qr;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -26,6 +29,8 @@ import java.net.URL;
 public class Profile extends Fragment {
 
     TextView firstNameTextView;
+    TextView homePageTextView;
+    TextView contactTextView;
     private Button editProfileButton;
     private ImageView avatarImageView;
     private String deviceId;
@@ -43,6 +48,8 @@ public class Profile extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         firstNameTextView = view.findViewById(R.id.firstNameTextView);
+        homePageTextView = view.findViewById(R.id.homePageTextView);
+        contactTextView = view.findViewById(R.id.contactTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
 
