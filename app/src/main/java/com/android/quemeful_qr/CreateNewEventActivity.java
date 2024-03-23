@@ -71,6 +71,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     // xml variables
     private EditText eventTitle;
     private EditText eventDescription;
+//    private EditText eventAddress;
     private TextView startDate;
     private TextView startTime;
     private TextView endDate;
@@ -134,6 +135,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         startTime = findViewById(R.id.enter_startTime);
         endDate = findViewById(R.id.enter_endDate);
         endTime = findViewById(R.id.enter_endTime);
+//        eventAddress = findViewById(R.id.enter_location);
         generateQRButton = findViewById(R.id.QR_generate_button_for_createEvent);
 
         cancelButton = findViewById(R.id.cancel_button);

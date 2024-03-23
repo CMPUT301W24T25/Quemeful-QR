@@ -49,4 +49,23 @@
         android:layout_height="500dp"
         android:layout_gravity="center" />
 
+    <Button
+        android:id="@+id/return_to_current_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to my location"/>
+
+    <EditText
+        android:id="@+id/search_map_edittext"
+        android:layout_width="295dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:hint="Enter address to search"
+        android:minHeight="48dp"
+        android:textColorHint="@color/black" />
+    <Button
+        android:id="@+id/search_map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"/>
 </LinearLayout>

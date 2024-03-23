@@ -1,14 +1,31 @@
+//https://github.com/osmdroid/osmdroid/issues/1304#issuecomment-477920497
+//https://github.com/osmdroid/osmdroid/wiki/How-to-use-the-osmdroid-library-(Java)
+//https://stackoverflow.com/a/34139211
+//https://stackoverflow.com/a/63456832
+//https://stackoverflow.com/a/71698834
+//https://stackoverflow.com/a/69148289
 package com.android.quemeful_qr;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static androidx.core.content.ContentProviderCompat.requireContext;
 import static java.sql.DriverManager.println;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +43,8 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * This is an activity class used to enable location/map functions, where the event takes place for the users.
@@ -45,12 +64,15 @@ public class MapActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
     private ImageView backButton;
+    private Button returnToCurrentLocation;
+    private EditText searchMapEditText;
+    private Button searchMapButton;
 
     private MapView map = null;
     private IMapController mapController;
 
     private MyLocationNewOverlay mLocationOverlay;
-    private CompassOverlay mCompassOverlay;
+
 
     /**
      * This onCreate method is used to create the map view on the app.
@@ -82,8 +104,9 @@ public class MapActivity extends AppCompatActivity {
 
         map = (MapView) findViewById(R.id.map);
         backButton = (ImageView) findViewById(R.id.backArrow);
-
-
+        returnToCurrentLocation = (Button) findViewById(R.id.return_to_current_location);
+        searchMapEditText = (EditText) findViewById(R.id.search_map_edittext);
+        searchMapButton = (Button) findViewById(R.id.search_map_button);
         backButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -91,10 +114,45 @@ public class MapActivity extends AppCompatActivity {
                 finish();
             }
         });
-//        String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-//        requestPermissionsIfNecessary(strArray);
+        returnToCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapController.animateTo(mLocationOverlay.getMyLocation());
+                mapController.setZoom(15.5);
+            }
+        });
+
+        searchMapButton.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+                final String locationName = searchMapEditText.getText().toString();
+
+                try {
+                    Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+                    List<Address> geoResults = geocoder.getFromLocationName(locationName, 1);
+
+                    if (geoResults != null && !geoResults.isEmpty()) {
+                        Address addr = geoResults.get(0);
+
+                        GeoPoint location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
+                        mapController.animateTo(location);
+                        mapController.setZoom(15.5);
+                        Toast.makeText(getApplicationContext(), addr.toString(), Toast.LENGTH_LONG).show();
+
+                    } else {
+                    Toast.makeText(getApplicationContext(), "Location Not Found", Toast.LENGTH_LONG).show();
+                }
+                } catch (Exception e) {
+                    Log.d("catch", e.getStackTrace().toString());
+                }
+
+
+            }
+        });
 
 
         String[] strArray = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
@@ -131,6 +189,8 @@ public class MapActivity extends AppCompatActivity {
         this.mLocationOverlay.enableFollowLocation();
         this.mLocationOverlay.setDrawAccuracyEnabled(true);
 
+        map.getOverlays().add(this.mLocationOverlay);
+        //gets the current location
         mLocationOverlay.runOnFirstFix(new Runnable() {
             @Override
             public void run() {
@@ -144,42 +204,13 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        map.getOverlays().add(this.mLocationOverlay);
+
 
         // Set user agent
         Configuration.getInstance().setUserAgentValue("RossMaps");
 
         println(String.valueOf(mLocationOverlay.getMyLocation()));
         println("Create done");
-
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        IMapController mapController = map.getController();
-
-        this.mLocationOverlay = new MyLocationNewOverlay(prov,map);
-        this.mLocationOverlay.enableMyLocation();
-        this.mLocationOverlay.enableFollowLocation();
-        this.mLocationOverlay.setDrawAccuracyEnabled(true);
-
-        mapController.setCenter(mLocationOverlay.getMyLocation());
-        mapController.animateTo(mLocationOverlay.getMyLocation());
-
-        map.getOverlays().add(this.mLocationOverlay);
-
-        this.mCompassOverlay = new CompassOverlay(getApplicationContext(), new InternalCompassOrientationProvider(getApplicationContext()), map);
-        this.mCompassOverlay.enableCompass();
-        map.getOverlays().add(this.mCompassOverlay);
-
-        LatLonGridlineOverlay2 overlay = new LatLonGridlineOverlay2();
-        map.getOverlays().add(overlay);
-
-
-        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
-        map.setMultiTouchControls(true);
-
-
-        mapController.setZoom(9.5);
-//        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
-//        mapController.setCenter(startPoint);
 
 
     }
