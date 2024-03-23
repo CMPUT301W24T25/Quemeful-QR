@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * This is an activity class that handles the event promotions requirement.
- * Reference xml bug fix url - https://stackoverflow.com/questions/71151389/background-is-not-showing-up-on-android-studio-button
+ * Reference xml bug fix url - <a href="https://stackoverflow.com/questions/71151389/background-is-not-showing-up-on-android-studio-button">...</a>
  * Author- GHH, License- CC BY-SA 4.0, Published Date- 17 Feb, 2022, Accessed Date- 20 Mar, 2024
  */
 public class EventPromotionActivity extends AppCompatActivity {
@@ -41,15 +41,17 @@ public class EventPromotionActivity extends AppCompatActivity {
 
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // back clicked
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            // back clicked
+            finish();
         });
 
-        String eventId = getIntent().getStringExtra("eventId"); // get eventId for the event promotion
+        // get eventId for the event promotion
+//        String eventId = getIntent().getStringExtra("eventId");
+        Intent intent = getIntent();
+        EventHelper event = (EventHelper) intent.getSerializableExtra("event");
+        assert event != null; // to prevent null pointer exception
+        String eventId = event.getId(); // eventId getter method from EventHelper class.
         if (eventId != null) {
             fetchEventDetails(eventId); // fetch event details using the id
         } else {
@@ -99,13 +101,9 @@ public class EventPromotionActivity extends AppCompatActivity {
         noPromotionMessage.setVisibility(View.GONE);
         generatePromotionQR.setVisibility(View.GONE);
 
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // pop up user email ids
-                // multiple selection for email ids
-                // display toast shared
-            }
+        shareButton.setOnClickListener(v -> {
+            Intent intent = new Intent(EventPromotionActivity.this, ShareQRCodeActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -119,12 +117,9 @@ public class EventPromotionActivity extends AppCompatActivity {
         noPromotionMessage.setVisibility(View.VISIBLE);
         generatePromotionQR.setVisibility(View.VISIBLE);
 
-        generatePromotionQR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(EventPromotionActivity.this, GeneratePromotionalQRCodeActivity.class);
-                startActivity(intent);
-            }
+        generatePromotionQR.setOnClickListener(v -> {
+            Intent intent = new Intent(EventPromotionActivity.this, GeneratePromotionalQRCodeActivity.class);
+            startActivity(intent);
         });
     }
 

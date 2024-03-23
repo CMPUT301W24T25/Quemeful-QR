@@ -28,6 +28,9 @@
         android:theme="@style/Theme.QuemefulQR"
         tools:targetApi="31">
         <activity
+            android:name=".ShareQRCodeActivity"
+            android:exported="false" />
+        <activity
             android:name=".GeneratePromotionalQRCodeActivity"
             android:exported="false" />
         <activity
