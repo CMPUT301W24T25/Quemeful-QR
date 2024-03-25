@@ -33,6 +33,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -44,8 +45,10 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.ByteArrayOutputStream;
@@ -143,6 +146,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         //initialize firebase
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
+
+        // clicking on the back arrow on top navigates back to the previous page
+        Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
+        toolbar.setNavigationOnClickListener(v -> {
+            // back clicked
+            finish();
+        });
 
         /**
          * This method calls the imageChooser() to upload an image/poster for the event, when clicked on the plus icon under 'Add Poster'.
@@ -299,8 +309,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
             //empty string check
-            Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
-            myToast.show();
+            Toast message = Toast.makeText(getBaseContext(), "Please Fill All Fields", Toast.LENGTH_LONG);
+            message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL,0,0);
+            message.show();
         }
         else {
             HashMap<String, Object> data = new HashMap<>();

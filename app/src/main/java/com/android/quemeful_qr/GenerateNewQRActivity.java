@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +22,7 @@ import com.google.zxing.common.BitMatrix;
 /**
  * This is an activity class for generating QR code.
  * Note: For the purpose of generating and scanning a QR code,
- * zxing library has been implemented in the build.graddle.kts(Module:app)
+ * zxing library has been implemented in the build.gradle.kts(Module:app)
  */
 public class GenerateNewQRActivity extends AppCompatActivity {
     private ImageView QRImage;
@@ -41,43 +40,43 @@ public class GenerateNewQRActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_new_qractivity);
+
         eventTitle = findViewById(R.id.eventName_text);
         poster = findViewById(R.id.posterImage);
         QRImage = findViewById(R.id.QRImage);
-        // navigating back to the previous activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
+
         Intent intent = getIntent();
         EventHelper event = (EventHelper) intent.getSerializableExtra("event");
         assert event != null;
         eventTitle.setText(event.getTitle());
+
         assert event.getPoster() != null;
         byte[] imageAsBytes = Base64.decode(event.getPoster().getBytes(), Base64.DEFAULT);
         poster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+
         Bitmap bitmap = createBitmap(event.getId());
         QRImage.setImageBitmap(bitmap);
 
         // clicking on the back arrow on top navigates back to the previous page
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // back clicked
-                finish();
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            // back clicked
+            finish();
         });
     }
 
     /**
-     * This method is used to create/Encode the QR code using Bitmatrix.
+     * This method is used to create/Encode the QR code using BitMatrix.
      * References: URLs (Access Date: 21.02.2024)
-     * https://www.youtube.com/watch?v=zHStZwXtbj0
+     * <a href="https://www.youtube.com/watch?v=zHStZwXtbj0">...</a>
      * Author- Programmity  , Published Date- Nov 17, 2020
-     * https://www.youtube.com/watch?v=5DEHmN4PmA0
+     * <a href="https://www.youtube.com/watch?v=5DEHmN4PmA0">...</a>
      * Author- GeeksforGeeks  , Published Date- Jul 6, 2021
-     * https://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
+     * <a href="https://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application">...</a>
      * Author- Enamul Haque , License- CC BY-SA 3.0  , Published Date- Jan 28, 2018
-     * https://stackoverflow.com/questions/28232116/android-using-zxing-generate-qr-code
+     * <a href="https://stackoverflow.com/questions/28232116/android-using-zxing-generate-qr-code">...</a>
      * Author- Harpreet , License- CC BY-SA 4.0 , Published Date- Jan 16, 2019
-     * @param text Takes input text (e.g. the event name) to create a QR code based on that
+     * @param text Takes string input to create a QR code based on that
      * @return Returns BitMap map
      */
     private Bitmap createBitmap(String text) {
@@ -104,4 +103,5 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         map.setPixels(dim, 0, w,0, 0, w, h);
         return map;
     }
+
 } // activity class closing

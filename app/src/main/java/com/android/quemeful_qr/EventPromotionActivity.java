@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ public class EventPromotionActivity extends AppCompatActivity {
     private AppCompatButton generatePromotionQR;
     private TextView noPromotionMessage, shareButton;
     private ImageView promotionQRCode;
+    private String eventId;
     private FirebaseFirestore db;
 
     @Override
@@ -46,17 +49,14 @@ public class EventPromotionActivity extends AppCompatActivity {
             finish();
         });
 
-        // get eventId for the event promotion
-//        String eventId = getIntent().getStringExtra("eventId");
+        // get eventId
         Intent intent = getIntent();
         EventHelper event = (EventHelper) intent.getSerializableExtra("event");
-        assert event != null; // to prevent null pointer exception
-        String eventId = event.getId(); // eventId getter method from EventHelper class.
-        if (eventId != null) {
-            fetchEventDetails(eventId); // fetch event details using the id
+        if(event != null){
+            eventId = event.getId();
+            fetchEventDetails(eventId);
         } else {
-            // when eventId is null or missing
-            Toast.makeText(getBaseContext(), "eventId does not exist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), "Event not found", Toast.LENGTH_LONG).show();
         }
 
     } // onCreate method closing
@@ -73,13 +73,15 @@ public class EventPromotionActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         EventHelper event = documentSnapshot.toObject(EventHelper.class);
                         if (event != null) {
-                            Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
-                            // Check if the event has promotion or not
-                            if (!Boolean.TRUE.equals(eventData.get("promotion"))) {
-                                updateUIPromotionAvailable(); // yes - show promotion QR code and share
-                            }
-                            else {
-                                updateUIPromotionUnavailable(); // no - show generate promotion Qr code
+                            if(documentSnapshot.getData() != null) {
+                                Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
+                                // Check if the event has promotion or not
+                                String eventPromo = (String) eventData.get("Event Promotion QR Code");
+                                if (eventPromo != null) {
+                                    updateUIPromotionAvailable(eventPromo); // yes - show promotion QR code and share
+                                } else {
+                                    updateUIPromotionUnavailable(); // no - show generate promotion Qr code
+                                }
                             }
                         }
                     } else {
@@ -94,12 +96,20 @@ public class EventPromotionActivity extends AppCompatActivity {
     /**
      * This method is used to change the UI when promotion for that event is available.
      * And, the promo QR code is shareable.
+     * Reference- <a href="https://stackoverflow.com/questions/41737271/how-to-display-or-get-an-image-from-firebase-storage">...</a>
+     * Author-Diego Venancio, License- CC BY-SA 3.0, Published Date- 30 Aug, 2017, Accessed Date- 24 Mar, 2024
+     * @param uri The promo QR code image uri
      */
-    private void updateUIPromotionAvailable() {
+    private void updateUIPromotionAvailable(String uri) {
         promotionQRCode.setVisibility(View.VISIBLE);
         shareButton.setVisibility(View.VISIBLE);
         noPromotionMessage.setVisibility(View.GONE);
         generatePromotionQR.setVisibility(View.GONE);
+
+        // load the url to imageview
+        Glide.with(EventPromotionActivity.this)
+             .load(uri)
+             .into(promotionQRCode);
 
         shareButton.setOnClickListener(v -> {
             Intent intent = new Intent(EventPromotionActivity.this, ShareQRCodeActivity.class);

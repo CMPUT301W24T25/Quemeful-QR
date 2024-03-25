@@ -87,6 +87,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
             setupCheckInButton();
+            setupPromotionButton();
 
             // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(new View.OnClickListener() {
@@ -120,7 +121,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openQRCheckActivity();
+                openScanQRActivity();
             }
         });
     }
@@ -310,7 +311,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * This method is used when the user clicks on the check-in button to scan the QR code.
      * It works by starting another activity that handles QR code scanning.
      */
-    protected void openQRCheckActivity(){
+    protected void openScanQRActivity(){
         Intent intent = new Intent(EventDetailsActivity.this, ScanQRActivity.class);
         startActivity(intent);
     }

@@ -46,5 +46,6 @@
     <string name="Location">Location</string>
     <string name="generate_new">Generate New</string>
     <string name="share">Share</string>
+    <string name="view_attendees_announcements"><![CDATA[View Attendees & Announcements]]></string>
     >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>

@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * This class is used to add setter and getter methods for the events and its attributes,
  * (for functionality of an organizer)
- * Reference URL- https://stackoverflow.com/questions/60389906/could-not-deserialize-object-does-not-define-a-no-argument-constructor-if-you/60389994#60389994
+ * Reference URL- <a href="https://stackoverflow.com/questions/60389906/could-not-deserialize-object-does-not-define-a-no-argument-constructor-if-you/60389994#60389994">...</a>
  * Author- Royal Tiger, License- CC BY-SA 4.0, Published Date- 25 Feb, 2020.
  */
 public class EventHelper implements Serializable {
@@ -17,7 +17,6 @@ public class EventHelper implements Serializable {
     private String description;
     private String organizer;
     private String poster;
-//    private Boolean promotion;
 
     // event organizer getter
     public String getOrganizer() {
@@ -55,14 +54,7 @@ public class EventHelper implements Serializable {
 //        this.organizer = organizer;
         this.poster = poster;
 //        this.attendeeList = ArrayList< Attendees >
-//        this.promotion = promotion;
     }
-
-//    // event promotion getter
-//    public Boolean getPromotion() { return promotion; }
-//
-//    // event promotion setter
-//    public void setPromotion(Boolean promotion) { this.promotion = promotion; }
 
     // event description getter
     public String getDescription() {

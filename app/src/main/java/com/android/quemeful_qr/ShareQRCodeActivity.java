@@ -1,12 +1,9 @@
 package com.android.quemeful_qr;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +12,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+
 
 /**
  * This is an activity class is used to share the generated event promotional QR Code.
@@ -33,7 +31,7 @@ public class ShareQRCodeActivity extends AppCompatActivity {
     private byte[] imageByteArray;
     private Bitmap passedBitmap;
 
-    // firebase storage
+    // firebase
     private StorageReference reference;
 
     @Override
@@ -53,7 +51,7 @@ public class ShareQRCodeActivity extends AppCompatActivity {
      */
     private void UriToShare(){
         // get the string url after uploading the QR code to firebase storage using the interface defined below.
-        uploadBitmapToFirebase(passedBitmap, promo_qr_url -> {
+        getDownloadUrl(passedBitmap, promo_qr_url -> {
             // convert url string to uri
             Uri uri = Uri.parse(promo_qr_url);
             Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
@@ -88,11 +86,11 @@ public class ShareQRCodeActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is used to upload the promotion event QR Code image to the fireStore storage for record.
+     * This method is used to get the uri of the promotion event QR Code image and return it using the UploadListener.
      * @param bitmap The bitmap (promotion QR Code image) to upload.
      * @param uploadListener used to get the download url as a return after upload task.
      */
-    private void uploadBitmapToFirebase(Bitmap bitmap, UploadListener uploadListener) {
+    private void getDownloadUrl(Bitmap bitmap, UploadListener uploadListener) {
         // call method to convert bitmap to byte array (done in a worker thread to prevent block in main (UI) thread
         BitmapToByteArray(bitmap);
 
@@ -102,11 +100,18 @@ public class ShareQRCodeActivity extends AppCompatActivity {
 
         // upload
         UploadTask uploadTask = QrImageRef.putBytes(imageByteArray);
-        uploadTask.addOnSuccessListener(taskSnapshot ->
-                QrImageRef.getDownloadUrl().addOnSuccessListener(uri ->
-                        uploadListener.onUpload(uri.toString()))).addOnFailureListener(e -> {
-            // handle fail to upload task
-            Log.d(TAG, "failed to upload event promotion QR Code image to fireStore storage.");
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            // get download url of the promo QR code
+            QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                // get the uri consisting the download url to string
+                String promoQRCodeURI = uri.toString();
+                uploadListener.onUpload(promoQRCodeURI);
+
+            }).addOnFailureListener(e -> {
+                // handle fail to download url
+            });
+        }).addOnFailureListener(e -> {
+            // handle upload to storage failure
         });
     }
 
