@@ -1,9 +1,12 @@
 package com.android.quemeful_qr;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +26,8 @@ import java.io.ByteArrayOutputStream;
  * Author- Programmer World, Published Date- 13 Jan, 2023, Accessed Date- 21 Mar, 2024
  * <a href="https://developer.android.com/guide/components/processes-and-threads#WorkerThreads">...</a>
  * Author- Developers Android, License- Apache 2.0, Published Date- 03 Jan, 2024, Accessed Date- 22 Mar, 2024
+ * <a href="https://stackoverflow.com/questions/3351553/how-to-show-an-activity-as-pop-up-on-other-activity">...</a>
+ * Author- oli, License- CC BY-SA 2.5, Published Date- 28 Jul, 2010, Accessed Date- 26 Mar, 2024
  */
 
 public class ShareQRCodeActivity extends AppCompatActivity {
@@ -30,6 +35,7 @@ public class ShareQRCodeActivity extends AppCompatActivity {
     // for bitmap to byte array conversion
     private byte[] imageByteArray;
     private Bitmap passedBitmap;
+    private String passedUri;
 
     // firebase
     private StorageReference reference;
@@ -42,7 +48,10 @@ public class ShareQRCodeActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         reference = storage.getReference();
 
+        // get the bitmap passed by GeneratePromotionalQRCodeActivity when new QR code is generated.
         passedBitmap = getIntent().getParcelableExtra("promoQRCode");
+        // get the uri passed by EventPromotionActivity when a promotional QR code already exists for that event.
+        passedUri = getIntent().getStringExtra("existing promo QR Code uri");
         UriToShare(); // call the share method
     }
 
@@ -51,21 +60,35 @@ public class ShareQRCodeActivity extends AppCompatActivity {
      */
     private void UriToShare(){
         // get the string url after uploading the QR code to firebase storage using the interface defined below.
-        getDownloadUrl(passedBitmap, promo_qr_url -> {
-            // convert url string to uri
-            Uri uri = Uri.parse(promo_qr_url);
+        if (passedBitmap != null) {
+            getDownloadUrl(passedBitmap, promo_qr_url -> {
+                // convert url string to uri
+                Uri uri = Uri.parse(promo_qr_url);
+
+                Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_STREAM, uri); // share the promo QR Code image
+                // add a message for the user
+                intent.putExtra(Intent.EXTRA_TEXT, "Please Scan This QR Code to see the Event Details!");
+                // start activity to pop up window showing sharing options (e.g., email, drive, ...)
+                startActivity(Intent.createChooser(intent, "Share This Promote Event QR Code"));
+            });
+        } if (passedUri != null){
             Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
             intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_STREAM, uri); // share the promo QR Code image
+            intent.putExtra(Intent.EXTRA_STREAM, passedUri); // share the promo QR Code image
             // add a message for the user
-            intent.putExtra(Intent.EXTRA_TEXT, "Please Scan This QR Code to see the Event Details!");
+            intent.putExtra(Intent.EXTRA_TEXT, "Please Scan This QR Code to see the Event Details");
             // start activity to pop up window showing sharing options (e.g., email, drive, ...)
-            startActivity(Intent.createChooser(intent, "Share This Promote Event QR Code"));
-        });
+            startActivity(Intent.createChooser(intent, "Share This Event Promotional QR Code"));
+        } else {
+            Log.d(TAG,"Content to share not found!");
+        }
     }
 
     /**
      * This method is used to convert the bitmap to byte array in a worker thread.
+     * @param bitmap  The bitmap to be converted to byte array.
      */
     private void BitmapToByteArray(Bitmap bitmap) {
         new Thread(() -> {

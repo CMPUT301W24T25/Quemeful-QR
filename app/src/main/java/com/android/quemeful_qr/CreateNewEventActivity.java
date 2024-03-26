@@ -45,6 +45,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -78,7 +79,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private TextView startTime;
     private TextView endDate;
     private TextView endTime;
-    private Button generateQRButton;
+    private AppCompatButton generateQRButton;
     private Button cancelButton;
     private Button createButton;
     private ImageButton uploadPoster;
@@ -239,9 +240,16 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    //create new event
+                    // create new event
                     event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
-                    addNewEvent(event);
+                    if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")) {
+                        //empty string check
+                        Toast message = Toast.makeText(getBaseContext(), "Please Fill All Fields", Toast.LENGTH_LONG);
+                        message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+                        message.show();
+                    } else {
+                        addNewEvent(event);
+                    }
                     generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -307,13 +315,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
-            //empty string check
-            Toast message = Toast.makeText(getBaseContext(), "Please Fill All Fields", Toast.LENGTH_LONG);
-            message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL,0,0);
-            message.show();
-        }
-        else {
+//        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
+//            //empty string check
+//            Toast message = Toast.makeText(getBaseContext(), "Please Fill All Fields", Toast.LENGTH_LONG);
+//            message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL,0,0);
+//            message.show();
+//        }
+//        else {
             HashMap<String, Object> data = new HashMap<>();
             data.put("organizer",currentUserUID);
             data.put("id", event.getId());
@@ -341,7 +349,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                             Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
                         }
                     });
-        }
+      //  }
     }
 
     /**

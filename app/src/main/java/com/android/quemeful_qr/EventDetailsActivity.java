@@ -304,6 +304,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void openEventPromotionActivity() {
         Intent intent = new Intent(EventDetailsActivity.this, EventPromotionActivity.class);
+        String eventId = getIntent().getStringExtra("event_id");
+        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 

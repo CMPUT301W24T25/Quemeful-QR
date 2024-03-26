@@ -12,7 +12,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -23,6 +22,7 @@ import java.util.Map;
  * Reference xml bug fix url - <a href="https://stackoverflow.com/questions/71151389/background-is-not-showing-up-on-android-studio-button">...</a>
  * Author- GHH, License- CC BY-SA 4.0, Published Date- 17 Feb, 2022, Accessed Date- 20 Mar, 2024
  */
+
 public class EventPromotionActivity extends AppCompatActivity {
     private AppCompatButton generatePromotionQR;
     private TextView noPromotionMessage, shareButton;
@@ -49,21 +49,15 @@ public class EventPromotionActivity extends AppCompatActivity {
             finish();
         });
 
-        // get eventId
-        Intent intent = getIntent();
-        EventHelper event = (EventHelper) intent.getSerializableExtra("event");
-        if(event != null){
-            eventId = event.getId();
-            fetchEventDetails(eventId);
-        } else {
-            Toast.makeText(getBaseContext(), "Event not found", Toast.LENGTH_LONG).show();
-        }
+        // get eventId passed via intent by EventDetailsActivity
+        eventId = getIntent().getStringExtra("eventId");
+        fetchEventDetails(eventId);
 
     } // onCreate method closing
 
     /**
      * This method is used to fetch the event details from the firebase.
-     * (purpose - to check if promotions for that event is available)
+     * (purpose - to check whether promotions for that event is available or not)
      */
     private void fetchEventDetails(String eventId) {
         db.collection("events")
@@ -113,6 +107,8 @@ public class EventPromotionActivity extends AppCompatActivity {
 
         shareButton.setOnClickListener(v -> {
             Intent intent = new Intent(EventPromotionActivity.this, ShareQRCodeActivity.class);
+            // pass the uri to share
+            intent.putExtra("existing promo QR Code uri", uri);
             startActivity(intent);
         });
     }
@@ -129,8 +125,12 @@ public class EventPromotionActivity extends AppCompatActivity {
 
         generatePromotionQR.setOnClickListener(v -> {
             Intent intent = new Intent(EventPromotionActivity.this, GeneratePromotionalQRCodeActivity.class);
+            // pass the eventId to generate new promotional QR code
+            intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
     }
+
+
 
 } // activity class closing

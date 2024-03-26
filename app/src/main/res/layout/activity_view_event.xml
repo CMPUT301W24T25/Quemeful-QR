@@ -1,31 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ViewEventActivity"
-    android:background="#00BCD4">
+    android:background="@drawable/gradient_background">
 
-    <ImageView
-        android:id="@+id/poster_view"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/backTool"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginTop="112dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="serif"
+        android:text="Event Preview"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textAlignment="center"/>
 
     <TextView
         android:id="@+id/textview_event_name"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+        android:layout_marginTop="70dp"
         android:textSize="20sp"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/poster_view" />
+        android:gravity="center" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/poster_view"
+        android:layout_width="400dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/textview_event_name"
+        android:background="@android:color/transparent" />
+
+    <TextView
+        android:id="@+id/textview_event_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/poster_view"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/textview_event_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_event_description"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/textview_event_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_event_date"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:gravity="center" />
+
+
+</RelativeLayout>

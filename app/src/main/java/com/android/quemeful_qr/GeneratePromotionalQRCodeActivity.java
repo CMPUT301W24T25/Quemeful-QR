@@ -18,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -31,20 +30,13 @@ import java.util.Map;
 /**
  * This is an activity class used to generate a new promotional QR Code for an an event and upload it to firebase.
  * Reference URLs:
- * <a href="https://stackoverflow.com/questions/29698258/convert-mapinteger-object-to-json-with-gson">...</a>
- * Author- AlexWalterbos, License- CC BY-SA 3.0, Published Date- 17 Apr, 2015, Accessed Date - 22 Mar, 2024
- * <a href="https://github.com/google/gson/releases">...</a>
- * Author- GitHub Gson, License- Apache 2.0, Published Date- 06 Jan, 2023, Accessed Date- 22 Mar, 2024
+ * <a href="https://stackoverflow.com/questions/49382675/how-to-add-values-to-firebase-firestore-without-overwriting">...</a>
+ * Author- thaffe, License- CC BY-SA 3.0, Published Date- 20 Mar, 2018, Accessed Date- 26 Mar, 2024
  */
 
 public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
 
-    // from xml
-    private ImageView promotionQRCode;
-
-    // for eventId and the event details for that event
-    private String eventId, jsonEventData;
-    private byte[] imageByteArray;
+    private Bitmap bitmap;
 
     // fireStore firebase
     private FirebaseFirestore db;
@@ -55,8 +47,8 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_promotional_qrcode);
 
-        // initialize instances
-        promotionQRCode = findViewById(R.id.promotion_qrcode);
+        // declare and initialize instances from xml
+        ImageView promotionQRCode = findViewById(R.id.promotion_qrcode);
         TextView shareButton = findViewById(R.id.share_button);
         db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -69,60 +61,25 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
             finish();
         });
 
-        // get the eventId for the event
-        Intent intent = getIntent();
-        EventHelper event = (EventHelper) intent.getSerializableExtra("event");
-        assert event != null; // to prevent null pointer exception
-        eventId = event.getId(); // eventId getter method from EventHelper class.
-        if(eventId != null){
-            fetchEventDetails(eventId); // fetch event details of the specific eventId.
+        // get the eventId for the event passed via intent by EventPromotionActivity
+        // for eventId and the event details for that event
+        String eventId = getIntent().getStringExtra("eventId");
+        bitmap = createBitmap(eventId);
+        if (bitmap != null) {
+            promotionQRCode.setImageBitmap(bitmap);
+            UploadUriToFirebaseEvents(bitmap, eventId);
         } else {
-            Log.d(TAG, "eventId does not exist");
+            Log.d(TAG, "bitmap is still NULL");
         }
 
-        // share button click listener
-        shareButton.setOnClickListener(v -> {
-            // pass the bitmap created to ShareQRCodeActivity to share
-            Intent passIntent = new Intent(GeneratePromotionalQRCodeActivity.this, ShareQRCodeActivity.class);
-            // fetch the event details from firebase using event Id in string.
-            String eventDetails = fetchEventDetails(eventId);
-            // use the event data in string to encode the QR Code
-            Bitmap bitmap = createBitmap(eventDetails);
-            passIntent.putExtra("promoQRCode", bitmap);
-            startActivity(passIntent);
-        });
-    }
-
-    /**
-     * This method is used to fetch the event details from the firebase.
-     * @param eventId the event is identified with its specific Id.
-     * @return string event data.
-     */
-    private String fetchEventDetails(String eventId) {
-        db.collection("events").document(eventId)
-                .get().addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        EventHelper event = documentSnapshot.toObject(EventHelper.class);
-                        if (event != null) {
-                            // retrieve the event data from this document to Map
-                            Map<String, Object> eventData = documentSnapshot.getData();
-                            // convert map to json string to be able to encode
-                            Gson gson = new Gson();
-                            jsonEventData = gson.toJson(eventData);
-                            // pass the json string to createBitmap() as parameter to encode it
-                            Bitmap bitmap = createBitmap(jsonEventData); // our event promo bitmap (QR Code)
-                            UploadUriToFirebaseEvents(bitmap, eventId);
-                            promotionQRCode.setImageBitmap(bitmap); // display the bitmap (QR Code)
-                        } else {
-                            // when event is missing
-                            Log.d(TAG, "event not found");
-                        }
-                    }
-                }).addOnFailureListener(e -> {
-                    // handle when document does not exist - throw exception
-                });
-        return jsonEventData;
-    }
+            // share button click listener
+            shareButton.setOnClickListener(v -> {
+                // pass the bitmap created to ShareQRCodeActivity to share
+                Intent passIntent = new Intent(GeneratePromotionalQRCodeActivity.this, ShareQRCodeActivity.class);
+                passIntent.putExtra("promoQRCode", bitmap);
+                startActivity(passIntent);
+            });
+        }
 
     /**
      * This method is used to create/Encode the QR code using BitMatrix.
@@ -149,32 +106,23 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
                 dim[offset + j] = matrix.get(j,i) ? BLACK : WHITE;
             }
         }
-        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        bitmap.setPixels(dim, 0, w,0, 0, w, h);
-        return bitmap;
+        Bitmap map = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        map.setPixels(dim, 0, w,0, 0, w, h);
+        return map;
     }
 
     /**
-     * This method is used to convert the bitmap to byte array in a worker thread.
-     * @param bitmap The new bitmap generated for event promotion.
-     */
-    private void BitmapToByteArray(Bitmap bitmap) {
-        new Thread(() -> {
-            // converting bitmap to byte array
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            assert bitmap != null;
-            bitmap.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
-            imageByteArray = byteArrayOutputStream.toByteArray();
-        }).start();
-    }
-
-    /**
-     * This method is used to upload the generated event promotion QR Code to that specific event in the firebase.
-     * @param bitmap The new bitmap generated for event promotion.
+     * This method is used to upload and add the promotional event QR Code to the firebase,
+     * events collection along with its other fields.
+     * @param bitmap The bitmap to be uploaded/added.
+     * @param eventId The event to which the uri to be added identified by the specific eventId.
      */
     private void UploadUriToFirebaseEvents(Bitmap bitmap, String eventId) {
-        // call method to convert bitmap to byte array (done in a worker thread to prevent block in main (UI) thread
-        BitmapToByteArray(bitmap);
+
+        // convert bitmap to byte array
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] imageByteArray = byteArrayOutputStream.toByteArray();
 
         // a unique path (folder) in the firebase storage to upload the promo Qr images
         String QrImagePath = "PromoQRCodeImages/" + System.currentTimeMillis() + ".jpg";
@@ -193,7 +141,7 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
                 eventPromoData.put("Event Promotion QR Code", promoQRCodeURI);
                 db.collection("events")
                         .document(eventId)
-                        .set(eventPromoData)
+                        .update(eventPromoData)
                         .addOnSuccessListener(aVoid -> {
                             Log.d(TAG,"Event with specific eventId successfully updated with promotion field.");
                         }).addOnFailureListener(e -> {
