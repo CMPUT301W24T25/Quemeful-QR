@@ -27,10 +27,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuemefulQR"
         tools:targetApi="31">
+
         <activity
             android:name=".ShareQRCodeActivity"
-            android:theme="@android:style/Theme.Dialog"
-            android:label="Share This Event Promotion QR Code"
+            android:theme="@style/Theme.AppCompat.Dialog"
             android:exported="false" />
         <activity
             android:name=".GeneratePromotionalQRCodeActivity"

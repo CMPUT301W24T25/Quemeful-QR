@@ -47,7 +47,6 @@ android {
             implementation("org.apache.directory.studio:org.apache.commons.io:2.4") //
             implementation("com.google.firebase:firebase-messaging:23.4.1") // firebase
             implementation("com.google.firebase:firebase-storage:20.3.0") // firebase
-            implementation("com.google.code.gson:gson:2.9.1")
             implementation("androidx.appcompat:appcompat:1.6.1")
             implementation("com.google.android.material:material:1.11.0")
             implementation("androidx.constraintlayout:constraintlayout:2.1.4")
