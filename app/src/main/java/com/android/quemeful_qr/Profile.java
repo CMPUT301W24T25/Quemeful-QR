@@ -81,8 +81,12 @@ public class Profile extends Fragment {
                 String firstName = documentSnapshot.getString("firstName");
                 String lastName = documentSnapshot.getString("lastName");
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
+                String homePage = documentSnapshot.getString("homePage");
+                String contact = documentSnapshot.getString("contact");
 
                 firstNameTextView.setText(String.format("%s %s", firstName, lastName));
+                homePageTextView.setText(String.format("%s", homePage));
+                contactTextView.setText(String.format("%s", contact));
 
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
                     if (avatarUrl.endsWith(".svg") || avatarUrl.contains("avataaars.io")) {

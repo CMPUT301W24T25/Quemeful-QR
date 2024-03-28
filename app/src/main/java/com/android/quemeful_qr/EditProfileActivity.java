@@ -34,6 +34,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private EditText firstNameEditText;
     private EditText lastNameEditText;
+    private EditText homePageEditText;
+    private EditText contactEditText;
     private TextView changeAvatarTextView;
     private ImageView deletePic;
     private Button saveButton;
@@ -64,6 +66,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
         lastNameEditText = findViewById(R.id.lastNameEditText);
+        homePageEditText = findViewById(R.id.homePageEditText);
+        contactEditText = findViewById(R.id.contactEditText);
         changeAvatarTextView = findViewById(R.id.editAvatarTextView);
         saveButton = findViewById(R.id.editProfileButton);
         avatarImageView = findViewById(R.id.avatarImageView);
@@ -77,9 +81,13 @@ public class EditProfileActivity extends AppCompatActivity {
             if (documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("firstName");
                 String lastName = documentSnapshot.getString("lastName");
+                String homePage = documentSnapshot.getString("homePage");
+                String contact = documentSnapshot.getString("contact");
 
                 firstNameEditText.setText(firstName);
                 lastNameEditText.setText(lastName);
+                homePageEditText.setText(homePage);
+                contactEditText.setText(contact);
 
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
@@ -91,6 +99,8 @@ public class EditProfileActivity extends AppCompatActivity {
         saveButton.setOnClickListener(v -> {
             String updatedFirstName = firstNameEditText.getText().toString().trim();
             String updatedLastName = lastNameEditText.getText().toString().trim();
+            String updatedHomePage = homePageEditText.getText().toString().trim();
+            String updatedContact = contactEditText.getText().toString().trim();
 
             if (imageUri != null) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference("avatars/" + deviceId);
@@ -98,7 +108,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                         String profileImageUrl = uri.toString();
                         db.collection("users").document(deviceId)
-                                .update("firstName", updatedFirstName, "lastName", updatedLastName, "avatarUrl", profileImageUrl)
+                                .update("firstName", updatedFirstName, "lastName", updatedLastName, "homePage", updatedHomePage, "contact", updatedContact, "avatarUrl", profileImageUrl)
                                 .addOnSuccessListener(aVoid -> {
                                     loadFromUri(Uri.parse(profileImageUrl)); // Reload using the correct format
                                     onBackPressed();
@@ -108,7 +118,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show());
             } else {
                 db.collection("users").document(deviceId)
-                        .update("firstName", updatedFirstName, "lastName", updatedLastName)
+                        .update("firstName", updatedFirstName, "lastName", updatedLastName, "homePage", updatedHomePage, "contact", updatedContact)
                         .addOnSuccessListener(aVoid -> onBackPressed())
                         .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
             }
