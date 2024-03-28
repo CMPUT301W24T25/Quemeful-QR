@@ -11,6 +11,7 @@ import static java.sql.DriverManager.println;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -65,6 +66,7 @@ public class MapActivity extends AppCompatActivity {
     private IMapController mapController;
 
     private MyLocationNewOverlay mLocationOverlay;
+    private Button confirmLocationButton;
 
 
     /**
@@ -100,11 +102,22 @@ public class MapActivity extends AppCompatActivity {
         returnToCurrentLocation = (Button) findViewById(R.id.return_to_current_location);
         searchMapEditText = (EditText) findViewById(R.id.search_map_edittext);
         searchMapButton = (Button) findViewById(R.id.search_map_button);
+        confirmLocationButton = (Button) findViewById(R.id.confirm_location_button);
         backButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        confirmLocationButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapActivity.this, CreateNewEventActivity.class);
+                intent.putExtra("location string", searchMapEditText.getText());
+                startActivity(intent);
+
             }
         });
 

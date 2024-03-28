@@ -1,13 +1,24 @@
 package com.android.quemeful_qr;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Base64;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is an activity class used to handle the view for the user after scanning an event QR code.
@@ -45,5 +56,30 @@ public class ViewEventActivity extends AppCompatActivity {
         posterView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
 
     }
+
+//    private void signUpForEvent(String eventId) {
+//        String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//        DocumentReference eventRef = db.collection("events").document(eventId);
+//
+//        Map<String, Object> userMap = new HashMap<>();
+//        userMap.put("uid", currentUserUID);
+//        userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
+//
+//        eventRef.update("signed_up", FieldValue.arrayUnion(userMap))
+//                .addOnSuccessListener(aVoid -> {
+//                    // Update UI to reflect that the user has signed up
+//                    Toast.makeText(EventDetailsActivity.this, "Signed up for event successfully!", Toast.LENGTH_SHORT).show();
+//                    updateUIBasedOnUserStatus(true, false);
+//
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+//                            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Handle the error
+//                });
+//    }
 
 } // activity class closing

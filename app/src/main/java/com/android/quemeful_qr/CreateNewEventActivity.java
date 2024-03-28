@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -71,7 +72,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     // xml variables
     private EditText eventTitle;
     private EditText eventDescription;
-//    private EditText eventAddress;
+    private TextView eventLocation;
     private TextView startDate;
     private TextView startTime;
     private TextView endDate;
@@ -95,6 +96,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean startTimeTextClicked;
     private boolean endTimeTextClicked;
     private EventHelper event;
+    private String locationString;
 
     /**
      * This method sets time in a certain format after user picks a time from the pop out window.
@@ -135,12 +137,19 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         startTime = findViewById(R.id.enter_startTime);
         endDate = findViewById(R.id.enter_endDate);
         endTime = findViewById(R.id.enter_endTime);
-//        eventAddress = findViewById(R.id.enter_location);
         generateQRButton = findViewById(R.id.QR_generate_button_for_createEvent);
 
         cancelButton = findViewById(R.id.cancel_button);
         createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
+        eventLocation = findViewById(R.id.enter_location);
+
+        if (locationString != null){
+            Intent intent = getIntent();
+            locationString = intent.getExtras().getString("location string");
+            eventLocation.setText(locationString);
+        }
+
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
@@ -155,7 +164,12 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 imageChooser();
             }
         });
-
+        eventLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openMapActivity();
+            }
+        });
         /**
          * This method to set the start time opens a fragment to pick the starting time of the event.
          */
@@ -168,6 +182,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
             }
         });
+
 
         /**
          * This method to set the end time opens a fragment to pick the ending time of the event.
@@ -276,6 +291,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     public void setTimeClickFalse(){
         startTimeTextClicked = false;
         endTimeTextClicked = false;
+    }
+    /**
+     * This method is used to start the MapActivity when map/location button is clicked.
+     */
+    protected void openMapActivity(){
+        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
+        startActivity(intent);
     }
 
     /**
