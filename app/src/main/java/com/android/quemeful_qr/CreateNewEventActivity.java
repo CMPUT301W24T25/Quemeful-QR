@@ -247,7 +247,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, location, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventUUID, eventName, "location", eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
