@@ -72,13 +72,10 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
             Log.d(TAG, "bitmap is still NULL");
         }
 
-        String event_poster = getIntent().getStringExtra("event poster");
-
             // share button click listener
             shareButton.setOnClickListener(v -> {
                 // pass the bitmap created to ShareQRCodeActivity to share
                 Intent passIntent = new Intent(GeneratePromotionalQRCodeActivity.this, ShareQRCodeActivity.class);
-                passIntent.putExtra("event poster2", event_poster);
                 passIntent.putExtra("promoQRCode", bitmap);
                 startActivity(passIntent);
             });

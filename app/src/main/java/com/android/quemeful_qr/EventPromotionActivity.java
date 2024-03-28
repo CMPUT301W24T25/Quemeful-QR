@@ -1,10 +1,7 @@
 package com.android.quemeful_qr;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,7 +27,7 @@ public class EventPromotionActivity extends AppCompatActivity {
     private AppCompatButton generatePromotionQR;
     private TextView noPromotionMessage, shareButton;
     private ImageView promotionQRCode;
-    private String eventId, eventPoster;
+    private String eventId;
     private FirebaseFirestore db;
 
     @Override
@@ -74,7 +71,6 @@ public class EventPromotionActivity extends AppCompatActivity {
                                 Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
                                 // Check if the event has promotion or not
                                 String eventPromo = (String) eventData.get("Event Promotion QR Code");
-                                eventPoster = event.getPoster();
                                 if (eventPromo != null) {
                                     updateUIPromotionAvailable(eventPromo); // yes - show promotion QR code and share
                                 } else {
@@ -111,12 +107,7 @@ public class EventPromotionActivity extends AppCompatActivity {
 
         shareButton.setOnClickListener(v -> {
             Intent intent = new Intent(EventPromotionActivity.this, ShareQRCodeActivity.class);
-            // pass the uri to share
-            if(eventPoster != null) {
-                intent.putExtra("event poster", eventPoster);
-            } else {
-                Log.d(TAG, "event poster is null");
-            }
+            // pass the uri via intent to share activity
             intent.putExtra("existing promo QR Code uri", uri);
             startActivity(intent);
         });
@@ -135,16 +126,9 @@ public class EventPromotionActivity extends AppCompatActivity {
         generatePromotionQR.setOnClickListener(v -> {
             Intent intent = new Intent(EventPromotionActivity.this, GeneratePromotionalQRCodeActivity.class);
             // pass the eventId to generate new promotional QR code
-            if(eventPoster != null) {
-                intent.putExtra("event poster", eventPoster);
-            } else {
-                Log.d(TAG, "event poster is null");
-            }
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
     }
-
-
 
 } // activity class closing

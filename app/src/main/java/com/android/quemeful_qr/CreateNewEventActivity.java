@@ -238,7 +238,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     // converts bitmap to base64 string
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     // In case you want to compress your image, here it's at 40%
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     // create new event
                     event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));

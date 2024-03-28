@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +17,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-
 
 /**
  * This is an activity class is used to share the generated event promotional QR Code.
@@ -37,10 +37,9 @@ import java.io.ByteArrayOutputStream;
 
 public class ShareQRCodeActivity extends AppCompatActivity  {
 
-    // for bitmap to byte array conversion
-    private byte[] imageByteArray;
-    private Bitmap passedBitmap;
-    private String passedUri, eventPoster1, eventPoster2;
+    private byte[] imageByteArray; // for bitmap to byte array conversion
+    private Bitmap passedBitmap; // generated new promo qr code bitmap
+    private Uri passedUri; // uri of existing promo qr code
 
     // firebase
     private StorageReference reference;
@@ -48,17 +47,22 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // fireStore storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
         reference = storage.getReference();
 
-        // get the bitmap passed by GeneratePromotionalQRCodeActivity when new QR code is generated.
+        // get the bitmap passed by GeneratePromotionalQRCodeActivity
         passedBitmap = getIntent().getParcelableExtra("promoQRCode");
-        eventPoster2 = getIntent().getStringExtra("event poster2");
-        // get the uri passed by EventPromotionActivity when a promotional QR code already exists for that event.
-        passedUri = getIntent().getStringExtra("existing promo QR Code uri");
-        eventPoster1 = getIntent().getStringExtra("event poster");
+
+        // get the uri string passed by EventPromotionActivity
+        String passedUriString = getIntent().getStringExtra("existing promo QR Code uri");
+        // convert uri string to Uri
+        if(passedUriString != null) {
+                passedUri = Uri.parse(passedUriString);
+        } else {
+            Log.d(TAG, "Error in getting the existing promo uri");
+        }
+
         UriToShare(); // call the share method
     }
 
@@ -67,38 +71,28 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
      */
     private void UriToShare(){
         // get the string url after uploading the QR code to firebase storage using the interface defined below.
-        if (passedBitmap != null) { // for generate new promo QR code
+        if (passedBitmap != null) {
+            // for generate new promo QR code
             getDownloadUrl(passedBitmap, promo_qr_url -> {
                 // convert url string to uri
                 Uri uri = Uri.parse(promo_qr_url);
-
-                Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
-                intent.setType("image/*");
-                intent.putExtra(Intent.EXTRA_STREAM, uri); // share the promo QR Code image
-                // add a message for the user
-                intent.putExtra(Intent.EXTRA_TEXT, "Scan the QR Code to see the Event Details.");
-                // show event poster uri as thumbnail
-                Uri posterURI = Uri.parse(eventPoster2);
-                intent.setClipData(ClipData.newRawUri("", posterURI));
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // grant read uri permission
-                // show android share sheet
+                // intent to share
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setClipData(ClipData.newRawUri("event promotional QR Code", uri));
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.setType("image/png");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
+                // show the android share sheet/ share pop up
                 startActivity(Intent.createChooser(intent, "Share Using"));
             });
 
         } if (passedUri != null){ // for existing promo QR code
             Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_STREAM, passedUri); // share the promo QR Code image
-            // add a message for the user
-            intent.putExtra(Intent.EXTRA_TEXT, "Scan the QR Code to see the Event Details.");
-            // show event poster uri as thumbnail
-            Uri posterURI = Uri.parse(eventPoster1);
-            intent.setClipData(ClipData.newRawUri("", posterURI));
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // grant read uri permission
-            // show android share sheet
+            intent.setClipData(ClipData.newRawUri("event promotional QR Code", passedUri));
+            intent.putExtra(Intent.EXTRA_STREAM, passedUri);
+            intent.setType("image/png");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
             startActivity(Intent.createChooser(intent, "Share Using"));
-        } else {
-            Log.d(TAG,"Content to share not found!");
         }
     }
 
