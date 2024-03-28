@@ -1,3 +1,4 @@
+//https://stackoverflow.com/a/10407371
 package com.android.quemeful_qr;
 
 /**
@@ -82,6 +83,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private Button createButton;
     private ImageButton uploadPoster;
 
+    int LAUNCH_MAP_ACTIVITY = 1;
+
     // poster
     private Uri selectedImageUri;
 
@@ -96,7 +99,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean startTimeTextClicked;
     private boolean endTimeTextClicked;
     private EventHelper event;
+
+    private Location location;
     private String locationString;
+    private Double locationLatitude;
+    private Double locationLongitude;
 
     /**
      * This method sets time in a certain format after user picks a time from the pop out window.
@@ -143,12 +150,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
         eventLocation = findViewById(R.id.enter_location);
-
-        if (locationString != null){
-            Intent intent = getIntent();
-            locationString = intent.getExtras().getString("location string");
-            eventLocation.setText(locationString);
-        }
 
 
         //initialize firebase
@@ -233,7 +234,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 eventUUID = UUID.randomUUID().toString();
 
                 String eventName = eventTitle.getText().toString();
-                String eventLocation = "location";
                 String eventTime = startTime.getText().toString();
                 String eventDate = startDate.getText().toString();
 
@@ -247,7 +247,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventUUID, eventName, location, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
@@ -285,6 +285,30 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_MAP_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                locationString = data.getStringExtra("location string");
+                locationLatitude = data.getDoubleExtra("location latitude", 0);
+                locationLongitude = data.getDoubleExtra("location longitude", 0);
+                location = new Location();
+                location.setName(locationString);
+                location.setLatitude(locationLatitude);
+                location.setLongitude(locationLongitude);
+
+                eventLocation.setText(location.getName());
+                Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    } //onActivityResult
+
     /**
      * This method is used to tell which time textview (start time or end time) is pressed/clicked on.
      */
@@ -297,7 +321,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
      */
     protected void openMapActivity(){
         Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, LAUNCH_MAP_ACTIVITY);
+
     }
 
     /**
@@ -315,7 +340,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
-        String eventLocation = "location";
+        String eventLocation = location.getName();
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();

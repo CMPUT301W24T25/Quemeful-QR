@@ -10,11 +10,13 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static java.sql.DriverManager.println;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -67,6 +69,8 @@ public class MapActivity extends AppCompatActivity {
 
     private MyLocationNewOverlay mLocationOverlay;
     private Button confirmLocationButton;
+    private Double latitude;
+    private Double longitude;
 
 
     /**
@@ -98,6 +102,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         map = (MapView) findViewById(R.id.map);
+
         backButton = (ImageView) findViewById(R.id.backArrow);
         returnToCurrentLocation = (Button) findViewById(R.id.return_to_current_location);
         searchMapEditText = (EditText) findViewById(R.id.search_map_edittext);
@@ -114,9 +119,13 @@ public class MapActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MapActivity.this, CreateNewEventActivity.class);
-                intent.putExtra("location string", searchMapEditText.getText());
-                startActivity(intent);
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("location string",searchMapEditText.getText().toString());
+                returnIntent.putExtra("location latitude", latitude);
+                returnIntent.putExtra("location longitude", longitude);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
 
             }
         });
@@ -143,17 +152,26 @@ public class MapActivity extends AppCompatActivity {
 
                     if (geoResults != null && !geoResults.isEmpty()) {
                         Address addr = geoResults.get(0);
-
+                        latitude = addr.getLatitude();
+                        longitude = addr.getLongitude();
                         GeoPoint location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
+
+
+                        mapController.stopAnimation(true); //finish the animation
                         mapController.animateTo(location);
                         mapController.setZoom(15.5);
-                        Toast.makeText(getApplicationContext(), addr.toString(), Toast.LENGTH_LONG).show();
+
+
+
+
+                        Toast.makeText(getApplicationContext(), "Location Found", Toast.LENGTH_LONG).show();
 
                     } else {
                     Toast.makeText(getApplicationContext(), "Location Not Found", Toast.LENGTH_LONG).show();
                 }
                 } catch (Exception e) {
-                    Log.d("catch", e.getStackTrace().toString());
+                    Log.d("catch", e.toString());
+                    Toast.makeText(getApplicationContext(), "Failed Search", Toast.LENGTH_LONG).show();
                 }
 
 
@@ -184,8 +202,13 @@ public class MapActivity extends AppCompatActivity {
         map.setMultiTouchControls(true);
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
 
+
+
+
         // Create MapController and set starting location
         mapController = map.getController();
+
+
 
         GpsMyLocationProvider prov = new GpsMyLocationProvider(ctx);
         prov.addLocationSource(LocationManager.NETWORK_PROVIDER);
@@ -203,8 +226,10 @@ public class MapActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         mapController.animateTo(mLocationOverlay.getMyLocation());
                         mapController.setZoom(15.5);
+                        mapController.stopAnimation(true);
                     }
                 });
             }
@@ -215,8 +240,6 @@ public class MapActivity extends AppCompatActivity {
         // Set user agent
         Configuration.getInstance().setUserAgentValue("RossMaps");
 
-        println(String.valueOf(mLocationOverlay.getMyLocation()));
-        println("Create done");
 
 
     }

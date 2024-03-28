@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Base64;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,11 @@ import java.util.Map;
 public class ViewEventActivity extends AppCompatActivity {
     private ImageView posterView;
     private TextView textview_EventName;
+    private Button confirmCheckInButton;
+    private Button cancelButton;
+    private String poster;
+    private String title;
+    private String eventId;
 
     /**
      * This onCreate method is used to create the view that appears after scanning a QR code.
@@ -42,44 +49,39 @@ public class ViewEventActivity extends AppCompatActivity {
 
         textview_EventName = findViewById(R.id.textview_event_name);
         posterView = findViewById(R.id.poster_view);
+        confirmCheckInButton = findViewById(R.id.confirm_check_in_button);
+        cancelButton = findViewById(R.id.cancel_button);
 
         Intent intent = getIntent();
         EventHelper event = (EventHelper) intent.getSerializableExtra("event");
 
         assert event != null;
-        String poster = event.getPoster();
-        String title = event.getTitle();
-        String uuid = event.getId();
+        poster = event.getPoster();
+        title = event.getTitle();
+        eventId = event.getId();
         textview_EventName.setText(title);
         assert poster != null;
         byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
         posterView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        confirmCheckInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
 
     }
 
-//    private void signUpForEvent(String eventId) {
-//        String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//        DocumentReference eventRef = db.collection("events").document(eventId);
-//
-//        Map<String, Object> userMap = new HashMap<>();
-//        userMap.put("uid", currentUserUID);
-//        userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
-//
-//        eventRef.update("signed_up", FieldValue.arrayUnion(userMap))
-//                .addOnSuccessListener(aVoid -> {
-//                    // Update UI to reflect that the user has signed up
-//                    Toast.makeText(EventDetailsActivity.this, "Signed up for event successfully!", Toast.LENGTH_SHORT).show();
-//                    updateUIBasedOnUserStatus(true, false);
-//
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-//                            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    // Handle the error
-//                });
-//    }
+
 
 } // activity class closing
+
+
