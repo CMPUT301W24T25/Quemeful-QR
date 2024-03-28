@@ -127,7 +127,10 @@
         android:hint="@string/Address"
         android:padding="4dp"
         android:textSize="20sp"
-        app:cornerRadius="10dp" />
+        app:cornerRadius="10dp"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:singleLine="true"/>
 
     <LinearLayout
         android:id="@+id/event_starting"
