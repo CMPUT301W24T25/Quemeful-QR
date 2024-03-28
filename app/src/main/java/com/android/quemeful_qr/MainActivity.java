@@ -324,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
             newUser.put("Admin", false); // Here's the addition of the Admin field
             newUser.put("homePage", "N/A");
             newUser.put("contact", "N/A");
+            newUser.put("bio", "N/A");
 
             // Add the new user to Firestore - No changes needed here
             db.collection("users").document(deviceId).set(newUser).addOnSuccessListener(aVoid -> {

@@ -31,6 +31,7 @@ public class Profile extends Fragment {
     TextView firstNameTextView;
     TextView homePageTextView;
     TextView contactTextView;
+    TextView bioTextView;
     private Button editProfileButton;
     private ImageView avatarImageView;
     private String deviceId;
@@ -50,6 +51,7 @@ public class Profile extends Fragment {
         firstNameTextView = view.findViewById(R.id.firstNameTextView);
         homePageTextView = view.findViewById(R.id.homePageTextView);
         contactTextView = view.findViewById(R.id.contactTextView);
+        bioTextView = view.findViewById(R.id.bioTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
 
@@ -83,10 +85,12 @@ public class Profile extends Fragment {
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
                 String homePage = documentSnapshot.getString("homePage");
                 String contact = documentSnapshot.getString("contact");
+                String bio = documentSnapshot.getString("bio");
 
                 firstNameTextView.setText(String.format("%s %s", firstName, lastName));
                 homePageTextView.setText(String.format("%s", homePage));
                 contactTextView.setText(String.format("%s", contact));
+                bioTextView.setText(String.format("%s", bio));
 
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
                     if (avatarUrl.endsWith(".svg") || avatarUrl.contains("avataaars.io")) {
