@@ -15,7 +15,6 @@ import org.osmdroid.views.MapView;
 public class Events extends Fragment {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView map = null;
-    private Button mapButton;
     Button createEventButton;
 
     /**
@@ -44,19 +43,14 @@ public class Events extends Fragment {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         // Inflate the layout for this fragment
         createEventButton = view.findViewById(R.id.create_event_button);
-        mapButton = view.findViewById(R.id.map_button);
+
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openCreateNewEventActivity();
             }
         });
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMapActivity();
-            }
-        });
+
         return view;
     }
 
@@ -68,13 +62,6 @@ public class Events extends Fragment {
         startActivity(intent);
     }
 
-    /**
-     * This method is used to start the MapActivity when map/location button is clicked.
-     */
-    protected void openMapActivity(){
-        Intent intent = new Intent(Events.this.getActivity(), MapActivity.class);
-        startActivity(intent);
-    }
 
 } // class closing
 

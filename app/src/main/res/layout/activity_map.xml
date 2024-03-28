@@ -46,7 +46,48 @@
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_gravity="center" />
+
+
+    <Button
+        android:id="@+id/return_to_current_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to my location"
+        android:textColor="@color/black"
+        android:backgroundTint="#E3D39E"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/search_map_edittext"
+            android:layout_width="295dp"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="Enter address to search"
+            android:layout_marginStart="10dp"
+            android:minHeight="48dp"
+            android:textColorHint="@color/black" />
+        <Button
+            android:id="@+id/search_map_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:textColor="@color/black"
+            android:backgroundTint="#E3D39E"/>
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/confirm_location_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm Location"
+        android:textColor="@color/black"
+        android:backgroundTint="#E3D39E"/>
+
 
 </LinearLayout>
