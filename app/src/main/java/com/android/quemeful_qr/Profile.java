@@ -71,6 +71,7 @@ public class Profile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
         firstNameTextView = view.findViewById(R.id.firstNameTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
@@ -85,20 +86,10 @@ public class Profile extends Fragment {
         });
 
         showNotificationsButton.setOnClickListener(v -> {
-            Fragment show_notificationsFragment = new show_notifications();
-
-            // Use the FragmentManager to start a FragmentTransaction
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-            // Replace the current fragment with the new announcement fragment
-            transaction.replace(R.id.fragment_container, show_notificationsFragment);
-
-            // Add the transaction to the back stack so the user can navigate back
-            transaction.addToBackStack(null);
-
-            // Commit the transaction
-            transaction.commit();
+            Intent intent = new Intent(getActivity(), ShowNotificationsActivity.class);
+            startActivity(intent);
         });
+
 
 
 

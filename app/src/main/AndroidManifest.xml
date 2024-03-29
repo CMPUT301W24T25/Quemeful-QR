@@ -44,9 +44,12 @@
         <activity
             android:name=".ViewEventActivity"
             android:exported="false" />
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,6 +66,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/button_green" />
+
         <service
             android:name=".MapActivity"
             android:foregroundServiceType="location"/>
@@ -70,10 +74,13 @@
             android:name=".ReceiveNotifications"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.GET_NOTIFICATION" />
-               <action android:name="com.google.firebase.MESSAGING_EVENT"/>          </intent-filter>
 
+               <action android:name="com.google.firebase.MESSAGING_EVENT"/>          </intent-filter>
         </service>
+        <activity android:name=".ShowNotificationsActivity"
+            android:exported="true">
+            ]
+        </activity>
     </application>
 
 </manifest>
