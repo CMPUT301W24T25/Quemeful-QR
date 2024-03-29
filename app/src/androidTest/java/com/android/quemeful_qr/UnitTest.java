@@ -213,7 +213,7 @@ public class UnitTest {
         String description = "Test Description";
 
         // Call the method under test
-        Announcement fragment = new Announcement("events");
+        Announcement fragment = new Announcement("events", "Title");
         fragment.sendNotification(title, description);
 
 

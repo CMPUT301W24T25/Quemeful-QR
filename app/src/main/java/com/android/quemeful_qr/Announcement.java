@@ -11,11 +11,21 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.json.JSONObject;
+
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -32,13 +42,15 @@ import okhttp3.Response;
 public class Announcement extends Fragment {
     // The ID of the event/topic to which the notification will be sent.
     private String EventId;
+    private String EventName;
 
     /**
      * This a constructor with EventId as parameter.
      * @param EventId The ID of the event/topic to which the notification will be sent.
      */
-    public Announcement(String EventId) {
+    public Announcement(String EventId, String EventName) {
         this.EventId = EventId;
+        this.EventName = EventName;
     }
 
     /**
@@ -46,8 +58,8 @@ public class Announcement extends Fragment {
      * @param EventId The ID of the event/topic to which the notification will be sent.
      * @return A new instance of the announcement Fragment.
      */
-    public static Announcement newInstance(String EventId) {
-        return new Announcement(EventId);
+    public static Announcement newInstance(String EventId, String EventName) {
+        return new Announcement(EventId, EventName);
     }
 
     /**
@@ -81,9 +93,20 @@ public class Announcement extends Fragment {
             public void onClick(View v) {
                 String title = titleTextInput.getText().toString();
                 String description = descriptionTextInput.getText().toString();
-                sendNotification(title,description);
+                sendNotification(title ,description);
                 titleTextInput.getText().clear();
                 descriptionTextInput.getText().clear();
+                DocumentReference notifs = FirebaseFirestore.getInstance().collection("events").document(EventId);
+                Map<String,String> notification = new HashMap<>();
+                notification.put("title", title);
+                notification.put("body",description);
+                notification.put("Name", EventName);
+                LocalDateTime currentDate = LocalDateTime.now();
+                DateTimeFormatter currrentDateFormatted = DateTimeFormatter.ofPattern("dd MMM HH:mm");
+                String formattedDateTime = currentDate.format(currrentDateFormatted);
+                notification.put("date", formattedDateTime);
+                notifs.update("notifications", FieldValue.arrayUnion(notification));
+
 
             }
         });
@@ -111,9 +134,14 @@ public class Announcement extends Fragment {
         try{
             JSONObject jsonObject = new JSONObject();
             JSONObject notification = new JSONObject();
+
             notification.put("title",title);
+            notification.put("icon", EventName);
             notification.put("body",description);
+
+            //Log.d(TAG, "sendNotification: " + image);
             jsonObject.put("notification",notification);
+
             jsonObject.put("to","/topics/"+ EventId);
             callApi(jsonObject);
         }
