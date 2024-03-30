@@ -72,14 +72,14 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
             Log.d(TAG, "bitmap is still NULL");
         }
 
-            // share button click listener
-            shareButton.setOnClickListener(v -> {
-                // pass the bitmap created to ShareQRCodeActivity to share
-                Intent passIntent = new Intent(GeneratePromotionalQRCodeActivity.this, ShareQRCodeActivity.class);
-                passIntent.putExtra("promoQRCode", bitmap);
-                startActivity(passIntent);
-            });
-        }
+        // share button click listener
+        shareButton.setOnClickListener(v -> {
+            // pass the bitmap created to ShareQRCodeActivity to share
+            Intent passIntent = new Intent(GeneratePromotionalQRCodeActivity.this, ShareQRCodeActivity.class);
+            passIntent.putExtra("promoQRCode", bitmap);
+            startActivity(passIntent);
+        });
+    }
 
     /**
      * This method is used to create/Encode the QR code using BitMatrix.

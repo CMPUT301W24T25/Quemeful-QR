@@ -2,32 +2,43 @@ package com.android.quemeful_qr;
 
 import static android.graphics.Color.BLACK; // black qr code
 import static android.graphics.Color.WHITE; // white background
+import static android.service.controls.ControlsProviderService.TAG;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.os.Bundle;
-import android.util.Base64;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.zxing.BarcodeFormat; // import for library used to generate QR code
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import java.io.ByteArrayOutputStream;
+
 /**
- * This is an activity class for generating QR code.
+ * This is an activity class for generating QR code and make it return the QR code uri.
  * Note: For the purpose of generating and scanning a QR code,
  * zxing library has been implemented in the build.gradle.kts(Module:app)
  */
 public class GenerateNewQRActivity extends AppCompatActivity {
     private ImageView QRImage;
     private TextView eventTitle;
-    private ImageView poster;
+    private String eventId, uri;
+    private byte[] imageByteArray; // for bitmap to byte array conversion
+    private Bitmap bitmap;
+
+    // fireStore firebase
+    private StorageReference reference;
 
     /**
      * This onCreate method is used to setOnClickListener to the generate button and displays the QR code as image.
@@ -40,29 +51,53 @@ public class GenerateNewQRActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_new_qractivity);
-
+        // initialize the xml variables
         eventTitle = findViewById(R.id.eventName_text);
-        poster = findViewById(R.id.posterImage);
         QRImage = findViewById(R.id.QRImage);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
-
+        // initialize the fireStore
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        reference = storage.getReference();
+        // get the event passed
         Intent intent = getIntent();
         EventHelper event = (EventHelper) intent.getSerializableExtra("event");
-        assert event != null;
-        eventTitle.setText(event.getTitle());
-
-        assert event.getPoster() != null;
-        byte[] imageAsBytes = Base64.decode(event.getPoster().getBytes(), Base64.DEFAULT);
-        poster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-
-        Bitmap bitmap = createBitmap(event.getId());
-        QRImage.setImageBitmap(bitmap);
+        if (event != null) {
+            eventTitle.setText(event.getTitle()); // get event name and set text
+            eventId = event.getId(); // get eventId
+        } else {
+            Log.d(TAG,"event is NULL" ); // error handle for if event is not received.
+        }
+        // create the bitmap using the eventId
+        bitmap = createBitmap(eventId);
+        if (bitmap != null) {
+            QRImage.setImageBitmap(bitmap); // display the bitmap (QR code)
+        } else {
+            Log.d(TAG, "bitmap for check in QR code is NULL"); // bitmap null condition
+        }
 
         // clicking on the back arrow on top navigates back to the previous page
+        Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
             // back clicked
             finish();
         });
+
+        // pass the uri string of the generated check in Qr code to be used to store it in the db.
+        String checkInUri = getCheckInQRCodeUri();
+        Intent intent1 = new Intent(GenerateNewQRActivity.this, CreateNewEventActivity.class);
+        intent1.putExtra("CheckIn QR code uri string", checkInUri);
+        startActivity(intent1);
+    }
+
+    /**
+     * This method is used in create new event activity as a getter method for the uri string,
+     * of the generated QR code used for check in.
+     * @return uri of the generated check in QR code.
+     */
+    private String getCheckInQRCodeUri(){
+        getDownloadUrl(bitmap, checkIn_qr_url -> {
+            uri = checkIn_qr_url;
+        });
+        return uri;
     }
 
     /**
@@ -102,6 +137,59 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         Bitmap map = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         map.setPixels(dim, 0, w,0, 0, w, h);
         return map;
+    }
+
+    /**
+     * This interface is used as a listener for method getDownloadUrl.
+     * purpose - to getDownloadUrl() as return, as required to get the uri to other methods.
+     */
+    public interface UploadUriListener {
+        void onUpload(String checkIn_qr_url);
+    }
+
+    /**
+     * This method is used to convert the bitmap to byte array in a worker thread.
+     * @param bitmap  The bitmap to be converted to byte array.
+     */
+    private void BitmapToByteArray(Bitmap bitmap) {
+        new Thread(() -> {
+            // converting bitmap to byte array
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            assert bitmap != null;
+            bitmap.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
+            imageByteArray = byteArrayOutputStream.toByteArray();
+        }).start();
+    }
+
+    /**
+     * This method is used to get the uri of the promotion event QR Code image and return it using the UploadListener.
+     * @param bitmap The bitmap (promotion QR Code image) to upload.
+     * @param uploadUriListener used to get the download url as a return after upload task.
+     */
+    private void getDownloadUrl(Bitmap bitmap, UploadUriListener uploadUriListener) {
+        // call method to convert bitmap to byte array
+        // (done in a worker thread to prevent block in main (UI) thread
+        BitmapToByteArray(bitmap);
+
+        // a unique path (folder) in the firebase storage to upload the check in Qr images
+        String QrImagePath = "CheckInQRCodeImages/" + System.currentTimeMillis() + ".jpg";
+        StorageReference QrImageRef = reference.child(QrImagePath);
+
+        // upload
+        UploadTask uploadTask = QrImageRef.putBytes(imageByteArray);
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            // get download url of the QR code
+            QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                // get the uri consisting the download url to string
+                String CheckInQRCodeURI = uri.toString();
+                uploadUriListener.onUpload(CheckInQRCodeURI);
+
+            }).addOnFailureListener(e -> {
+                // handle fail to download url
+            });
+        }).addOnFailureListener(e -> {
+            // handle upload to storage failure
+        });
     }
 
 } // activity class closing

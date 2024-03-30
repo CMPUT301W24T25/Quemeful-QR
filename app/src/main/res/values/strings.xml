@@ -47,5 +47,11 @@
     <string name="generate_new">Generate New</string>
     <string name="share">Share</string>
     <string name="view_attendees_announcements"><![CDATA[View Attendees & Announcements]]></string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_for_this_event">Sign Up For this Event</string>
+    <string name="promotion">Promotion</string>
+    <string name="scan_event_qr_code">Scan Event QR Code</string>
+    <string name="reuse_existing">Reuse Existing</string>
+    <string name="qr_code_click_create_event_first">QR Code (click create event first)</string>
     >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>

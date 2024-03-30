@@ -80,7 +80,7 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setClipData(ClipData.newRawUri("event promotional QR Code", uri));
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
-                intent.setType("image/png");
+                intent.setType("image/jpg");
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
                 // show the android share sheet/ share pop up
                 startActivity(Intent.createChooser(intent, "Share Using"));
@@ -90,7 +90,7 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
             Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
             intent.setClipData(ClipData.newRawUri("event promotional QR Code", passedUri));
             intent.putExtra(Intent.EXTRA_STREAM, passedUri);
-            intent.setType("image/png");
+            intent.setType("image/jpg");
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
             startActivity(Intent.createChooser(intent, "Share Using"));
         }
@@ -111,7 +111,7 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
     }
 
     /**
-     * This interface is used as a listener for method uploadBitmapToFirebase.
+     * This interface is used as a listener for method getDownloadUrl.
      * purpose - to getDownloadUrl() as return, as required to get the uri to be shared.
      */
     public interface UploadListener {

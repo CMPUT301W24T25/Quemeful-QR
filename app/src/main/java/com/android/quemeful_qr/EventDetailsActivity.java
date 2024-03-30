@@ -280,11 +280,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.GONE);
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
+            buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for signed up users
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
                 buttonCheckIn.setVisibility(View.GONE);
                 // Possibly show a message saying "You are checked in"
+                Toast.makeText(getBaseContext(), "You are already Checked-In", Toast.LENGTH_LONG).show();
+                buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for checked in users
             } else {
                 textViewScanQR.setVisibility(View.VISIBLE);
                 buttonCheckIn.setVisibility(View.VISIBLE);
@@ -295,6 +298,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             viewAttendee.setVisibility(View.GONE);
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
+            buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for not signed up users
         }
     }
 
