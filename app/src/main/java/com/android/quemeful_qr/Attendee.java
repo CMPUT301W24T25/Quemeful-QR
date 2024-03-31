@@ -9,6 +9,8 @@ public class Attendee {
     private String lastName;
     private Integer checkedIn;
 
+
+
     /**
      * This is a constructor (with parameters ie, not a default constructor)
      * @param id the unique user id

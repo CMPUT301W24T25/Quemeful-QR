@@ -1,5 +1,7 @@
 package com.android.quemeful_qr;
 
+import static android.app.PendingIntent.getActivity;
+
 import android.content.Intent;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.caverock.androidsvg.SVG;
@@ -30,6 +33,8 @@ public class Profile extends Fragment {
 
     TextView firstNameTextView;
     private Button editProfileButton;
+
+    private Button showNotificationsButton;
     private ImageView avatarImageView;
     private String deviceId;
 
@@ -66,9 +71,11 @@ public class Profile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
         firstNameTextView = view.findViewById(R.id.firstNameTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
+        showNotificationsButton = view.findViewById(R.id.Notification_button);
 
         deviceId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         fetchProfileInfo();
@@ -77,6 +84,15 @@ public class Profile extends Fragment {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             startActivity(intent);
         });
+
+        showNotificationsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ShowNotificationsActivity.class);
+            startActivity(intent);
+        });
+
+
+
+
 
         return view;
     }
