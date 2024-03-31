@@ -4,7 +4,7 @@ import static android.graphics.Color.BLACK; // black qr code
 import static android.graphics.Color.WHITE; // white background
 import static android.service.controls.ControlsProviderService.TAG;
 
-import android.content.Intent;
+import android.content.ContentValues;
 import android.graphics.Bitmap;
 
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -24,6 +25,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is an activity class for generating QR code and make it return the QR code uri.
@@ -31,13 +34,10 @@ import java.io.ByteArrayOutputStream;
  * zxing library has been implemented in the build.gradle.kts(Module:app)
  */
 public class GenerateNewQRActivity extends AppCompatActivity {
-    private ImageView QRImage;
-    private TextView eventTitle;
-    private String eventId, uri;
-    private byte[] imageByteArray; // for bitmap to byte array conversion
     private Bitmap bitmap;
 
     // fireStore firebase
+    private FirebaseFirestore db;
     private StorageReference reference;
 
     /**
@@ -52,26 +52,25 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_new_qractivity);
         // initialize the xml variables
-        eventTitle = findViewById(R.id.eventName_text);
-        QRImage = findViewById(R.id.QRImage);
+        TextView eventTitle = findViewById(R.id.eventName_text);
+        ImageView QRImage = findViewById(R.id.QRImage);
         // initialize the fireStore
+        db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         reference = storage.getReference();
-        // get the event passed
-        Intent intent = getIntent();
-        EventHelper event = (EventHelper) intent.getSerializableExtra("event");
-        if (event != null) {
-            eventTitle.setText(event.getTitle()); // get event name and set text
-            eventId = event.getId(); // get eventId
-        } else {
-            Log.d(TAG,"event is NULL" ); // error handle for if event is not received.
-        }
+        // get the eventId and name passed
+        String eventId = getIntent().getStringExtra("eventId");
+        String title = getIntent().getStringExtra("event name");
         // create the bitmap using the eventId
         bitmap = createBitmap(eventId);
         if (bitmap != null) {
             QRImage.setImageBitmap(bitmap); // display the bitmap (QR code)
+            UploadToFirebase(bitmap, eventId); // add to the event document
         } else {
             Log.d(TAG, "bitmap for check in QR code is NULL"); // bitmap null condition
+        }
+        if(title != null){
+            eventTitle.setText(title);
         }
 
         // clicking on the back arrow on top navigates back to the previous page
@@ -81,24 +80,7 @@ public class GenerateNewQRActivity extends AppCompatActivity {
             finish();
         });
 
-        // pass the uri string of the generated check in Qr code to be used to store it in the db.
-        String checkInUri = getCheckInQRCodeUri();
-        Intent intent1 = new Intent(GenerateNewQRActivity.this, CreateNewEventActivity.class);
-        intent1.putExtra("CheckIn QR code uri string", checkInUri);
-        startActivity(intent1);
-    }
-
-    /**
-     * This method is used in create new event activity as a getter method for the uri string,
-     * of the generated QR code used for check in.
-     * @return uri of the generated check in QR code.
-     */
-    private String getCheckInQRCodeUri(){
-        getDownloadUrl(bitmap, checkIn_qr_url -> {
-            uri = checkIn_qr_url;
-        });
-        return uri;
-    }
+    } // onCreate closing
 
     /**
      * This method is used to create/Encode the QR code using BitMatrix.
@@ -140,36 +122,16 @@ public class GenerateNewQRActivity extends AppCompatActivity {
     }
 
     /**
-     * This interface is used as a listener for method getDownloadUrl.
-     * purpose - to getDownloadUrl() as return, as required to get the uri to other methods.
-     */
-    public interface UploadUriListener {
-        void onUpload(String checkIn_qr_url);
-    }
-
-    /**
-     * This method is used to convert the bitmap to byte array in a worker thread.
-     * @param bitmap  The bitmap to be converted to byte array.
-     */
-    private void BitmapToByteArray(Bitmap bitmap) {
-        new Thread(() -> {
-            // converting bitmap to byte array
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            assert bitmap != null;
-            bitmap.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
-            imageByteArray = byteArrayOutputStream.toByteArray();
-        }).start();
-    }
-
-    /**
      * This method is used to get the uri of the promotion event QR Code image and return it using the UploadListener.
      * @param bitmap The bitmap (promotion QR Code image) to upload.
-     * @param uploadUriListener used to get the download url as a return after upload task.
+     * @param eventId the event with specific eventId
      */
-    private void getDownloadUrl(Bitmap bitmap, UploadUriListener uploadUriListener) {
-        // call method to convert bitmap to byte array
-        // (done in a worker thread to prevent block in main (UI) thread
-        BitmapToByteArray(bitmap);
+    private void UploadToFirebase(Bitmap bitmap, String eventId) {
+
+        // convert bitmap to byte array
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] imageByteArray = byteArrayOutputStream.toByteArray();
 
         // a unique path (folder) in the firebase storage to upload the check in Qr images
         String QrImagePath = "CheckInQRCodeImages/" + System.currentTimeMillis() + ".jpg";
@@ -182,7 +144,18 @@ public class GenerateNewQRActivity extends AppCompatActivity {
             QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                 // get the uri consisting the download url to string
                 String CheckInQRCodeURI = uri.toString();
-                uploadUriListener.onUpload(CheckInQRCodeURI);
+                // add this uri to the specific event in the firebase
+                Map<String, Object> eventData = new HashMap<>();
+                eventData.put("CheckIn QR Code", CheckInQRCodeURI);
+                db.collection("events")
+                        .document(eventId)
+                        .update(eventData)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(ContentValues.TAG,"Event with specific eventId successfully updated with check in QR field.");
+                        }).addOnFailureListener(e -> {
+                            // handle fail to update event document with specific eventId
+                            Log.d(ContentValues.TAG, "failed to add event check in QR Code field to events collection with document eventId.");
+                        });
 
             }).addOnFailureListener(e -> {
                 // handle fail to download url

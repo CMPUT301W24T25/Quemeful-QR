@@ -89,7 +89,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private CollectionReference eventsRef;
 
     // attributes for event class
-    private String eventId;
+    private String eventId, eventName;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
@@ -123,7 +123,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("events");
 
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = findViewById(R.id.backTool);
@@ -172,7 +171,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         createButton.setOnClickListener(v -> {
             //generates random id for the event
             eventId = UUID.randomUUID().toString();
-            String eventName = eventTitle.getText().toString();
+            eventName = eventTitle.getText().toString();
             String eventLocation = "location";
             String eventTime = startTime.getText().toString();
             String eventDate = startDate.getText().toString();
@@ -207,7 +206,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // on click generates a new QR by starting Generate new QR activity
         generateQRButton.setOnClickListener(v -> {
             Intent intent = new Intent(CreateNewEventActivity.this, GenerateNewQRActivity.class);
-            intent.putExtra("event", event);
+            intent.putExtra("eventId", eventId);
+            intent.putExtra("event name", eventName);
             startActivity(intent);
 
         });
@@ -254,12 +254,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // get the uri of the generated QR code to also add to the firebase db.
-        String uri = getIntent().getStringExtra("CheckIn QR code uri string");
-
-        if (eventId.matches("") || eventName.matches("")
-                || eventLocation.matches("") || eventTime.matches("")
-                || eventDate.matches("") || eventDescr.matches("")){
+        if ( eventName.matches("") || eventLocation.matches("")
+                || eventTime.matches("") || eventDate.matches("")
+                || eventDescr.matches("")){
             //empty string check
             Toast message = Toast.makeText(getBaseContext(), "Please Fill All Text Fields", Toast.LENGTH_LONG);
             message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -280,15 +277,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             else {
                 data.put("poster", "");
             }
-            if(uri != null){ // add the uri as a field in the firebase to re-use later
-                data.put("CheckIn QR Code", uri);
-            }
             List<Map<String, Object>> emptySignUpList = new ArrayList<>();
             data.put("signed_up", emptySignUpList);
 
-            eventsRef
-                    .document(db.collection("events").document().getId())
-                    .set(data)
+            eventsRef = db.collection("events");
+            eventsRef.document(eventId).set(data)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("FireStore", "DocumentSnapshot successfully written!");
                         Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
