@@ -52,8 +52,8 @@
                 String Name = message.getNotification().getTitle();
                 String title = message.getNotification().getBody();
 
-
-                handleMessage(Name, title);
+                int icon = Integer.getInteger( message.getNotification().getIcon());
+                handleMessage(Name, title, icon);
                 Log.d(TAG, "onMessageReceived: " + title + " " );
 
             }
@@ -78,7 +78,7 @@
          * @param title The title of the notification.
          * @param message The body/message of the notification.
          */
-        public void handleMessage(String title,String  message) {
+        public void handleMessage(String title,String  message, int icon) {
             String CHANNEL_ID = "MESSAGE";
             String channelName = "NOTIFICATION MESSAGE";
             Intent intent = new Intent(getApplicationContext(), ShowNotificationsActivity.class);
@@ -88,7 +88,7 @@
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.mail_notif).setContentTitle(title).setContentText(message)
+                    .setSmallIcon(icon).setContentTitle(title).setContentText(message)
                     .setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(pendingIntent);
             notification = notification.setContent(getRemoteView(title, message));
 

@@ -209,7 +209,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                             }
                                             String token = document.getString("creator_token");
                                             sendNotif sendNotif = new sendNotif();
-                                            sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token);
+                                            sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, R.drawable.party);
                                         }}}}}});
 
                 })

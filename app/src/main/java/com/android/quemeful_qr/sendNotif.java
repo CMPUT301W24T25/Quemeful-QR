@@ -38,40 +38,39 @@ public class sendNotif {
      * @param EventName The Name of the Event for the notification.
      * @param description The description/body of the notification.
      */
-    boolean sendNotification(String EventName,String description, String sendID){
-        boolean response = false;
+    void sendNotification(String EventName,String description, String sendID, int icon_id){
+
         try{
             JSONObject jsonObject = new JSONObject();
             JSONObject notification = new JSONObject();
 
             notification.put("title",EventName);
             notification.put("body",description);
-
+            notification.put("icon",icon_id);
             //Log.d(TAG, "sendNotification: " + image);
             jsonObject.put("notification",notification);
 
             jsonObject.put("to",sendID);
-            response =  callApi(jsonObject);
+            callApi(jsonObject);
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        return response;
+
     }
 
     /**
      * This method is used to call the API to send the notification using the provided JSON object.
      * @param jsonObject The JSON object containing the notification details.
      */
-    boolean callApi(JSONObject jsonObject){
-        final boolean[] success = {false};
+    void callApi(JSONObject jsonObject){
+
         FirebaseFirestore.getInstance().collection("notification").document("key").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
                             String key = document.getString("key");
-                            Log.d("TAG", "Key: " + key);
                             MediaType JSON = MediaType.get("application/json; charset=utf-8");
                             OkHttpClient okHttpClient = new OkHttpClient();
                             String url = "https://fcm.googleapis.com/fcm/send";
@@ -105,18 +104,19 @@ public class sendNotif {
                                     if (response.isSuccessful()) {
                                         String responseBody = response.body().string();
                                         Log.d("TAG", "Response: " + responseBody);
-                                        success[0] =  true;
+
 
                                     } else {
                                         Log.e("TAG", "Error: " + response.code() + " " + response.message());
-                                        success[0] =   false;
+
                                     }
+
 
                                 }
                             });
                         }
                     }
                 });
-        return success[0];
+
     } // call Api function closing
 }
