@@ -100,7 +100,7 @@ public class Announcement extends Fragment {
             public void onClick(View v) {
                 String title = titleTextInput.getText().toString();
                 String description = descriptionTextInput.getText().toString();
-                this.sendNotif.sendNotification(EventName ,title, "/topics/" + EventId, R.drawable.mail_notif);
+                this.sendNotif.sendNotification(EventName ,title, "/topics/" + EventId, "mail_notif");
 
                 titleTextInput.getText().clear();
                 descriptionTextInput.getText().clear();

@@ -1,6 +1,7 @@
 package com.android.quemeful_qr;
 
 import static android.app.PendingIntent.getActivity;
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static androidx.test.InstrumentationRegistry.getContext;
 
 import android.app.Activity;
@@ -38,7 +39,7 @@ public class sendNotif {
      * @param EventName The Name of the Event for the notification.
      * @param description The description/body of the notification.
      */
-    void sendNotification(String EventName,String description, String sendID, int icon_id){
+    void sendNotification(String EventName,String description, String sendID, String icon_id){
 
         try{
             JSONObject jsonObject = new JSONObject();
@@ -46,8 +47,9 @@ public class sendNotif {
 
             notification.put("title",EventName);
             notification.put("body",description);
-            notification.put("icon",icon_id);
-            //Log.d(TAG, "sendNotification: " + image);
+            Log.d(TAG, "sendNotification: " + icon_id);
+            notification.put("icon", icon_id);
+
             jsonObject.put("notification",notification);
 
             jsonObject.put("to",sendID);
