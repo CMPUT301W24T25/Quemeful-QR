@@ -237,25 +237,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    //get device token to send notification
-                    final String[] token = new String[1];
-                    FirebaseMessaging.getInstance().getToken()
-                            .addOnCompleteListener(new OnCompleteListener<String>() {
-                                @Override
-                                public void onComplete(@NonNull Task<String> task) {
-                                    if (!task.isSuccessful()) {
-                                        Log.w(TAG, "Fetching FCM token failed", task.getException());
-
-                                    }
-                                    token[0] = task.getResult().toString();
-                                    Log.d(TAG, "FCM Token: " + token[0]);
-
-                                }
-                            });
 
 
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT), token[0]);
+                    event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
 
@@ -348,13 +333,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                             if (task.isSuccessful()) {
                                 Log.w(TAG, "Fetching FCM token failed", task.getException());
                                 String token = task.getResult().toString();
-                                Log.d(TAG, "FCM Token: " + token);
                                 data.put("organizer_token", token);
                             }
 
 
 
-            Log.d(TAG, "addNewEvent: " + data.get("organizer_token"));
             if (event.getPoster() != null) {
                 data.put("poster", event.getPoster());
             }

@@ -18,10 +18,6 @@ public class EventHelper implements Serializable {
     private String organizer;
     private String poster;
 
-
-
-    private String organizer_token;
-
     // event organizer getter
     public String getOrganizer() {
         return organizer;
@@ -48,7 +44,7 @@ public class EventHelper implements Serializable {
      * @param description the purpose or abouts of the event.
      * @param poster the event poster.
      */
-    EventHelper(String id, String title, String location, String time, String date, String description, String poster, String organizer_token){
+    EventHelper(String id, String title, String location, String time, String date, String description, String poster){
         this.id = id;
         this.title = title;
         this.location = location;
@@ -58,8 +54,6 @@ public class EventHelper implements Serializable {
 //        this.organizer = organizer;
         this.poster = poster;
 //        this.attendeeList = ArrayList< Attendees >
-
-        this.organizer_token = organizer_token;
     }
 
     // event description getter
@@ -130,14 +124,6 @@ public class EventHelper implements Serializable {
     // event poster setter
     public void setPoster(String poster) {
         this.poster = poster;
-    }
-
-    public String getOrganizer_token() {
-        return organizer_token;
-    }
-
-    public void setOrganizer_token(String organizer_token) {
-        this.organizer_token = organizer_token;
     }
 } // class closing
 

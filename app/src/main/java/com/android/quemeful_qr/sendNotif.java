@@ -35,17 +35,16 @@ public class sendNotif {
      * This method is used to send a notification with the specified title and description to the event/topic.
      * Reference URL- https://www.youtube.com/watch?v=YjNZO90yVsE&t=530s
      * Author- Easy Tuto, Published Date- Jul 5, 2023
-     * @param title The title of the notification.
+     * @param EventName The Name of the Event for the notification.
      * @param description The description/body of the notification.
      */
-    boolean sendNotification(String title,String description, String sendID, String EventName ){
+    boolean sendNotification(String EventName,String description, String sendID){
         boolean response = false;
         try{
             JSONObject jsonObject = new JSONObject();
             JSONObject notification = new JSONObject();
 
-            notification.put("title",title);
-            notification.put("icon", EventName);
+            notification.put("title",EventName);
             notification.put("body",description);
 
             //Log.d(TAG, "sendNotification: " + image);

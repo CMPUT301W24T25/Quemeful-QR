@@ -49,12 +49,12 @@
         @Override
         public void onMessageReceived(@NonNull RemoteMessage message) {
             if (message.getNotification() != null) {
-                String title = message.getNotification().getTitle();
-                String body = message.getNotification().getBody();
-                String Name= message.getNotification().getIcon();
+                String Name = message.getNotification().getTitle();
+                String title = message.getNotification().getBody();
+
 
                 handleMessage(Name, title);
-                Log.d(TAG, "onMessageReceived: " + title + " " + body + " " );
+                Log.d(TAG, "onMessageReceived: " + title + " " );
 
             }
         }

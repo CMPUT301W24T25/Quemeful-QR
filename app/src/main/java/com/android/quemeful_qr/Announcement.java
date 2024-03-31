@@ -99,15 +99,9 @@ public class Announcement extends Fragment {
             public void onClick(View v) {
                 String title = titleTextInput.getText().toString();
                 String description = descriptionTextInput.getText().toString();
-                boolean response =  this.sendNotif.sendNotification(title ,description, "/topics/" + EventId, EventName);
+                boolean response =  this.sendNotif.sendNotification(EventName ,title, "/topics/" + EventId);
                 if ( response ) {
                     getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Notification sent successfully", Toast.LENGTH_SHORT).show());
-                } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "An Error Occurred. Please try again later.", Toast.LENGTH_SHORT).show());
-                }
-
-
-
                 titleTextInput.getText().clear();
                 descriptionTextInput.getText().clear();
                 DocumentReference notifs = FirebaseFirestore.getInstance().collection("events").document(EventId);
@@ -120,7 +114,9 @@ public class Announcement extends Fragment {
                 String formattedDateTime = currentDate.format(currrentDateFormatted);
                 notification.put("date", formattedDateTime);
                 notifs.update("notifications", FieldValue.arrayUnion(notification));
-
+                } else {
+                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "An Error Occurred. Please try again later.", Toast.LENGTH_SHORT).show());
+                }
 
             }
         });

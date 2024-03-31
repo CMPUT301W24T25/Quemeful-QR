@@ -197,14 +197,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                             if (document.exists()) {
                                 String title = document.getString("title");
                                 List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+                                String description;
                                 for (int milestone : MILESTONES) {
                                     if (document.get("signed_up") != null) {
 
                                         if (signedUpUsers.size() == milestone) {
-                                            String description = "You have reached " + milestone + " attendees!";
+                                            if (milestone == 1){
+                                                 description = "You just got your first attendee!";
+                                            } else {
+                                                description = "You have reached " + milestone + " attendees!";
+                                            }
                                             String token = document.getString("creator_token");
                                             sendNotif sendNotif = new sendNotif();
-                                            sendNotif.sendNotification("You just hit a Milestone!\uD83C\uDF89", description, token, title);
+                                            sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token);
                                         }}}}}});
 
                 })
