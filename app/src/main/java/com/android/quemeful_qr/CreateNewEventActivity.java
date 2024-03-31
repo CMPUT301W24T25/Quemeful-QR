@@ -20,6 +20,9 @@ package com.android.quemeful_qr;
  *  Author- Android Developers, License- CC BY 2.5 and Apache 2.0, Published Date- 2024-03-12 UTC.
  */
 
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -45,9 +48,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -229,10 +237,31 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    //get device token to send notification
+                    final String[] token = new String[1];
+                    FirebaseMessaging.getInstance().getToken()
+                            .addOnCompleteListener(new OnCompleteListener<String>() {
+                                @Override
+                                public void onComplete(@NonNull Task<String> task) {
+                                    if (!task.isSuccessful()) {
+                                        Log.w(TAG, "Fetching FCM token failed", task.getException());
+
+                                    }
+                                    token[0] = task.getResult().toString();
+                                    Log.d(TAG, "FCM Token: " + token[0]);
+
+                                }
+                            });
+
+
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventUUID, eventName, eventLocation, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT), token[0]);
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
+
+
+
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -311,6 +340,21 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
+
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(new OnCompleteListener<String>() {
+                        @Override
+                        public void onComplete(@NonNull Task<String> task) {
+                            if (task.isSuccessful()) {
+                                Log.w(TAG, "Fetching FCM token failed", task.getException());
+                                String token = task.getResult().toString();
+                                Log.d(TAG, "FCM Token: " + token);
+                                data.put("organizer_token", token);
+                            }
+
+
+
+            Log.d(TAG, "addNewEvent: " + data.get("organizer_token"));
             if (event.getPoster() != null) {
                 data.put("poster", event.getPoster());
             }
@@ -328,6 +372,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         public void onSuccess(Void aVoid) {
                             Log.d("Firestore", "DocumentSnapshot successfully written!");
                             Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                         }
                     });
         }

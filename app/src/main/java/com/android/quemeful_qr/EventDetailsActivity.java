@@ -191,6 +191,22 @@ public class EventDetailsActivity extends AppCompatActivity {
                             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
                         }
                     }
+                    eventRef.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                String title = document.getString("title");
+                                List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+                                for (int milestone : MILESTONES) {
+                                    if (document.get("signed_up") != null) {
+
+                                        if (signedUpUsers.size() == milestone) {
+                                            String description = "You have reached " + milestone + " attendees!";
+                                            String token = document.getString("creator_token");
+                                            sendNotif sendNotif = new sendNotif();
+                                            sendNotif.sendNotification("You just hit a Milestone!\uD83C\uDF89", description, token, title);
+                                        }}}}}});
+
                 })
                 .addOnFailureListener(e -> {
                     // Handle the error
