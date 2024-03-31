@@ -6,12 +6,8 @@
     import android.app.NotificationChannel;
     import android.app.NotificationManager;
     import android.app.PendingIntent;
-    import android.content.Context;
     import android.content.Intent;
-    import android.content.SharedPreferences;
-    import android.net.Uri;
     import android.os.Build;
-    import android.os.SystemClock;
     import android.util.Log;
     import android.widget.RemoteViews;
 
@@ -20,10 +16,6 @@
 
     import com.google.firebase.messaging.FirebaseMessagingService;
     import com.google.firebase.messaging.RemoteMessage;
-
-    import java.time.LocalDateTime;
-    import java.time.format.DateTimeFormatter;
-    import java.util.Map;
 
     /**
      * This is a service class responsible for handling Firebase Cloud Messaging (FCM) notifications.
@@ -52,7 +44,10 @@
                 String Name = message.getNotification().getTitle();
                 String title = message.getNotification().getBody();
 
-                int icon = Integer.getInteger( message.getNotification().getIcon());
+                String icon = message.getNotification().getIcon();
+
+
+
                 handleMessage(Name, title, icon);
                 Log.d(TAG, "onMessageReceived: " + title + " " );
 
@@ -78,7 +73,7 @@
          * @param title The title of the notification.
          * @param message The body/message of the notification.
          */
-        public void handleMessage(String title,String  message, int icon) {
+        public void handleMessage(String title,String  message, String icon) {
             String CHANNEL_ID = "MESSAGE";
             String channelName = "NOTIFICATION MESSAGE";
             Intent intent = new Intent(getApplicationContext(), ShowNotificationsActivity.class);
@@ -88,7 +83,7 @@
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(icon).setContentTitle(title).setContentText(message)
+                    .setSmallIcon(this.getResources().getIdentifier( icon, "drawable", this.getPackageName())).setContentTitle(title).setContentText(message)
                     .setAutoCancel(true).setOnlyAlertOnce(true).setContentIntent(pendingIntent);
             notification = notification.setContent(getRemoteView(title, message));
 

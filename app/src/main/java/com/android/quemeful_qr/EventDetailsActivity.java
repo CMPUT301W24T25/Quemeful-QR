@@ -207,7 +207,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                             } else {
                                                 description = "You have reached " + milestone + " attendees!";
                                             }
-                                            String token = document.getString("creator_token");
+                                            String token = document.getString("organizer_token");
                                             sendNotif sendNotif = new sendNotif();
                                             sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
                                         }}}}}});
