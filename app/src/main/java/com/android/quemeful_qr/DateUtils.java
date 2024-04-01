@@ -1,9 +1,5 @@
-//https://stackoverflow.com/questions/22467899/formatting-date-from-date-object-with-only-mm-dd-yyyy
 package com.android.quemeful_qr;
 
-import android.util.Log;
-
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,14 +7,16 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * This is a class that has custom made methods for Dates
+ * This is a class used to custom fix the date display format.
+ * Reference URL- https://stackoverflow.com/questions/22467899/formatting-date-from-date-object-with-only-mm-dd-yyyy
+ *
  */
 public class DateUtils {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     /**
-     * parseDate converts string into dates
-     * @param dateString
+     * The parseDate method converts string into dates.
+     * @param dateString the date in string form
      * @return Date
      */
     public static Date parseDate(String dateString) {
@@ -31,8 +29,8 @@ public class DateUtils {
     }
 
     /**
-     * isToday checks whether the given date is today's date
-     * @param date
+     * This boolean method is used to check whether the given date is today's date.
+     * @param date the given date.
      * @return boolean
      */
     public static boolean isToday(Date date) {
@@ -42,5 +40,5 @@ public class DateUtils {
         return today.get(Calendar.YEAR) == targetDate.get(Calendar.YEAR) &&
                 today.get(Calendar.DAY_OF_YEAR) == targetDate.get(Calendar.DAY_OF_YEAR);
     }
-}
+} // class closing
 

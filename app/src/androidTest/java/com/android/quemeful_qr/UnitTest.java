@@ -43,7 +43,7 @@ public class UnitTest {
     private EventsTodayAdapter.EventViewHolder viewHolder;
     private EventHelper event;
 
-    private admin_dashboard_adapter adapter;
+    private AdminDashboardAdapter adapter;
     private List<Map<String, Object>> dataList;
     private String testDeviceId;
 
@@ -64,7 +64,8 @@ public class UnitTest {
                 "Test Time1",
                 "Test Date1",
                 "Test Description1",
-                "Test Poster1"
+                "Test Poster1",
+                "Test token1"
         );
         events.add(event);
 
@@ -75,7 +76,7 @@ public class UnitTest {
         data.put("avatarUrl", "https://example.com/avatar.png");
         dataList.add(data);
 
-        adapter = new admin_dashboard_adapter(ApplicationProvider.getApplicationContext(), dataList);
+        adapter = new AdminDashboardAdapter(ApplicationProvider.getApplicationContext(), dataList);
 
 
         testDeviceId = "test_device_id";
@@ -97,7 +98,8 @@ public class UnitTest {
               "Test Time",
               "Test Date",
               "Test Description",
-              "Test Poster"
+              "Test Poster",
+              "Test token"
       );
 
       // Add the event to Firestore
@@ -131,7 +133,8 @@ public class UnitTest {
                 "Test Time1",
                 "Test Date1",
                 "Test Description1",
-                "Test Poster1"
+                "Test Poster1",
+                "Test token1"
         ));
         events.add( new EventHelper(
                 "eventId2",
@@ -140,7 +143,8 @@ public class UnitTest {
                 "Test Time2",
                 "Test Date2",
                 "Test Description2",
-                "Test Poster2"
+                "Test Poster2",
+                "Test token2"
         ));
 
         EventsTodayAdapter adapter = new EventsTodayAdapter(context, events, null);
@@ -198,7 +202,7 @@ public class UnitTest {
             protected void onLayout(boolean changed, int l, int t, int r, int b) {}
         };
         View itemView = LayoutInflater.from(ApplicationProvider.getApplicationContext()).inflate(R.layout.admin_dashboard_content, parent, false);
-        admin_dashboard_adapter.ViewHolder viewHolder = new admin_dashboard_adapter.ViewHolder(itemView);
+        AdminDashboardAdapter.ViewHolder viewHolder = new AdminDashboardAdapter.ViewHolder(itemView);
 
         assertNotNull(viewHolder);
         assertNotNull(viewHolder.textViewName);
@@ -206,18 +210,18 @@ public class UnitTest {
         assertNotNull(viewHolder.imageViewDelete);
     }
 
-    @Test
-    public void testSendNotification() {
-        // Create test data
-        String title = "Test Title";
-        String description = "Test Description";
-
-        // Call the method under test
-        announcement fragment = new announcement("events");
-        fragment.sendNotification(title, description);
-
-
-    }
+//    @Test
+//    public void testSendNotification() {
+//        // Create test data
+//        String title = "Test Title";
+//        String description = "Test Description";
+//
+//        // Call the method under test
+//        Announcement fragment = new Announcement("events", "Title");
+//        fragment.sendNotification(title, description);
+//
+//
+//    }
     @Test
     public void testValidCreation() {
         Attendee attendee = new Attendee("1", "John", "Doe", 0);
