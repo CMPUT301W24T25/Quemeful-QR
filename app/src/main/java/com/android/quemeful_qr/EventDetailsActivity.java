@@ -40,8 +40,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription, current_milestone_text, congradulatoryText;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
-    private TextView viewAttendee, textViewScanQR, textViewSignUp;
-    private Button buttonCheckIn, buttonSignUp;
+    private TextView viewAttendee, textViewScanQR, textViewSignUp, textDeleteEvent;
+    private Button buttonCheckIn, buttonSignUp, buttonDeleteEvent;
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
 
@@ -86,8 +86,10 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         textViewScanQR = findViewById(R.id.scanQRTitle);
         textViewSignUp = findViewById(R.id.signUpTitle);
+        textDeleteEvent = findViewById(R.id.deleteEventTitle);
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
+        buttonDeleteEvent = findViewById(R.id.deleteEventButton);
 
         String eventId = getIntent().getStringExtra("event_id");
 
@@ -95,6 +97,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         if (eventId != null) {
             fetchEventDetails(eventId);
+
+            String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
             setupSignUpButton(eventId);
             setupCheckInButton();
 
