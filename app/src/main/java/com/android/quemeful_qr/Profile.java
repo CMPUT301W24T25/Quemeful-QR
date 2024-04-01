@@ -1,7 +1,7 @@
 package com.android.quemeful_qr;
 
+import android.annotation.SuppressLint;
 import static android.app.PendingIntent.getActivity;
-
 import android.content.Intent;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
@@ -21,6 +21,8 @@ import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -32,6 +34,9 @@ import java.net.URL;
 public class Profile extends Fragment {
 
     TextView firstNameTextView;
+    TextView homePageTextView;
+    TextView contactTextView;
+    TextView bioTextView;
     private Button editProfileButton;
 
     private Button showNotificationsButton;
@@ -73,6 +78,9 @@ public class Profile extends Fragment {
 
 
         firstNameTextView = view.findViewById(R.id.firstNameTextView);
+        homePageTextView = view.findViewById(R.id.homePageTextView);
+        contactTextView = view.findViewById(R.id.contactTextView);
+        bioTextView = view.findViewById(R.id.bioTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
         showNotificationsButton = view.findViewById(R.id.Notification_button);
@@ -117,8 +125,14 @@ public class Profile extends Fragment {
                 String firstName = documentSnapshot.getString("firstName");
                 String lastName = documentSnapshot.getString("lastName");
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
+                String homePage = documentSnapshot.getString("homePage");
+                String contact = documentSnapshot.getString("contact");
+                String bio = documentSnapshot.getString("bio");
 
                 firstNameTextView.setText(String.format("%s %s", firstName, lastName));
+                homePageTextView.setText(String.format("%s", homePage));
+                contactTextView.setText(String.format("%s", contact));
+                bioTextView.setText(String.format("%s", bio));
 
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
                     if (avatarUrl.endsWith(".svg") || avatarUrl.contains("avataaars.io")) {

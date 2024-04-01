@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.android.quemeful_qr"
-        minSdk = 34 // changed minSdk 24 to 34
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
