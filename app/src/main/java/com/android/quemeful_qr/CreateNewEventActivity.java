@@ -21,7 +21,6 @@ package com.android.quemeful_qr;
  *  Author- Android Developers, License- CC BY 2.5 and Apache 2.0, Published Date- 2024-03-12 UTC.
  */
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -42,23 +41,25 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -100,7 +101,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean endTimeTextClicked;
     private EventHelper event;
 
-    private Location location;
     private String locationString;
     private Double locationLatitude;
     private Double locationLongitude;
@@ -247,7 +247,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, location.getName(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventUUID, eventName, event.getLocation(), event.getLatitude(), event.getLongitude(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
@@ -294,12 +294,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
-                location = new Location();
-                location.setName(locationString);
-                location.setLatitude(locationLatitude);
-                location.setLongitude(locationLongitude);
+                event.setLocation(locationString);
+                event.setLatitude(locationLatitude);
+                event.setLongitude(locationLongitude);
 
-                eventLocation.setText(location.getName());
+                eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
 
             }
@@ -340,7 +339,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
-        String eventLocation = location.getName();
+        String eventLocation = event.getLocation();
+        Double eventLatitude = event.getLatitude();
+        Double eventLongitude = event.getLongitude();
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
@@ -357,6 +358,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
+            data.put("latitude", event.getLatitude());
+            data.put("longitude", event.getLongitude());
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
@@ -376,7 +379,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("Firestore", "DocumentSnapshot successfully written!");
-                            Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateNewEventActivity.this, "Create New " +
+                                    "Event Successful\n Latitude: "+ event.getLatitude() +
+                                    " Longitude: "+ event.getLongitude(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
