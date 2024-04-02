@@ -4,7 +4,6 @@ import static android.graphics.Color.BLACK; // black qr code
 import static android.graphics.Color.WHITE; // white background
 import static android.service.controls.ControlsProviderService.TAG;
 
-import android.content.ContentValues;
 import android.graphics.Bitmap;
 
 import android.os.Bundle;
@@ -151,10 +150,10 @@ public class GenerateNewQRActivity extends AppCompatActivity {
                         .document(eventId)
                         .update(eventData)
                         .addOnSuccessListener(aVoid -> {
-                            Log.d(ContentValues.TAG,"Event with specific eventId successfully updated with check in QR field.");
+                            Log.d(TAG,"Event with specific eventId successfully updated with check in QR field.");
                         }).addOnFailureListener(e -> {
                             // handle fail to update event document with specific eventId
-                            Log.d(ContentValues.TAG, "failed to add event check in QR Code field to events collection with document eventId.");
+                            Log.d(TAG, "failed to add event check in QR Code field to events collection with document eventId.");
                         });
 
             }).addOnFailureListener(e -> {

@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -29,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -81,12 +83,14 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private AppCompatButton generateQRButton, reuseQRButton;
     private ImageButton uploadPoster;
 
+    // fragment frame
+    private FrameLayout reuseFragmentFrame;
+
     // poster
     private Uri selectedImageUri;
 
     //firebase
     private FirebaseFirestore db;
-    private CollectionReference eventsRef;
 
     // attributes for event class
     private String eventId, eventName;
@@ -116,7 +120,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         endTime = findViewById(R.id.enter_endTime);
         generateQRButton = findViewById(R.id.QR_generate_button_for_createEvent);
         reuseQRButton = findViewById(R.id.ReuseQRButton);
-
+        reuseFragmentFrame = findViewById(R.id.reuse_qr_fragment_container);
+        reuseFragmentFrame.setVisibility(View.GONE);
         Button cancelButton = findViewById(R.id.cancel_button);
         Button createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
@@ -213,9 +218,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         });
 
         // on click re-uses existing QR code by retrieving from the firebase db.
-        reuseQRButton.setOnClickListener(v -> {
-
-        });
+        // since the re-use data is handled in a fragment, instead of starting activity,
+        // need to load the fragment into the frame layout
+        // call the navigateToReuseQRFragment method to load the fragment pop up.
+        reuseQRButton.setOnClickListener(v -> navigateToReuseQRFragment(eventId));
 
         // cancels creating new event by closing this activity
         cancelButton.setOnClickListener(v -> {
@@ -224,6 +230,25 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         });
 
     } // onCreate closing
+
+    /**
+     * This method is used to show the fragment pop up with the list of event check in Qr codes,
+     * to select one for reuse for the newly created event.
+     * It loads the associated reuse fragment.
+     * @param eventId the event id (to identify correctly) of the newly created event.
+     */
+    private void navigateToReuseQRFragment(String eventId) {
+        ReuseQRCodeFragment reuseFragment = new ReuseQRCodeFragment(eventId);
+        // only before loading the fragment the frame layout as the fragment container should be visible.
+        reuseFragmentFrame.setVisibility(View.VISIBLE);
+        // Begin a transaction
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        // replace the fragment container with the fragment data, that appears within the frame.
+        transaction.replace(R.id.reuse_qr_fragment_container, reuseFragment);
+        transaction.addToBackStack(null);
+        // Commit the transaction
+        transaction.commit();
+    }
 
     /**
      * This method is used to tell which time textview (start time or end time) is pressed/clicked on.
@@ -280,7 +305,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             List<Map<String, Object>> emptySignUpList = new ArrayList<>();
             data.put("signed_up", emptySignUpList);
 
-            eventsRef = db.collection("events");
+            CollectionReference eventsRef = db.collection("events");
             eventsRef.document(eventId).set(data)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("FireStore", "DocumentSnapshot successfully written!");

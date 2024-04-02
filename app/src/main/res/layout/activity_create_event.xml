@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/create_event_layout"
     android:background="@drawable/gradient_background"
     tools:context=".MainActivity">
 
@@ -316,5 +317,15 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
     </LinearLayout>
+
+<!--    Frame for the fragment pop up when Reuse existing QR button is clicked -->
+    <FrameLayout
+        android:id="@+id/reuse_qr_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_below="@+id/header"
+        android:layout_margin="30dp"
+        android:foregroundGravity="center"
+        android:background="@color/use_existing_fragment_bg"/>
 
 </RelativeLayout>

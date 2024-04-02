@@ -27,11 +27,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuemefulQR"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ReuseQRCodeActivity"
+            android:exported="false" />
         <activity
             android:name=".ShareQRCodeActivity"
-            android:theme="@style/Theme.AppCompat.Dialog"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
             android:name=".GeneratePromotionalQRCodeActivity"
             android:exported="false" />

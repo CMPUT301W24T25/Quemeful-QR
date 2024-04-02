@@ -207,14 +207,14 @@
                 android:id="@+id/promotionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="180dp"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:text="@string/promotion"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/scanQRButton" />
+                app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
             <TextView
                 android:id="@+id/signUpTitle"
