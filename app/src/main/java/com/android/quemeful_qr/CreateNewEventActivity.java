@@ -21,10 +21,6 @@ package com.android.quemeful_qr;
  *  Author- Android Developers, License- CC BY 2.5 and Apache 2.0, Published Date- 2024-03-12 UTC.
  */
 
-import static android.content.ContentValues.TAG;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -45,29 +41,26 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -75,9 +68,11 @@ import java.util.UUID;
  * implements DatePickerDialog and TimerPickerDialog which are on the interface
  */
 
-
-
-public class CreateNewEventActivity extends AppCompatActivity {
+public class CreateNewEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
+        DatePickerFragment.DatePickerDialogListener,
+        TimePickerDialog.OnTimeSetListener,
+        TimePickerFragment.TimePickerDialogListener{
+    // xml variables
     private EditText eventTitle;
     private EditText eventDescription;
     private TextView eventLocation;
@@ -90,10 +85,9 @@ public class CreateNewEventActivity extends AppCompatActivity {
     private Button createButton;
     private ImageButton uploadPoster;
 
-
     int LAUNCH_MAP_ACTIVITY = 1;
 
-
+    // poster
     private Uri selectedImageUri;
 
     //firebase
@@ -108,7 +102,6 @@ public class CreateNewEventActivity extends AppCompatActivity {
     private boolean endTimeTextClicked;
     private EventHelper event;
 
-    private Location location;
     private String locationString;
     private Double locationLatitude;
     private Double locationLongitude;
@@ -119,7 +112,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
      * @param hourOfDay the hour that was set
      * @param minute the minute that was set
      */
-
+    @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         startTime = findViewById(R.id.enter_startTime);
         if (startTimeTextClicked){
@@ -164,11 +157,9 @@ public class CreateNewEventActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
 
-
         /**
          * This method calls the imageChooser() to upload an image/poster for the event, when clicked on the plus icon under 'Add Poster'.
          */
-
         uploadPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -256,31 +247,22 @@ public class CreateNewEventActivity extends AppCompatActivity {
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, location.getName(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventUUID, eventName, event.getLocation(), event.getLatitude(), event.getLongitude(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
-
-
-
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
 
-              }
+            }
         });
-
 
         /**
          * This method helps to use the generate button which on click generates a new QR code when required for the new event created.
          * Since, for generating a QR code there exists a separate activity,
          * on clicking on this generate button it starts the GenerateNewQRActivity.
          */
-
-
         generateQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -304,7 +286,6 @@ public class CreateNewEventActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -314,12 +295,11 @@ public class CreateNewEventActivity extends AppCompatActivity {
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
-                location = new Location();
-                location.setName(locationString);
-                location.setLatitude(locationLatitude);
-                location.setLongitude(locationLongitude);
+                event.setLocation(locationString);
+                event.setLatitude(locationLatitude);
+                event.setLongitude(locationLongitude);
 
-                eventLocation.setText(location.getName());
+                eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
 
             }
@@ -356,17 +336,13 @@ public class CreateNewEventActivity extends AppCompatActivity {
     /**
      * This method is used to add the new event created with all its attributes to the firebase collection db.
      * @param event The new event created that is to be added to the firebase.
-    /**
-     * This method is to get the start and the end date from user.
-     * selectDate() allows user to pick date.
-     * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
-
      */
     private void addNewEvent(EventHelper event) {
+
         String eventName = eventTitle.getText().toString();
-
-        String eventLocation = location.getName();
-
+        String eventLocation = event.getLocation();
+        Double eventLatitude = event.getLatitude();
+        Double eventLongitude = event.getLongitude();
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
@@ -383,22 +359,11 @@ public class CreateNewEventActivity extends AppCompatActivity {
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
+            data.put("latitude", event.getLatitude());
+            data.put("longitude", event.getLongitude());
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
-
-            FirebaseMessaging.getInstance().getToken()
-                    .addOnCompleteListener(new OnCompleteListener<String>() {
-                        @Override
-                        public void onComplete(@NonNull Task<String> task) {
-                            if (task.isSuccessful()) {
-                                Log.w(TAG, "Fetching FCM token failed", task.getException());
-                                String token = task.getResult().toString();
-                                data.put("organizer_token", token);
-                            }
-
-
-
             if (event.getPoster() != null) {
                 data.put("poster", event.getPoster());
             }
@@ -415,9 +380,10 @@ public class CreateNewEventActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("Firestore", "DocumentSnapshot successfully written!");
-                            Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            updateUserEvents(currentUserUID, event.getId());
+                            Toast.makeText(CreateNewEventActivity.this, "Create New " +
+                                    "Event Successful\n Latitude: "+ event.getLatitude() +
+                                    " Longitude: "+ event.getLongitude(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -430,7 +396,7 @@ public class CreateNewEventActivity extends AppCompatActivity {
      * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
      * @param dayOfMonth the selected day of the month (1-31, depending on month)
      */
-
+    @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
@@ -448,12 +414,6 @@ public class CreateNewEventActivity extends AppCompatActivity {
             endDateTextClicked = false;
         }
     }
-
-    /**
-     * This method selects an image for the event poster and saves the uri to a variable.
-     */
-
-
     private void updateUserEvents(String userId, String eventId) {
         CollectionReference usersRef = db.collection("users");
         usersRef.document(userId)
@@ -467,9 +427,10 @@ public class CreateNewEventActivity extends AppCompatActivity {
                 });
     }
 
-    private void imageChooser()
-    {
-
+    /**
+     * This method selects an image for the event poster and saves the uri to a variable.
+     */
+    private void imageChooser() {
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
@@ -486,8 +447,4 @@ public class CreateNewEventActivity extends AppCompatActivity {
                     }
                 }
             });
-
-}
-
-
-
+} // closing CreateNewEventActivity

@@ -17,13 +17,15 @@ public class EventHelper implements Serializable {
     private String description;
     private String organizer;
     private String poster;
+    private Double latitude;
+    private Double longitude;
 
     // event organizer getter
     public String getOrganizer() {
         return organizer;
     }
 
-   // event organizer setter
+    // event organizer setter
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
@@ -31,7 +33,9 @@ public class EventHelper implements Serializable {
     /**
      * EventHelper default constructor (no parameters)
      */
-    EventHelper(){}
+    EventHelper(){
+
+    }
 
     /**
      * EventHelper constructor with its attributes as parameters,
@@ -44,16 +48,34 @@ public class EventHelper implements Serializable {
      * @param description the purpose or abouts of the event.
      * @param poster the event poster.
      */
-    EventHelper(String id, String title, String location, String time, String date, String description, String poster){
+    EventHelper(String id, String title, String location, Double latitude, Double longitude, String time, String date, String description, String poster){
         this.id = id;
         this.title = title;
         this.location = location;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.time = time;
         this.date = date;
         this.description = description;
 //        this.organizer = organizer;
         this.poster = poster;
 //        this.attendeeList = ArrayList< Attendees >
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     // event description getter
@@ -126,4 +148,3 @@ public class EventHelper implements Serializable {
         this.poster = poster;
     }
 } // class closing
-
