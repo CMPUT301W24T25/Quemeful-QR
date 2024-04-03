@@ -80,6 +80,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        //change what needs to be set as GONE initially
         textViewEventTitle = findViewById(R.id.textViewEventTitle);
         textViewEventDate = findViewById(R.id.textViewEventDate);
         textViewEventTime = findViewById(R.id.textViewEventTime);

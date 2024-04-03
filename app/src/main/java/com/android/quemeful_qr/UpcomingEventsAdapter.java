@@ -14,6 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
 
 /**
@@ -70,6 +72,39 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
             holder.image.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
         }
 
+        holder.itemView.setOnLongClickListener(v -> {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View dialogView = inflater.inflate(R.layout.dialog_box, null);
+
+            final android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(context);
+            dialogBuilder.setView(dialogView);
+
+            TextView deleteButton = dialogView.findViewById(R.id.materialButton2); // Assume your delete button has this ID
+            TextView cancelButton = dialogView.findViewById(R.id.materialButton); // Assume your cancel button has this ID
+
+            final android.app.AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
+
+            deleteButton.setOnClickListener(view -> {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                String eventId = (String) event.getId();
+                if (eventId != null) {
+                    db.collection("events").document(eventId).delete().addOnSuccessListener(aVoid -> {
+                        events.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, events.size());
+                        dialog.dismiss();
+                    }).addOnFailureListener(e -> {
+                        // Handle failure
+                        dialog.dismiss();
+                    });
+                }
+            });
+
+            cancelButton.setOnClickListener(view -> dialog.dismiss());
+
+            return true;
+        });
     }
 
     /**
