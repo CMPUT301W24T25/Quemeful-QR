@@ -49,6 +49,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         notifyDataSetChanged(); // Notify the adapter to re-render
     }
 
+    public void clearEvents() {
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView eventNameTextView;
         private TextView eventDateTextView;
@@ -70,6 +74,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 }
             });
         }
+
+
 
         public void bindEventData(Map<String, Object> event) {
             eventNameTextView.setText((String) event.get("title"));

@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-
         app:cardBackgroundColor="#EAD2D2"
         app:cardCornerRadius="4dp">
 
@@ -32,6 +31,8 @@
                 android:gravity="center"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFFFFF" />
+
+
 
         </LinearLayout>
 

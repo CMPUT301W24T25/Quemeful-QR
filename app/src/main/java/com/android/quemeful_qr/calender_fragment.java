@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,6 +20,7 @@ public class calender_fragment extends Fragment {
     private CalendarView mCalendarView;
     private TextView mSelectedDate;
     private SimpleDateFormat dateFormat;
+    private SharedViewModel sharedViewModel;
 
     @Nullable
     @Override
@@ -34,22 +36,18 @@ public class calender_fragment extends Fragment {
         // Set the date format to "dd MMMM yyyy"
         dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
 
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
         // Initialize the CalendarView to display today's date
         Calendar today = Calendar.getInstance();
-        // Set today's date in the CalendarView
         mCalendarView.setDate(today.getTimeInMillis());
-        // Update the selected date TextView with today's date
         updateSelectedDate(today);
 
-        // Set the date change listener
-        mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                Calendar selectedDate = Calendar.getInstance();
-                selectedDate.set(year, month, dayOfMonth);
-                // Update the selected date TextView with the selected date
-                updateSelectedDate(selectedDate);
-            }
+        mCalendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.set(year, month, dayOfMonth);
+            updateSelectedDate(selectedDate);
+            sharedViewModel.selectDate(selectedDate); // Share the selected date with the ViewModel
         });
 
         return rootView;

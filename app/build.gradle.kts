@@ -41,6 +41,7 @@ android {
         }
 
         dependencies {
+            implementation ("com.google.android.material:material:<version>")
             implementation("com.squareup.okhttp3:okhttp:4.10.0")
             implementation("org.apache.directory.studio:org.apache.commons.io:2.4")
             implementation("com.google.firebase:firebase-messaging:23.4.1")
