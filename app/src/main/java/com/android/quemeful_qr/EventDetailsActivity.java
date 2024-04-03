@@ -1,5 +1,7 @@
 package com.android.quemeful_qr;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,6 +34,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is a class activity that handles the event details view for specific user type.
@@ -40,12 +44,14 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription, current_milestone_text, congradulatoryText;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
-    private TextView viewAttendee, textViewScanQR, textViewSignUp, textDeleteEvent;
-    private Button buttonCheckIn, buttonSignUp, buttonDeleteEvent;
+    private TextView viewAttendee, textViewScanQR, textViewSignUp, textViewDeleteEvent; //new
+    private Button buttonCheckIn, buttonSignUp, buttonDeleteEvent; //new
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
 
     private CardView milestoneCardView;
+
+    AtomicBoolean isAdminNew = new AtomicBoolean();
 
     /**
      * This onCreate method is used to set up an interface with all event details.
@@ -86,41 +92,59 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         textViewScanQR = findViewById(R.id.scanQRTitle);
         textViewSignUp = findViewById(R.id.signUpTitle);
-        textDeleteEvent = findViewById(R.id.deleteEventTitle);
+        textViewDeleteEvent = findViewById(R.id.deleteEventTitle); //new
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
-        buttonDeleteEvent = findViewById(R.id.deleteEventButton);
+        buttonDeleteEvent = findViewById(R.id.deleteEventButton); //new
 
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID); //new
         String eventId = getIntent().getStringExtra("event_id");
 
-
-
-        if (eventId != null) {
-            fetchEventDetails(eventId);
-
-            String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-            setupSignUpButton(eventId);
-            setupCheckInButton();
-
-            // on click on viewAttendee it navigates to the list of attendees.
-            viewAttendee.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    navigateToListOfAttendees(eventId);
+        //new
+        db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                DocumentSnapshot document = task.getResult();
+                Boolean isAdminResult = document.getBoolean("Admin");
+                if (isAdminResult != null && isAdminResult) {
+                    isAdminNew.set(true);
+                    Log.d(TAG, "This is an admin: " + deviceId);
+                } else {
+                    isAdminNew.set(false);
+                    Log.d(TAG, "This is not an admin: " + deviceId);
                 }
-            });
-
-            milestoneCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    navigateToLMilestone(eventId);
+                if (eventId != null) {
+                    fetchEventDetails(eventId, isAdminNew);
+                    nonAdminFunctionalities(eventId);
+                } else {
+                    //Handle error
                 }
-            });
 
-        } else {
-            // Handle the error
-        }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+        //newend
+    }
+
+    private void nonAdminFunctionalities(String eventId) {
+        setupSignUpButton(eventId);
+        setupCheckInButton();
+
+        // on click on viewAttendee it navigates to the list of attendees.
+        viewAttendee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToListOfAttendees(eventId);
+            }
+        });
+
+        milestoneCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToLMilestone(eventId);
+            }
+        });
+
         DocumentReference eventRef = db.collection("events").document(eventId);
 
         eventRef.get().addOnCompleteListener(task -> {
@@ -142,8 +166,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
                     current_milestone_text.setText( "Next Milestone: " + signedUpUsers.size() + "/" + nextMilestone);
                 }}});
-
     }
+
 
     /**
      * This method is used to set the button to sign up for an event.
@@ -208,7 +232,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                                         if (signedUpUsers.size() == milestone) {
                                             if (milestone == 1){
-                                                 description = "You just got your first attendee!";
+                                                description = "You just got your first attendee!";
                                             } else {
                                                 description = "You have reached " + milestone + " attendees!";
                                             }
@@ -260,9 +284,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     /**
      * This method is used to fetch the event details with its specific id from the firebase,
      * and display them to the user.
-     * @param eventId the event being attended/signed up/checked in (identified with its specific id).
+     *
+     * @param eventId    the event being attended/signed up/checked in (identified with its specific id).
+     * @param isAdminNew
      */
-    private void fetchEventDetails (String eventId) {
+    private void fetchEventDetails (String eventId, AtomicBoolean isAdminNew) {
 
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -276,11 +302,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                     textViewEventLocation.setText(event.getLocation());
                     textViewEventDescription.setText(event.getDescription());
 
-                    // Update UI for organizer or general user
-                    if (currentUserUID.equals(event.getOrganizer())) {
-                        updateUIForOrganizer();
+                    if (isAdminNew.get()) {
+                        updateUIForAdmin();
                     } else {
-                        updateUIForGeneralUser(currentUserUID, event, documentSnapshot);
+                        // Update UI for organizer or general user
+                        if (currentUserUID.equals(event.getOrganizer())) {
+                            updateUIForOrganizer();
+                        } else {
+                            updateUIForGeneralUser(currentUserUID, event, documentSnapshot);
+                        }
                     }
 
                     // Decode and set the image
@@ -297,6 +327,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void updateUIForAdmin() {
+        // Show admin-specific UI elements
+        textViewDeleteEvent.setVisibility(View.VISIBLE);
+        buttonDeleteEvent.setVisibility(View.VISIBLE);
+
+        textViewScanQR.setVisibility(View.GONE);
+        buttonCheckIn.setVisibility(View.GONE);
+        textViewSignUp.setVisibility(View.GONE);
+        buttonSignUp.setVisibility(View.GONE);
+        viewAttendee.setVisibility(View.GONE);
+        milestoneCardView.setVisibility(View.GONE);
+        current_milestone_text.setVisibility(View.GONE);
+        congradulatoryText.setVisibility(View.GONE);
+    }
+
     /**
      * This method is used to change the UI when an attendee signs up for an event.
      */
@@ -305,6 +350,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn.setVisibility(View.GONE);
         textViewSignUp.setVisibility(View.GONE);
         buttonSignUp.setVisibility(View.GONE);
+        textViewDeleteEvent.setVisibility(View.GONE);
+        buttonDeleteEvent.setVisibility(View.GONE);
         viewAttendee.setVisibility(View.VISIBLE);
     }
 
@@ -346,6 +393,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         TextView textViewSignUp = findViewById(R.id.signUpTitle);
         Button buttonSignUp = findViewById(R.id.signUpButton);
         CardView milestone = findViewById(R.id.milestone_cardView);
+
+        textViewDeleteEvent.setVisibility(View.GONE);
+        buttonDeleteEvent.setVisibility(View.GONE);
 
         if (isUserSignedUp) {
             textViewSignUp.setVisibility(View.GONE);
