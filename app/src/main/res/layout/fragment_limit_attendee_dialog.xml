@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF1E0"
+    tools:context=".LimitAttendeeDialogFragment">
+
+    <TextView
+        android:id="@+id/limitAttendee_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Limit Attendees"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:fontFamily="serif"
+        android:layout_margin="10dp"/>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/enter_limit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Enter limit"
+        android:layout_below="@id/limitAttendee_header" />
+
+    <Button
+        android:id="@+id/save_limit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enter_limit"
+        android:layout_alignEnd="@+id/enter_limit"
+        android:text="Save"
+        android:layout_margin="10dp" />
+
+
+</RelativeLayout>
