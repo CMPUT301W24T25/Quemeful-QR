@@ -1,9 +1,10 @@
 package com.android.quemeful_qr;
-
-import android.annotation.SuppressLint;
-import static android.app.PendingIntent.getActivity;
 import android.content.Intent;
-import android.graphics.drawable.PictureDrawable;
+
+
+
+import android.graphics.drawable.Drawable;
+
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -14,19 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+
 
 import com.bumptech.glide.Glide;
-import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
+import java.io.File;
 
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * This class is used to handle user profile's editing functionality.
@@ -124,45 +118,36 @@ public class Profile extends Fragment {
             if (documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("firstName");
                 String lastName = documentSnapshot.getString("lastName");
+
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
                 String homePage = documentSnapshot.getString("homePage");
                 String contact = documentSnapshot.getString("contact");
                 String bio = documentSnapshot.getString("bio");
+
+                String avatarPath = documentSnapshot.getString("avatarUrl");
+
 
                 firstNameTextView.setText(String.format("%s %s", firstName, lastName));
                 homePageTextView.setText(String.format("%s", homePage));
                 contactTextView.setText(String.format("%s", contact));
                 bioTextView.setText(String.format("%s", bio));
 
-                if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                    if (avatarUrl.endsWith(".svg") || avatarUrl.contains("avataaars.io")) {
-                        loadSvgFromUrl(avatarUrl);
+                if (avatarPath != null && !avatarPath.isEmpty()) {
+                    if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
+                        // Avatar path is a remote URL
+                        Glide.with(this).load(avatarPath).into(avatarImageView);
                     } else {
-                        Glide.with(this).load(avatarUrl).into(avatarImageView);
+                        // Avatar path is a local file path
+                        File imgFile = new File(avatarPath);
+                        if (imgFile.exists()) {
+                            Drawable drawable = Drawable.createFromPath(imgFile.getAbsolutePath());
+                            avatarImageView.setImageDrawable(drawable);
+                        }
                     }
                 }
             }
         });
     }
 
-    /**
-     * This method is used to convert the image url to SVG and display it in the imageview.
-     * @param url the url of the image
-     */
-    private void loadSvgFromUrl(String url) {
-        new Thread(() -> {
-            try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                InputStream inputStream = connection.getInputStream();
-                SVG svg = SVG.getFromInputStream(inputStream);
-                final PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
+}
 
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> avatarImageView.setImageDrawable(drawable));
-                }
-            } catch (IOException | SVGParseException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-} // class closing

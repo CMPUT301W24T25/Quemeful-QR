@@ -54,6 +54,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -74,11 +75,9 @@ import java.util.UUID;
  * implements DatePickerDialog and TimerPickerDialog which are on the interface
  */
 
-public class CreateNewEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener,
-        DatePickerFragment.DatePickerDialogListener,
-        TimePickerDialog.OnTimeSetListener,
-        TimePickerFragment.TimePickerDialogListener{
-    // xml variables
+
+
+public class CreateNewEventActivity extends AppCompatActivity {
     private EditText eventTitle;
     private EditText eventDescription;
     private TextView eventLocation;
@@ -91,9 +90,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private Button createButton;
     private ImageButton uploadPoster;
 
+
     int LAUNCH_MAP_ACTIVITY = 1;
 
-    // poster
+
     private Uri selectedImageUri;
 
     //firebase
@@ -119,7 +119,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
      * @param hourOfDay the hour that was set
      * @param minute the minute that was set
      */
-    @Override
+
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         startTime = findViewById(R.id.enter_startTime);
         if (startTimeTextClicked){
@@ -164,9 +164,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
 
+
         /**
          * This method calls the imageChooser() to upload an image/poster for the event, when clicked on the plus icon under 'Add Poster'.
          */
+
         uploadPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,11 +273,14 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
               }
         });
 
+
         /**
          * This method helps to use the generate button which on click generates a new QR code when required for the new event created.
          * Since, for generating a QR code there exists a separate activity,
          * on clicking on this generate button it starts the GenerateNewQRActivity.
          */
+
+
         generateQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -298,6 +303,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             }
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -350,11 +356,17 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     /**
      * This method is used to add the new event created with all its attributes to the firebase collection db.
      * @param event The new event created that is to be added to the firebase.
+    /**
+     * This method is to get the start and the end date from user.
+     * selectDate() allows user to pick date.
+     * setDateFormat() is a method used to set the format for displaying the date in dd/MM/yyyy.
+
      */
     private void addNewEvent(EventHelper event) {
-
         String eventName = eventTitle.getText().toString();
+
         String eventLocation = location.getName();
+
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
@@ -418,7 +430,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
      * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
      * @param dayOfMonth the selected day of the month (1-31, depending on month)
      */
-    @Override
+
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
@@ -440,7 +452,24 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     /**
      * This method selects an image for the event poster and saves the uri to a variable.
      */
-    private void imageChooser() {
+
+
+    private void updateUserEvents(String userId, String eventId) {
+        CollectionReference usersRef = db.collection("users");
+        usersRef.document(userId)
+                .update("events_organized", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating user", e);
+                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void imageChooser()
+    {
+
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
@@ -457,4 +486,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     }
                 }
             });
-} // closing CreateNewEventActivity
+
+}
+
+
+

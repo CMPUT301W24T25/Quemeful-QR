@@ -6,8 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import androidx.fragment.app.Fragment;
 import org.osmdroid.views.MapView;
+
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 
 /**
  * This class is used to set up create a new event button and handle the location map.
@@ -16,6 +23,7 @@ public class Events extends Fragment {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView map = null;
     Button createEventButton;
+
 
     /**
      * Events default constructor (no parameters)
@@ -35,12 +43,12 @@ public class Events extends Fragment {
      *
      * @return view
      */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.events, container, false);
 
-
-        View view = inflater.inflate(R.layout.fragment_events, container, false);
         // Inflate the layout for this fragment
         createEventButton = view.findViewById(R.id.create_event_button);
 
@@ -50,19 +58,41 @@ public class Events extends Fragment {
                 openCreateNewEventActivity();
             }
         });
-
         return view;
     }
 
-    /**
-     * This method is used to start the CreateNewEventActivity when create event button is clicked.
-     */
-    protected void openCreateNewEventActivity(){
-        Intent intent = new Intent(Events.this.getActivity(), CreateNewEventActivity.class);
+
+    private void openCreateNewEventActivity() {
+        Intent intent = new Intent(getActivity(), CreateNewEventActivity.class);
         startActivity(intent);
     }
 
+    private void addCalendarFragment() {
+        calender_fragment calendarFragment = new calender_fragment();
 
-} // class closing
+        FragmentManager fragmentManager = getChildFragmentManager();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.calendar_container, calendarFragment);
+
+        fragmentTransaction.commit();
+    }
+
+    private void addEventFragment() {
+        // Here you can add your event fragment using FragmentTransaction
+        // For demonstration purposes, let's assume you have an eventFragment already implemented
+        eventFragment eventFragment = new eventFragment();
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.event_container, eventFragment);
+
+        fragmentTransaction.commit();
+    }
+
+}
 
 
