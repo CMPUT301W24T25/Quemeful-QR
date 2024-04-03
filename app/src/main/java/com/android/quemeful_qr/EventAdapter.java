@@ -68,7 +68,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     Map<String, Object> event = events.get(position);
-                    Intent intent = new Intent(context, Admin_Event_Detail_Activity.class);
+                    Intent intent = new Intent(context, AdminEventDetailsActivity.class);
                     intent.putExtra("eventId", (String) event.get("eventId"));
                     context.startActivity(intent);
                 }
