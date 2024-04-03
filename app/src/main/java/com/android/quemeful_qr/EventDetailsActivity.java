@@ -25,6 +25,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -303,7 +305,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     textViewEventDescription.setText(event.getDescription());
 
                     if (isAdminNew.get()) {
-                        updateUIForAdmin();
+                        updateUIForAdmin(eventId);
                     } else {
                         // Update UI for organizer or general user
                         if (currentUserUID.equals(event.getOrganizer())) {
@@ -327,7 +329,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUIForAdmin() {
+    private void updateUIForAdmin(String eventId) {
         // Show admin-specific UI elements
         textViewDeleteEvent.setVisibility(View.VISIBLE);
         buttonDeleteEvent.setVisibility(View.VISIBLE);
@@ -340,6 +342,33 @@ public class EventDetailsActivity extends AppCompatActivity {
         milestoneCardView.setVisibility(View.GONE);
         current_milestone_text.setVisibility(View.GONE);
         congradulatoryText.setVisibility(View.GONE);
+
+        buttonDeleteEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference eventRef = db.collection("events").document(eventId);
+
+                // Delete the document
+                eventRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Handle successful deletion, e.g., show a toast or log
+                        Log.d("DeleteEvent", "Event successfully deleted");
+                        Toast.makeText(getApplicationContext(), "Event successfully deleted", Toast.LENGTH_SHORT).show();
+
+                        // Optionally, end the activity to go back to the previous screen
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors
+                        Log.w("DeleteEvent", "Error deleting event", e);
+                        Toast.makeText(getApplicationContext(), "Error deleting event", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /**

@@ -126,6 +126,7 @@ public class Home extends Fragment implements EventClickListenerInterface{
         Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
         intent.putExtra("event_id", event.getId());
         startActivity(intent);
+        fetchEvents();
     }
 
 } // class closing
