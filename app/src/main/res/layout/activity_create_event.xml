@@ -41,6 +41,15 @@
         android:text="@string/event_title"
         android:textSize="22sp" />
 
+    <ImageButton
+        android:id="@+id/limit_no_of_attendees_buttonIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/event_title"
+        android:layout_below="@+id/header"
+        android:layout_margin="5dp"
+        android:src="@drawable/baseline_attendee_limit_24" />
+
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/enter_title"
         android:layout_width="match_parent"
@@ -326,6 +335,7 @@
         android:layout_below="@+id/header"
         android:layout_margin="30dp"
         android:foregroundGravity="center"
-        android:background="@color/use_existing_fragment_bg"/>
+        android:background="@color/use_existing_fragment_bg"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
