@@ -1,5 +1,7 @@
 package com.android.quemeful_qr;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,9 +16,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is an adapter class used to put the events list organized that day, and
@@ -27,12 +31,15 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     private Context context;
     private static EventClickListenerInterface mClickListener;
 
+    private String deviceId;
+    AtomicBoolean isAdminNew;
+
     /**
      * EventsTodayAdapter constructor with parameters.
      * @param context Context
      * @param events All events on that day or upcoming.
      */
-    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener){
+    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener, String deviceId){
         this.context = context;
         this.events = events;
         this.mClickListener = clickListener;
@@ -74,6 +81,29 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
             holder.eventImage.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
         }
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                DocumentSnapshot document = task.getResult();
+                Boolean isAdminResult = document.getBoolean("Admin");
+                if (isAdminResult != null && isAdminResult) {
+                    isAdminNew.set(true);
+                    Log.d(TAG, "admin delete event true: " + deviceId);
+                } else {
+                    isAdminNew.set(false);
+                    Log.d(TAG, "admin delete event false: " + deviceId);
+                }
+                if (event.getId() != null) {
+                } else {
+                    //Handle error
+                }
+
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+
         holder.itemView.setOnLongClickListener(v -> {
             LayoutInflater inflater = LayoutInflater.from(context);
             View dialogView = inflater.inflate(R.layout.dialog_box, null);
@@ -88,7 +118,6 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
             dialog.show();
 
             deleteButton.setOnClickListener(view -> {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
                 String eventId = (String) event.getId();
                 if (eventId != null) {
                     db.collection("events").document(eventId).delete().addOnSuccessListener(aVoid -> {

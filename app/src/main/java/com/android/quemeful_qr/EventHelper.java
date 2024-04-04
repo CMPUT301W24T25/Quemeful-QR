@@ -18,6 +18,12 @@ public class EventHelper implements Serializable {
     private String organizer;
     private String poster;
 
+    /**
+     * EventHelper default constructor (no parameters)
+     */
+    public EventHelper(String eventId1, String testEvent1, String testLocation1, String testTime1, String testDate1, String testDescription1, String testPoster1, String testToken1) {
+    }
+
     // event organizer getter
     public String getOrganizer() {
         return organizer;
@@ -27,11 +33,6 @@ public class EventHelper implements Serializable {
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
-
-    /**
-     * EventHelper default constructor (no parameters)
-     */
-    EventHelper(){}
 
     /**
      * EventHelper constructor with its attributes as parameters,
