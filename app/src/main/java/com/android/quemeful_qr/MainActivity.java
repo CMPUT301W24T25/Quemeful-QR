@@ -359,6 +359,8 @@ public class MainActivity extends AppCompatActivity {
      * This method is used to create the customized bottom navigation bar.
      */
     private void initializeBottomNavigation() {
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         MeowBottomNavigation bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.add(new MeowBottomNavigation.Model(1, R.drawable.baseline_dashboard_24));
         bottomNavigation.add(new MeowBottomNavigation.Model(2, R.drawable.baseline_event_24));
@@ -372,10 +374,10 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
             switch (item.getId()) {
                 case 1:
-                    fragment = isAdmin ? AdminDashboardFragment.newInstance() : new Home();
+                    fragment = isAdmin ? AdminDashboardFragment.newInstance() : new Home(deviceId, isAdmin);
                     break;
                 case 2:
-                    fragment = isAdmin ? new AdminEventFragment() : new Events();
+                    fragment = isAdmin ? new Home(deviceId, isAdmin) : new Events();
                     break;
                 case 3:
                     fragment = Profile.newInstance();

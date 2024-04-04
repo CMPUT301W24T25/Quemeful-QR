@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,10 +24,15 @@ import java.util.List;
  */
 public class Home extends Fragment implements EventClickListenerInterface{
 
+    public String deviceId;
+    public boolean isAdmin;
     /**
      * This is a default Home constructor (no parameters).
      */
-    public Home() {}
+    public Home(String deviceId, boolean isAdmin) {
+        this.deviceId = deviceId;
+        this.isAdmin = isAdmin;
+    }
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView eventsRecyclerView;
@@ -45,6 +52,14 @@ public class Home extends Fragment implements EventClickListenerInterface{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        TextView textViewDashboard = view.findViewById(R.id.textViewDashboard);
+
+        if (!isAdmin) {
+            textViewDashboard.setText("Dashboard");
+        } else {
+            textViewDashboard.setText("Events");
+        }
 
         eventsRecyclerView = view.findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -125,13 +140,13 @@ public class Home extends Fragment implements EventClickListenerInterface{
      */
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
         if (!todayEvents.isEmpty()) {
-            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this);
+            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this, isAdmin);
             eventsRecyclerView.setAdapter(todayEventAdapter);
         }
         else {}
 
         if (!upcomingEvents.isEmpty()) {
-            UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this);
+            UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this, isAdmin);
             upcomingEventsRecyclerView.setAdapter(upcomingEventAdapter);
         }
         else {}
@@ -143,10 +158,17 @@ public class Home extends Fragment implements EventClickListenerInterface{
      */
     @Override
     public void onEventClick(EventHelper event) {
-        Log.d("HomeFragment", "Event clicked: " + event.getTitle());
-        Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
-        intent.putExtra("event_id", event.getId());
-        startActivity(intent);
+        if (!isAdmin) {
+            Log.d("HomeFragment", "Event clicked: " + event.getTitle());
+            Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+            intent.putExtra("event_id", event.getId());
+            startActivity(intent);
+        } else {
+            Log.d("HomeFragment", "Admin Event clicked: " + event.getTitle());
+            Intent intent = new Intent(getActivity(), AdminEventDetailsActivity.class);
+            intent.putExtra("event_id", event.getId());
+            startActivity(intent);
+        }
     }
 
 } // class closing

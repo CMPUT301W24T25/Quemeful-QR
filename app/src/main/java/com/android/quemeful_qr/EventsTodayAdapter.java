@@ -1,5 +1,7 @@
 package com.android.quemeful_qr;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +16,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is an adapter class used to put the events list organized that day, and
@@ -25,15 +31,18 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     private Context context;
     private static EventClickListenerInterface mClickListener;
 
+    private boolean isAdmin;
+
     /**
      * EventsTodayAdapter constructor with parameters.
      * @param context Context
      * @param events All events on that day or upcoming.
      */
-    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener){
+    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener, boolean isAdmin){
         this.context = context;
         this.events = events;
         this.mClickListener = clickListener;
+        this.isAdmin = isAdmin;
     }
 
     /**
@@ -71,6 +80,42 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         } else {
             holder.eventImage.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
         }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        holder.itemView.setOnLongClickListener(v -> {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View dialogView = inflater.inflate(R.layout.dialog_box, null);
+
+            if (isAdmin) {
+                final android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(context);
+                dialogBuilder.setView(dialogView);
+
+                TextView deleteButton = dialogView.findViewById(R.id.materialButton2); // Assume your delete button has this ID
+                TextView cancelButton = dialogView.findViewById(R.id.materialButton); // Assume your cancel button has this ID
+
+                final android.app.AlertDialog dialog = dialogBuilder.create();
+                dialog.show();
+
+                deleteButton.setOnClickListener(view -> {
+                    String eventId = (String) event.getId();
+                    if (eventId != null) {
+                        db.collection("events").document(eventId).delete().addOnSuccessListener(aVoid -> {
+                            events.remove(position);
+                            notifyItemRemoved(position);
+                            notifyItemRangeChanged(position, events.size());
+                            dialog.dismiss();
+                        }).addOnFailureListener(e -> {
+                            // Handle failure
+                            dialog.dismiss();
+                        });
+                    }
+                });
+
+                cancelButton.setOnClickListener(view -> dialog.dismiss());
+            }
+            return true;
+        });
     }
 
     /**
