@@ -107,32 +107,8 @@ public class ViewEventActivity extends AppCompatActivity {
 
                                }); //replaces the old sign up list with the new one
 
-//
 
 
-//
-
-//                                      eventsDocRef.update("signed_up", FieldValue.arrayUnion(signupList.get(i)))
-//                                               .addOnCompleteListener(aVoid -> {
-//                                                   // Update UI to reflect that the user has signed up
-//                                                   Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
-//
-//                                                }); //updates the signed_up list
-
-
-
-
-//                               for (int j = 0; j < signupList.size(); j++){
-//                Log.d("work uid", signupList.get(j).get("uid").toString());
-//                Log.d("work checkin list", signupList.get(j).get("checked_in").toString());
-//            }
-//                               eventsDocRef.update("signed_up", FieldValue.arrayUnion(signupList))
-//                                       .addOnCompleteListener(aVoid -> {
-//                                           // Update UI to reflect that the user has signed up
-//                                           Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
-//
-//                                       }); //updates the signed_up list
-//                               Toast.makeText(ViewEventActivity.this, "check-in success", Toast.LENGTH_SHORT).show();
                        }
                });
 
