@@ -33,7 +33,9 @@ public class EventHelper implements Serializable {
     /**
      * EventHelper default constructor (no parameters)
      */
-//    EventHelper(String eventUUID, String eventName, String location, Double latitude, Double longitude, String eventDate, String eventDescr, String s){}
+    EventHelper(){
+
+    }
 
     /**
      * EventHelper constructor with its attributes as parameters,

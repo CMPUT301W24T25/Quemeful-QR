@@ -94,7 +94,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private CollectionReference eventsRef;
 
     // attributes for event class
-    private String eventUUID;
+    private String eventId;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
@@ -231,7 +231,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             @Override
             public void onClick(View v) {
                 //generates random id which is the QR code
-                eventUUID = UUID.randomUUID().toString();
+                eventId = db.collection("events").document().getId();
 
                 String eventName = eventTitle.getText().toString();
                 String eventTime = startTime.getText().toString();
@@ -247,7 +247,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, event.getLocation(), event.getLatitude(), event.getLongitude(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
                 } catch (IOException e) {
@@ -294,9 +294,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
-                event.setLocation(locationString);
-                event.setLatitude(locationLatitude);
-                event.setLongitude(locationLongitude);
+//                event.setLocation(locationString);
+//                event.setLatitude(locationLatitude);
+//                event.setLongitude(locationLongitude);
 
                 eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
@@ -347,7 +347,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
+        if (eventId.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
             //empty string check
             Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
             myToast.show();
@@ -373,15 +373,15 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("signed_up", emptySignUpList);
 
             eventsRef
-                    .document(db.collection("events").document().getId())
+                    .document(eventId)
                     .set(data)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("Firestore", "DocumentSnapshot successfully written!");
                             Toast.makeText(CreateNewEventActivity.this, "Create New " +
-                                    "Event Successful\n Latitude: "+ event.getLatitude() +
-                                    " Longitude: "+ event.getLongitude(), Toast.LENGTH_SHORT).show();
+                                    "Event Successful\n id: " + eventId, Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     });
         }
