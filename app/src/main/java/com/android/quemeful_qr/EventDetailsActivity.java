@@ -28,6 +28,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.osmdroid.views.MapView;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private CardView milestoneCardView;
 
+    private MapView map;
+    private Button displayMapPinsActivityButton;
+
     /**
      * This onCreate method is used to set up an interface with all event details.
      * @param savedInstanceState If the activity is being re-initialized after
@@ -63,7 +68,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
-
+        map = findViewById(R.id.map);
+        displayMapPinsActivityButton = findViewById(R.id.display_map_pins_activity_button);
         // navigate back to previous page on clicking the back arrow.
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,6 +307,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewSignUp.setVisibility(View.GONE);
         buttonSignUp.setVisibility(View.GONE);
         viewAttendee.setVisibility(View.VISIBLE);
+        map.setVisibility(View.VISIBLE);
+        displayMapPinsActivityButton.setVisibility(View.VISIBLE);
     }
 
     /**
