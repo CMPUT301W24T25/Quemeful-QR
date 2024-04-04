@@ -109,13 +109,13 @@ public class Home extends Fragment implements EventClickListenerInterface{
      */
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
         if (!todayEvents.isEmpty()) {
-            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this, deviceId, isAdmin);
+            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this, isAdmin);
             eventsRecyclerView.setAdapter(todayEventAdapter);
         }
         else {}
 
         if (!upcomingEvents.isEmpty()) {
-            UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this);
+            UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this, isAdmin);
             upcomingEventsRecyclerView.setAdapter(upcomingEventAdapter);
         }
         else {}

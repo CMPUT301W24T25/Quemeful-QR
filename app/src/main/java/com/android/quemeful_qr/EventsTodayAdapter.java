@@ -31,7 +31,6 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     private Context context;
     private static EventClickListenerInterface mClickListener;
 
-    private String deviceId;
     private boolean isAdmin;
 
     /**
@@ -39,7 +38,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
      * @param context Context
      * @param events All events on that day or upcoming.
      */
-    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener, String deviceId, boolean isAdmin){
+    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener, boolean isAdmin){
         this.context = context;
         this.events = events;
         this.mClickListener = clickListener;
