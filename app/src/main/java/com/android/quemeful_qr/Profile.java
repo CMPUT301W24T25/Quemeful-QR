@@ -1,8 +1,11 @@
+//https://stackoverflow.com/a/10209902
 package com.android.quemeful_qr;
 
+import android.content.Context;
 import android.annotation.SuppressLint;
 import static android.app.PendingIntent.getActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -42,6 +46,19 @@ public class Profile extends Fragment {
     private Button showNotificationsButton;
     private ImageView avatarImageView;
     private String deviceId;
+
+    private SharedPreferences sharedPref;
+
+    private Switch geolocationSwitch;
+//    Context context = getActivity();
+//    SharedPreferences sharedPref = context.getSharedPreferences(
+//            getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+
+//    SharedPreferences settings = getSharedPreferences("UserInfo", 0);
+//    SharedPreferences.Editor editor = settings.edit();
+//editor.putString("Username",txtUname.getText().toString());
+//editor.putString("Password",txtPWD.getText().toString());
+//editor.commit()
 
     /**
      * Profile default constructor (no parameters)
@@ -83,6 +100,7 @@ public class Profile extends Fragment {
         bioTextView = view.findViewById(R.id.bioTextView);
         editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
+        geolocationSwitch = view.findViewById(R.id.notificationSwitch);
         showNotificationsButton = view.findViewById(R.id.Notification_button);
 
         deviceId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -92,6 +110,9 @@ public class Profile extends Fragment {
             Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             startActivity(intent);
         });
+        geolocationSwitch.isChecked();
+
+
 
         showNotificationsButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), ShowNotificationsActivity.class);

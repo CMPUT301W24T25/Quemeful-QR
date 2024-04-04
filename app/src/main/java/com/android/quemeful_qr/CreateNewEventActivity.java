@@ -45,6 +45,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,12 +62,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -101,14 +101,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private CollectionReference eventsRef;
 
     // attributes for event class
-    private String eventUUID;
+    private String eventId;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
     private boolean endTimeTextClicked;
     private EventHelper event;
 
-    private Location location;
     private String locationString;
     private Double locationLatitude;
     private Double locationLongitude;
@@ -239,7 +238,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             @Override
             public void onClick(View v) {
                 //generates random id which is the QR code
-                eventUUID = UUID.randomUUID().toString();
+                eventId = db.collection("events").document().getId();
 
                 String eventName = eventTitle.getText().toString();
                 String eventTime = startTime.getText().toString();
@@ -257,7 +256,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
 
                     //create new event
-                    event = new EventHelper(eventUUID, eventName, location.getName(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                    event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
 
@@ -308,12 +307,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
-                location = new Location();
-                location.setName(locationString);
-                location.setLatitude(locationLatitude);
-                location.setLongitude(locationLongitude);
+//                event.setLocation(locationString);
+//                event.setLatitude(locationLatitude);
+//                event.setLongitude(locationLongitude);
 
-                eventLocation.setText(location.getName());
+                eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
 
             }
@@ -354,13 +352,15 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private void addNewEvent(EventHelper event) {
 
         String eventName = eventTitle.getText().toString();
-        String eventLocation = location.getName();
+        String eventLocation = event.getLocation();
+        Double eventLatitude = event.getLatitude();
+        Double eventLongitude = event.getLongitude();
         String eventTime = startTime.getText().toString();
         String eventDate = startDate.getText().toString();
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventUUID.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
+        if (eventId.matches("") || eventLocation.matches("") || eventTime.matches("") || eventDate.matches("") || eventDescr.matches("")){
             //empty string check
             Toast myToast = Toast.makeText(CreateNewEventActivity.this, "please enter all fields", Toast.LENGTH_SHORT);
             myToast.show();
@@ -371,6 +371,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
+            data.put("latitude", event.getLatitude());
+            data.put("longitude", event.getLongitude());
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
@@ -397,13 +399,15 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("signed_up", emptySignUpList);
 
             eventsRef
-                    .document(db.collection("events").document().getId())
+                    .document(eventId)
                     .set(data)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Log.d("Firestore", "DocumentSnapshot successfully written!");
-                            Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateNewEventActivity.this, "Create New " +
+                                    "Event Successful\n id: " + eventId, Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     });
                         }
