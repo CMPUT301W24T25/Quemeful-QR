@@ -18,15 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,57 +81,61 @@ public class ViewEventActivity extends AppCompatActivity {
             public void onClick(View v) {
                 DocumentReference eventsDocRef = db.collection("events").document(eventId);
                 String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-
+//                String currentUserUID = "d06f09a667154775";
+//                String currentUserUID = "439cd80ba5572b17";
 
                 eventsDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                            @Override
                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                DocumentSnapshot document = task.getResult();
                                List<Map<String,Object>> signupList = (List<Map<String,Object>>) document.get("signed_up");
-                               Log.d("current user", currentUserUID);
+
 
                                for (int i = 0; i < signupList.size(); i++){
                                    if (signupList.get(i).get("uid").toString().equals(currentUserUID)){
-                                       Log.d("uid", signupList.get(i).get("uid").toString());
-                                       Log.d("check-in value", signupList.get(i).get("checked_in").toString());
                                        saveUID = signupList.get(i).get("uid").toString();
                                        checkInString = signupList.get(i).get("checked_in").toString();
                                        int checkInInt = Integer.parseInt(checkInString);
-                                       signupList.get(i).replace("checked_in",checkInString, String.valueOf(checkInInt + 1));
+                                       signupList.get(i).replace("checked_in",String.valueOf(checkInInt+1));
+                                       }
 
-                                       Map<String,Object> tempMap = new HashMap<>();
-                                       tempMap.put("uid", saveUID);
-                                       tempMap.put("checked_in", String.valueOf(checkInInt+1));
+                               }
+                               eventsDocRef.update("signed_up", signupList)
+                                       .addOnCompleteListener(aVoid -> {
+                                   // Update UI to reflect that the user has signed up
+                                   Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
 
+                               }); //replaces the old sign up list with the new one
 
+//
 
 
 //
-                                       signupList.get(i).put("signed_up", FieldValue.delete());
 
-                                       eventsDocRef.update(signupList.get(i)).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                          @Override
-                                          public void onComplete(@NonNull Task<Void> task) {
-
-                                          }
-                                      });
-
+//                                      eventsDocRef.update("signed_up", FieldValue.arrayUnion(signupList.get(i)))
+//                                               .addOnCompleteListener(aVoid -> {
+//                                                   // Update UI to reflect that the user has signed up
+//                                                   Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
+//
+//                                                }); //updates the signed_up list
 
 
-                                       eventsDocRef.update("signed_up", FieldValue.arrayUnion(tempMap))
-                                               .addOnCompleteListener(aVoid -> {
-                                                   // Update UI to reflect that the user has signed up
-                                                   Toast.makeText(ViewEventActivity.this, "Signed up for event successfully!", Toast.LENGTH_SHORT).show();
 
-                                                });
-                                       Toast.makeText(ViewEventActivity.this, "check-in failed", Toast.LENGTH_SHORT).show();
 
-                                   }
-
-                                }
+//                               for (int j = 0; j < signupList.size(); j++){
+//                Log.d("work uid", signupList.get(j).get("uid").toString());
+//                Log.d("work checkin list", signupList.get(j).get("checked_in").toString());
+//            }
+//                               eventsDocRef.update("signed_up", FieldValue.arrayUnion(signupList))
+//                                       .addOnCompleteListener(aVoid -> {
+//                                           // Update UI to reflect that the user has signed up
+//                                           Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
+//
+//                                       }); //updates the signed_up list
+//                               Toast.makeText(ViewEventActivity.this, "check-in success", Toast.LENGTH_SHORT).show();
                        }
                });
+
 
             }
 
