@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.android.quemeful_qr"
-        minSdk = 34 // changed minSdk 24 to 34
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -77,13 +77,23 @@ android {
 
         }
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
-    implementation ("androidx.preference:preference:1.2.0") //
+    implementation ("androidx.preference:preference:1.2.1")
+    implementation("com.google.firebase:firebase-inappmessaging:20.4.0") //
+
+    implementation ("com.google.firebase:firebase-analytics:21.5.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2") //
+
+
 }
 
 

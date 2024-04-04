@@ -1,6 +1,8 @@
 package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -12,8 +14,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
+import com.google.firebase.inappmessaging.FirebaseInAppMessagingClickListener;
+import com.google.firebase.inappmessaging.FirebaseInAppMessagingDisplay;
+import com.google.firebase.inappmessaging.FirebaseInAppMessagingDisplayCallbacks;
+import com.google.firebase.inappmessaging.model.Action;
+import com.google.firebase.inappmessaging.model.InAppMessage;
 import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -250,21 +259,20 @@ public class MainActivity extends AppCompatActivity {
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        Log.d(TAG, "User exists with ID: " + deviceId);
+                        userFirstName = task.getResult().getString("firstName");
+                        userLastName = task.getResult().getString("lastName");
+                        isAdmin = Boolean.TRUE.equals(task.getResult().getBoolean("Admin"));
 
-        db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult().exists()) {
-                Log.d(TAG, "User exists with ID: " + deviceId);
-                userFirstName = task.getResult().getString("firstName");
-                userLastName = task.getResult().getString("lastName");
-                isAdmin = Boolean.TRUE.equals(task.getResult().getBoolean("Admin"));
+                        transitionToMainScreen();
+                    } else {
+                        Log.d(TAG, "No user found with ID: " + deviceId);
+                        promptNewUser(db, deviceId);
+                    }
+                });
 
-                transitionToMainScreen();
-            } else {
-                Log.d(TAG, "No user found with ID: " + deviceId);
-                promptNewUser(db, deviceId);
-            }
-        });
-        FirebaseMessaging.getInstance().subscribeToTopic("events");
     }
 
     /**
@@ -315,6 +323,9 @@ public class MainActivity extends AppCompatActivity {
             newUser.put("lastName", userLastName);
             newUser.put("avatarUrl", imageUrl);
             newUser.put("Admin", false); // Here's the addition of the Admin field
+            newUser.put("homePage", "N/A");
+            newUser.put("contact", "N/A");
+            newUser.put("bio", "N/A");
 
             // Add the new user to Firestore - No changes needed here
             db.collection("users").document(deviceId).set(newUser).addOnSuccessListener(aVoid -> {

@@ -6,6 +6,8 @@ import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,7 +33,11 @@ import java.net.URL;
 public class EditProfileActivity extends AppCompatActivity {
     private EditText firstNameEditText;
     private EditText lastNameEditText;
+    private EditText homePageEditText;
+    private EditText contactEditText;
+    private EditText bioEditText;
     private TextView changeAvatarTextView;
+    private ImageView deletePic;
     private Button saveButton;
     private ImageView avatarImageView;
     private Uri imageUri;
@@ -59,9 +65,13 @@ public class EditProfileActivity extends AppCompatActivity {
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
         lastNameEditText = findViewById(R.id.lastNameEditText);
+        homePageEditText = findViewById(R.id.homePageEditText);
+        contactEditText = findViewById(R.id.contactEditText);
+        bioEditText = findViewById(R.id.bioEditText);
         changeAvatarTextView = findViewById(R.id.editAvatarTextView);
         saveButton = findViewById(R.id.editProfileButton);
         avatarImageView = findViewById(R.id.avatarImageView);
+        deletePic = findViewById(R.id.profilePicDelete);
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -71,9 +81,15 @@ public class EditProfileActivity extends AppCompatActivity {
             if (documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("firstName");
                 String lastName = documentSnapshot.getString("lastName");
+                String homePage = documentSnapshot.getString("homePage");
+                String contact = documentSnapshot.getString("contact");
+                String bio = documentSnapshot.getString("bio");
 
                 firstNameEditText.setText(firstName);
                 lastNameEditText.setText(lastName);
+                homePageEditText.setText(homePage);
+                contactEditText.setText(contact);
+                bioEditText.setText(bio);
 
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
@@ -85,6 +101,9 @@ public class EditProfileActivity extends AppCompatActivity {
         saveButton.setOnClickListener(v -> {
             String updatedFirstName = firstNameEditText.getText().toString().trim();
             String updatedLastName = lastNameEditText.getText().toString().trim();
+            String updatedHomePage = homePageEditText.getText().toString().trim();
+            String updatedContact = contactEditText.getText().toString().trim();
+            String updatedBio = bioEditText.getText().toString().trim();
 
             if (imageUri != null) {
                 StorageReference storageReference = FirebaseStorage.getInstance().getReference("avatars/" + deviceId);
@@ -92,7 +111,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
                         String profileImageUrl = uri.toString();
                         db.collection("users").document(deviceId)
-                                .update("firstName", updatedFirstName, "lastName", updatedLastName, "avatarUrl", profileImageUrl)
+                                .update("firstName", updatedFirstName, "lastName", updatedLastName, "homePage", updatedHomePage, "contact", updatedContact, "bio", updatedBio, "avatarUrl", profileImageUrl)
                                 .addOnSuccessListener(aVoid -> {
                                     loadFromUri(Uri.parse(profileImageUrl)); // Reload using the correct format
                                     onBackPressed();
@@ -102,9 +121,22 @@ public class EditProfileActivity extends AppCompatActivity {
                 }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show());
             } else {
                 db.collection("users").document(deviceId)
-                        .update("firstName", updatedFirstName, "lastName", updatedLastName)
+                        .update("firstName", updatedFirstName, "lastName", updatedLastName, "homePage", updatedHomePage, "contact", updatedContact, "bio", updatedBio)
                         .addOnSuccessListener(aVoid -> onBackPressed())
                         .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
+            }
+        });
+
+        deletePic.setOnClickListener(v -> {
+            String newAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/quemeful-qr-8e3a2.appspot.com/o/avatars%2Fe4a01d113899a8fc?alt=media&token=33555359-6857-41a5-9078-eaff94876979";
+
+            if (deviceId != null) {
+                db.collection("users").document(deviceId).update("avatarUrl", newAvatarUrl)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("EditProfileActivity", "Profile picture successfully updated for user: " + deviceId);
+                            Glide.with(this).load(newAvatarUrl).into(avatarImageView);
+                        })
+                        .addOnFailureListener(e -> Log.e("EditProfileActivity", "Error deleting profile picture", e));
             }
         });
 
