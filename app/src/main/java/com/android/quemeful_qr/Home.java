@@ -127,10 +127,17 @@ public class Home extends Fragment implements EventClickListenerInterface{
      */
     @Override
     public void onEventClick(EventHelper event) {
-        Log.d("HomeFragment", "Event clicked: " + event.getTitle());
-        Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
-        intent.putExtra("event_id", event.getId());
-        startActivity(intent);
+        if (!isAdmin) {
+            Log.d("HomeFragment", "Event clicked: " + event.getTitle());
+            Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+            intent.putExtra("event_id", event.getId());
+            startActivity(intent);
+        } else {
+            Log.d("HomeFragment", "Admin Event clicked: " + event.getTitle());
+            Intent intent = new Intent(getActivity(), AdminEventDetailsActivity.class);
+            intent.putExtra("event_id", event.getId());
+            startActivity(intent);
+        }
     }
 
 } // class closing
