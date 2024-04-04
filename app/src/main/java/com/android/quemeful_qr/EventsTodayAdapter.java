@@ -32,17 +32,18 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     private static EventClickListenerInterface mClickListener;
 
     private String deviceId;
-    AtomicBoolean isAdminNew;
+    private boolean isAdmin;
 
     /**
      * EventsTodayAdapter constructor with parameters.
      * @param context Context
      * @param events All events on that day or upcoming.
      */
-    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener, String deviceId){
+    public EventsTodayAdapter(Context context, List<EventHelper> events, EventClickListenerInterface clickListener, String deviceId, boolean isAdmin){
         this.context = context;
         this.events = events;
         this.mClickListener = clickListener;
+        this.isAdmin = isAdmin;
     }
 
     /**
@@ -83,57 +84,37 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(deviceId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                DocumentSnapshot document = task.getResult();
-                Boolean isAdminResult = document.getBoolean("Admin");
-                if (isAdminResult != null && isAdminResult) {
-                    isAdminNew.set(true);
-                    Log.d(TAG, "admin delete event true: " + deviceId);
-                } else {
-                    isAdminNew.set(false);
-                    Log.d(TAG, "admin delete event false: " + deviceId);
-                }
-                if (event.getId() != null) {
-                } else {
-                    //Handle error
-                }
-
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
-            }
-        });
-
         holder.itemView.setOnLongClickListener(v -> {
             LayoutInflater inflater = LayoutInflater.from(context);
             View dialogView = inflater.inflate(R.layout.dialog_box, null);
 
-            final android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(context);
-            dialogBuilder.setView(dialogView);
+            if (isAdmin) {
+                final android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(context);
+                dialogBuilder.setView(dialogView);
 
-            TextView deleteButton = dialogView.findViewById(R.id.materialButton2); // Assume your delete button has this ID
-            TextView cancelButton = dialogView.findViewById(R.id.materialButton); // Assume your cancel button has this ID
+                TextView deleteButton = dialogView.findViewById(R.id.materialButton2); // Assume your delete button has this ID
+                TextView cancelButton = dialogView.findViewById(R.id.materialButton); // Assume your cancel button has this ID
 
-            final android.app.AlertDialog dialog = dialogBuilder.create();
-            dialog.show();
+                final android.app.AlertDialog dialog = dialogBuilder.create();
+                dialog.show();
 
-            deleteButton.setOnClickListener(view -> {
-                String eventId = (String) event.getId();
-                if (eventId != null) {
-                    db.collection("events").document(eventId).delete().addOnSuccessListener(aVoid -> {
-                        events.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, events.size());
-                        dialog.dismiss();
-                    }).addOnFailureListener(e -> {
-                        // Handle failure
-                        dialog.dismiss();
-                    });
-                }
-            });
+                deleteButton.setOnClickListener(view -> {
+                    String eventId = (String) event.getId();
+                    if (eventId != null) {
+                        db.collection("events").document(eventId).delete().addOnSuccessListener(aVoid -> {
+                            events.remove(position);
+                            notifyItemRemoved(position);
+                            notifyItemRangeChanged(position, events.size());
+                            dialog.dismiss();
+                        }).addOnFailureListener(e -> {
+                            // Handle failure
+                            dialog.dismiss();
+                        });
+                    }
+                });
 
-            cancelButton.setOnClickListener(view -> dialog.dismiss());
-
+                cancelButton.setOnClickListener(view -> dialog.dismiss());
+            }
             return true;
         });
     }

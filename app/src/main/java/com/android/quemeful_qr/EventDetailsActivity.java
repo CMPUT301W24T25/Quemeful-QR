@@ -53,7 +53,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private CardView milestoneCardView;
 
-    AtomicBoolean isAdminNew = new AtomicBoolean();
+    private AtomicBoolean isAdminNew = new AtomicBoolean();
 
     /**
      * This onCreate method is used to set up an interface with all event details.

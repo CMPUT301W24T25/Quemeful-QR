@@ -22,11 +22,13 @@ import java.util.List;
 public class Home extends Fragment implements EventClickListenerInterface{
 
     public String deviceId;
+    public boolean isAdmin;
     /**
      * This is a default Home constructor (no parameters).
      */
-    public Home(String deviceId) {
+    public Home(String deviceId, boolean isAdmin) {
         this.deviceId = deviceId;
+        this.isAdmin = isAdmin;
     }
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -107,7 +109,7 @@ public class Home extends Fragment implements EventClickListenerInterface{
      */
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
         if (!todayEvents.isEmpty()) {
-            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this, deviceId);
+            EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this, deviceId, isAdmin);
             eventsRecyclerView.setAdapter(todayEventAdapter);
         }
         else {}

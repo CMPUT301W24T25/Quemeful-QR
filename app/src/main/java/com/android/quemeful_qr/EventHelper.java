@@ -21,7 +21,7 @@ public class EventHelper implements Serializable {
     /**
      * EventHelper default constructor (no parameters)
      */
-    public EventHelper(String eventId1, String testEvent1, String testLocation1, String testTime1, String testDate1, String testDescription1, String testPoster1, String testToken1) {
+    EventHelper() {
     }
 
     // event organizer getter

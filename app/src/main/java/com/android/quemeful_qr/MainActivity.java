@@ -374,10 +374,10 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
             switch (item.getId()) {
                 case 1:
-                    fragment = isAdmin ? AdminDashboardFragment.newInstance() : new Home(deviceId);
+                    fragment = isAdmin ? AdminDashboardFragment.newInstance() : new Home(deviceId, isAdmin);
                     break;
                 case 2:
-                    fragment = isAdmin ? new Home(deviceId) : new Events();
+                    fragment = isAdmin ? new Home(deviceId, isAdmin) : new Events();
                     break;
                 case 3:
                     fragment = Profile.newInstance();
