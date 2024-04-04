@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * This class is used to add setter and getter methods for the events and its attributes,
  * (for functionality of an organizer)
- * Reference URL- https://stackoverflow.com/questions/60389906/could-not-deserialize-object-does-not-define-a-no-argument-constructor-if-you/60389994#60389994
+ * Reference URL- <a href="https://stackoverflow.com/questions/60389906/could-not-deserialize-object-does-not-define-a-no-argument-constructor-if-you/60389994#60389994">...</a>
  * Author- Royal Tiger, License- CC BY-SA 4.0, Published Date- 25 Feb, 2020.
  */
 public class EventHelper implements Serializable {

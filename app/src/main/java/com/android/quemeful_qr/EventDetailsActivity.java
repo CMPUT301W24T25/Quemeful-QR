@@ -39,7 +39,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
-    private Button buttonCheckIn, buttonSignUp;;
+    private Button buttonCheckIn, buttonSignUp, buttonPromotion;
 
 
     /**
@@ -79,6 +79,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewSignUp = findViewById(R.id.signUpTitle);
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
+        buttonPromotion = findViewById(R.id.promotionButton);
 
         String eventId = getIntent().getStringExtra("event_id");
 
@@ -86,6 +87,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
             setupCheckInButton();
+            setupPromotionButton();
 
             // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +121,19 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openQRCheckActivity();
+                openScanQRActivity();
+            }
+        });
+    }
+
+    /**
+     * This method is used to set the button to add promotions (by organizer) for an event.
+     */
+    private void setupPromotionButton() {
+        buttonPromotion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEventPromotionActivity();
             }
         });
     }
@@ -213,7 +227,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is used to change the UI when an attendee signs up for an event.
+     * This method is used to change the UI when an organizer views event details.
      */
     private void updateUIForOrganizer() {
         textViewScanQR.setVisibility(View.GONE);
@@ -221,6 +235,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewSignUp.setVisibility(View.GONE);
         buttonSignUp.setVisibility(View.GONE);
         viewAttendee.setVisibility(View.VISIBLE);
+        buttonPromotion.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -265,11 +280,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.GONE);
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
+            buttonPromotion.setVisibility(View.GONE); // show promotion button for signed up users
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
                 buttonCheckIn.setVisibility(View.GONE);
                 // Possibly show a message saying "You are checked in"
+                Toast.makeText(getBaseContext(), "You are already Checked-In", Toast.LENGTH_LONG).show();
+                buttonPromotion.setVisibility(View.GONE); // show promotion button for checked in users
             } else {
                 textViewScanQR.setVisibility(View.VISIBLE);
                 buttonCheckIn.setVisibility(View.VISIBLE);
@@ -280,17 +298,28 @@ public class EventDetailsActivity extends AppCompatActivity {
             viewAttendee.setVisibility(View.GONE);
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
+            buttonPromotion.setVisibility(View.GONE); // show promotion button for not signed up users
         }
+    }
+
+    /**
+     * This method is used to start the EventPromotionActivity when promotion button is clicked.
+     * (only accessible when the user-type: organizer)
+     */
+    private void openEventPromotionActivity() {
+        Intent intent = new Intent(EventDetailsActivity.this, EventPromotionActivity.class);
+        String eventId = getIntent().getStringExtra("event_id");
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
     }
 
     /**
      * This method is used when the user clicks on the check-in button to scan the QR code.
      * It works by starting another activity that handles QR code scanning.
      */
-    protected void openQRCheckActivity(){
+    protected void openScanQRActivity(){
         Intent intent = new Intent(EventDetailsActivity.this, ScanQRActivity.class);
         startActivity(intent);
-
     }
 
     /**
