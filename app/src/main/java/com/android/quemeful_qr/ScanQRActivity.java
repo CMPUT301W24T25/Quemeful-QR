@@ -47,7 +47,9 @@ public class ScanQRActivity extends AppCompatActivity {
     private String eventTime;
     private String eventDate;
     private String eventDescription;
-
+    private String eventLocation;
+    private Double eventLatitude;
+    private Double eventLongitude;
 
     /**
      * The onCreate method of this activity is used to set a listener on the camera icon button to scan a QR code.
@@ -137,13 +139,16 @@ public class ScanQRActivity extends AppCompatActivity {
                                 //brings the user to a new activity with event details
                                 eventUUID = result.getContents();
                                 eventName = document.getData().get("title").toString();
+                                eventLocation = document.getData().get("location").toString();
+                                eventLatitude = (Double) document.getData().get("latitude");
+                                eventLongitude = (Double) document.getData().get("longitude");
                                 eventPoster = document.getData().get("poster").toString();
                                 eventTime = document.getData().get("time").toString();
                                 eventDate = document.getData().get("date").toString();
                                 eventDescription = document.getData().get("description").toString();
                                 confirm.setText(eventPoster);
 
-                                EventHelper event = new EventHelper(eventUUID, eventName, "location", eventTime, eventDate, eventDescription, eventPoster);
+                                EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventLatitude, eventLongitude, eventTime, eventDate, eventDescription, eventPoster);
                                 Intent intent = new Intent(ScanQRActivity.this, ViewEventActivity.class);
 
                                 intent.putExtra("event", event);

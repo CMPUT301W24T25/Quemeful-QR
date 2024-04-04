@@ -91,7 +91,8 @@ dependencies {
 
     implementation ("com.google.firebase:firebase-analytics:21.5.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.2") //
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("com.google.firebase:firebase-database:20.3.1") //
 
 
 }

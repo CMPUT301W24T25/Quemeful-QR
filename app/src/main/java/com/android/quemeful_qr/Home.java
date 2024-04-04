@@ -2,6 +2,7 @@ package com.android.quemeful_qr;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,12 +83,32 @@ public class Home extends Fragment implements EventClickListenerInterface{
                 
                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-                    EventHelper event = document.toObject(EventHelper.class);
+//                    EventHelper event = document.toObject(EventHelper.class);
+
+
+//
+                    String eventId = document.getString("id");
+                    String eventName = document.getString("title");
+                    String eventLocation = document.getString("location");
+                    Double eventLatitude = document.getDouble("latitude");
+                    Double eventLongitude = document.getDouble("longitude");
+                    String eventTime = document.getString("time");
+                    String eventDateString = document.getString("date");
+
+                    String eventDescr = document.getString("description");
+                    String eventPoster = document.getString("poster");
+                    String currentUserUID = document.getString("organizer");
+                    EventHelper event = new EventHelper(eventId, eventName, eventLocation,eventLatitude,
+                            eventLongitude,eventTime,eventDateString,eventDescr, eventPoster);
+
 
                     event.setId(document.getId()); // Set the document ID as the event ID
                     try {
+                        Log.d("Date", event.getDate());
                         Date eventDate = DateUtils.parseDate(event.getDate());
+
                         if (eventDate != null) {
+
                             if (DateUtils.isToday(eventDate)) {
                                 todayEvents.add(event);
                             } else if (eventDate.after(new Date())) {
@@ -103,8 +124,8 @@ public class Home extends Fragment implements EventClickListenerInterface{
 
 
                 }
-                System.out.println(todayEvents.toString());
-                System.out.println(upcomingEvents.toString());
+                Log.d("today", todayEvents.toString());
+                Log.d("upcoming", upcomingEvents.toString());
                 updateUI(todayEvents, upcomingEvents);
             } else {
                 // Handle errors
