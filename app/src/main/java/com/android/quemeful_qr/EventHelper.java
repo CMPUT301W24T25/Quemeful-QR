@@ -39,11 +39,8 @@ public class EventHelper implements Serializable {
     /**
      * EventHelper default constructor (no parameters)
      */
-    EventHelper(){
 
-    }
-
-     * EventHelper constructor with its attributes as parameters,
+     /** EventHelper constructor with its attributes as parameters,
      * which is used to initialize all the event attributes.
      * @param id the event with the specific id.
      * @param title the name of the event.
