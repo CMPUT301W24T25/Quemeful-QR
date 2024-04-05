@@ -222,7 +222,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                                         if (signedUpUsers.size() == milestone) {
                                             if (milestone == 1){
-                                                 description = "You just got your first attendee!";
+                                                description = "You just got your first attendee!";
                                             } else {
                                                 description = "You have reached " + milestone + " attendees!";
                                             }

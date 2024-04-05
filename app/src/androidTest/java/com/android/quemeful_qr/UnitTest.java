@@ -47,6 +47,8 @@ public class UnitTest {
     private List<Map<String, Object>> dataList;
     private String testDeviceId;
 
+    private boolean testIsAdmin;
+
     @Before
     public void setUp() {
       firestore = FirebaseFirestore.getInstance();
@@ -147,21 +149,21 @@ public class UnitTest {
                 "Test token2"
         ));
 
-        EventsTodayAdapter adapter = new EventsTodayAdapter(context, events, null);
+        EventsTodayAdapter adapter = new EventsTodayAdapter(context, events, null, testIsAdmin);
         assertEquals(events.size(), adapter.getItemCount());
     }
     @Test
     public void testEmptyItemCount() {
 
          List<EventHelper> localEvent = new ArrayList<>();
-        EventsTodayAdapter adapter = new EventsTodayAdapter(context, localEvent, null);
+        EventsTodayAdapter adapter = new EventsTodayAdapter(context, localEvent, null, testIsAdmin);
         assertEquals(localEvent.size(), adapter.getItemCount());
     }
 
     @Test
     public void testViewHolder() {
 
-        EventsTodayAdapter adapter = new EventsTodayAdapter(ApplicationProvider.getApplicationContext(), events, null);
+        EventsTodayAdapter adapter = new EventsTodayAdapter(ApplicationProvider.getApplicationContext(), events, null, testIsAdmin);
         adapter.onBindViewHolder(viewHolder, 0);
         EventsTodayAdapter.EventViewHolder viewHolder = new EventsTodayAdapter.EventViewHolder(itemView);
 
@@ -174,7 +176,7 @@ public class UnitTest {
 
     @Test
     public void testViewBinding() {
-        EventsTodayAdapter adapter = new EventsTodayAdapter(ApplicationProvider.getApplicationContext(), events, null);
+        EventsTodayAdapter adapter = new EventsTodayAdapter(ApplicationProvider.getApplicationContext(), events, null, testIsAdmin);
         adapter.onBindViewHolder(viewHolder, 0);
 
         assertEquals(event.getTitle(), viewHolder.eventTitle.getText().toString());
