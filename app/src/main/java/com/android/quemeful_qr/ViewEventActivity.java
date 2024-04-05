@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -56,15 +57,28 @@ public class ViewEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
 
-        textview_EventName = findViewById(R.id.textview_event_name);
-        posterView = findViewById(R.id.poster_view);
+        
         confirmCheckInButton = findViewById(R.id.confirm_check_in_button);
         cancelButton = findViewById(R.id.cancel_button);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
+        // initialize instances from xml
+        TextView eventName = findViewById(R.id.textview_event_name);
+        ImageView eventPoster = findViewById(R.id.poster_view);
+        TextView eventDesc = findViewById(R.id.textview_event_description);
+        TextView eventDate = findViewById(R.id.textview_event_date);
+        TextView eventTime = findViewById(R.id.textview_event_time);
 
+        // clicking on the back arrow on top navigates back to the previous page
+        Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
+        toolbar.setNavigationOnClickListener(v -> {
+            // back clicked - close this activity
+            finish();
+        });
+
+        // get the event passed by ScanQRActivity result via intent
         Intent intent = getIntent();
         EventHelper event = (EventHelper) intent.getSerializableExtra("event");
 
@@ -72,10 +86,7 @@ public class ViewEventActivity extends AppCompatActivity {
         poster = event.getPoster();
         title = event.getTitle();
         eventId = event.getId();
-        textview_EventName.setText(title);
-        assert poster != null;
-        byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
-        posterView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        eventName.setText(title);
         confirmCheckInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,32 +118,8 @@ public class ViewEventActivity extends AppCompatActivity {
 
                                }); //replaces the old sign up list with the new one
 
-//
 
 
-//
-
-//                                      eventsDocRef.update("signed_up", FieldValue.arrayUnion(signupList.get(i)))
-//                                               .addOnCompleteListener(aVoid -> {
-//                                                   // Update UI to reflect that the user has signed up
-//                                                   Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
-//
-//                                                }); //updates the signed_up list
-
-
-
-
-//                               for (int j = 0; j < signupList.size(); j++){
-//                Log.d("work uid", signupList.get(j).get("uid").toString());
-//                Log.d("work checkin list", signupList.get(j).get("checked_in").toString());
-//            }
-//                               eventsDocRef.update("signed_up", FieldValue.arrayUnion(signupList))
-//                                       .addOnCompleteListener(aVoid -> {
-//                                           // Update UI to reflect that the user has signed up
-//                                           Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
-//
-//                                       }); //updates the signed_up list
-//                               Toast.makeText(ViewEventActivity.this, "check-in success", Toast.LENGTH_SHORT).show();
                        }
                });
 
@@ -146,6 +133,22 @@ public class ViewEventActivity extends AppCompatActivity {
                 finish();
             }
         });
+        if (event != null) {
+            String title = event.getTitle();
+            eventName.setText(title);
+            String poster = event.getPoster();
+            if(poster != null){
+                byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
+                eventPoster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+            }
+            String desc = event.getDescription();
+            eventDesc.setText(desc);
+            String date = event.getDate();
+            eventDate.setText(date);
+            String time = event.getTime();
+            eventTime.setText(time);
+
+        }
 
     }
 }

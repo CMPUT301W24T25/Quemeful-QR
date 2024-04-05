@@ -30,6 +30,19 @@
         android:theme="@style/Theme.QuemefulQR"
         tools:targetApi="31">
         <activity
+            android:name=".ReuseQRCodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ShareQRCodeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".GeneratePromotionalQRCodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EventPromotionActivity"
+            android:exported="false" />
+        <activity
             android:name=".MapActivity"
             android:exported="false" />
         <activity
@@ -56,6 +69,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ShowNotificationsActivity"
+            android:exported="true">
+        </activity>
         <activity android:name=".EventDetailsActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".AdminEventDetailsActivity" />
@@ -72,18 +89,19 @@
 
         <service
             android:name=".MapActivity"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location" />
         <service
             android:name=".ReceiveNotifications"
             android:exported="true">
-            <intent-filter>
 
-               <action android:name="com.google.firebase.MESSAGING_EVENT"/>          </intent-filter>
+            <intent-filter>
+               <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="android.intent.action.GET_NOTIFICATION" />
+            </intent-filter>
+
         </service>
-        <activity android:name=".ShowNotificationsActivity"
-            android:exported="true">
-            ]
-        </activity>
+
+
     </application>
 
 </manifest>

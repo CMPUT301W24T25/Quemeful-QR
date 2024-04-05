@@ -28,6 +28,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.osmdroid.views.MapView;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +43,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
-    private Button buttonCheckIn, buttonSignUp;
+    private Button buttonCheckIn, buttonSignUp, buttonPromotion;
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
 
     private CardView milestoneCardView;
+    private MapView map;
+    private Button displayMapPinsActivityButton;
 
     /**
      * This onCreate method is used to set up an interface with all event details.
@@ -63,7 +67,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
-
+        map = findViewById(R.id.map);
+        displayMapPinsActivityButton = findViewById(R.id.display_map_pins_activity_button);
         // navigate back to previous page on clicking the back arrow.
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +93,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewSignUp = findViewById(R.id.signUpTitle);
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
+        buttonPromotion = findViewById(R.id.promotionButton);
 
         String eventId = getIntent().getStringExtra("event_id");
 
@@ -97,6 +103,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
             setupCheckInButton();
+            setupPromotionButton();
 
             // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(new View.OnClickListener() {
@@ -160,7 +167,19 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openQRCheckActivity();
+                openScanQRActivity();
+            }
+        });
+    }
+
+    /**
+     * This method is used to set the button to add promotions (by organizer) for an event.
+     */
+    private void setupPromotionButton() {
+        buttonPromotion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEventPromotionActivity();
             }
         });
     }
@@ -293,7 +312,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * This method is used to change the UI when an attendee signs up for an event.
+     * This method is used to change the UI when an organizer views event details.
      */
     private void updateUIForOrganizer() {
         textViewScanQR.setVisibility(View.GONE);
@@ -301,6 +320,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewSignUp.setVisibility(View.GONE);
         buttonSignUp.setVisibility(View.GONE);
         viewAttendee.setVisibility(View.VISIBLE);
+        buttonPromotion.setVisibility(View.VISIBLE);
+        map.setVisibility(View.VISIBLE);
+        displayMapPinsActivityButton.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -347,11 +369,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
             milestone.setVisibility(View.GONE);
+            buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for signed up users
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
                 buttonCheckIn.setVisibility(View.GONE);
                 // Possibly show a message saying "You are checked in"
+                Toast.makeText(getBaseContext(), "You are already Checked-In", Toast.LENGTH_LONG).show();
+                buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for checked in users
             } else {
                 textViewScanQR.setVisibility(View.VISIBLE);
                 buttonCheckIn.setVisibility(View.VISIBLE);
@@ -363,17 +388,28 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
             milestone.setVisibility(View.GONE);
+            buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for not signed up users
         }
+    }
+
+    /**
+     * This method is used to start the EventPromotionActivity when promotion button is clicked.
+     * (only accessible when the user-type: organizer)
+     */
+    private void openEventPromotionActivity() {
+        Intent intent = new Intent(EventDetailsActivity.this, EventPromotionActivity.class);
+        String eventId = getIntent().getStringExtra("event_id");
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
     }
 
     /**
      * This method is used when the user clicks on the check-in button to scan the QR code.
      * It works by starting another activity that handles QR code scanning.
      */
-    protected void openQRCheckActivity(){
+    protected void openScanQRActivity(){
         Intent intent = new Intent(EventDetailsActivity.this, ScanQRActivity.class);
         startActivity(intent);
-
     }
 
     /**
