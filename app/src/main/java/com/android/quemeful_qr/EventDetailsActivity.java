@@ -329,7 +329,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         map.invalidate();
     }
     protected void loadMap(){
-        // Request Location permission
+        // Request runtime Location permissions
         if (ContextCompat.checkSelfPermission(
                 this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -677,7 +677,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 buttonCheckIn.setVisibility(View.GONE);
                 // Possibly show a message saying "You are checked in"
                 Toast.makeText(getBaseContext(), "You are already Checked-In", Toast.LENGTH_LONG).show();
-                buttonPromotion.setVisibility(View.GONE); // show promotion button for checked in users
+                buttonPromotion.setVisibility(View.VISIBLE); // show promotion button for checked in users
+                buttonCheckIn.setVisibility(View.VISIBLE);
             } else {
                 textViewScanQR.setVisibility(View.VISIBLE);
                 buttonCheckIn.setVisibility(View.VISIBLE);

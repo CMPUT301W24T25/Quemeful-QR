@@ -118,7 +118,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private FirebaseFirestore db;
 
     // attributes for event class
-    private String eventId, eventName;
+    private String eventId, eventName, eventLoc, eventLat, eventLong, eventTime, eventDate, eventDescr, eventPost;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
@@ -217,12 +217,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         createButton.setOnClickListener(v -> {
             //generates random id for the event
             eventId = db.collection("events").document().getId();
+            eventName = eventTitle.getText().toString();
 
-            String eventName = eventTitle.getText().toString();
-            String eventTime = startTime.getText().toString();
-            String eventDate = startDate.getText().toString();
-
-            String eventDescr = eventDescription.getText().toString();
 
             try {
                 if(selectedImageUri != null) {
@@ -233,6 +229,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
 
     
@@ -240,7 +237,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     generateQRButton.setVisibility(View.VISIBLE);
 
                     // create new event
-                     event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+
+
                 } else {
                     //empty poster check
                     Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
@@ -360,62 +358,49 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
      */
     private void addNewEvent(EventHelper event) {
 
-        String eventName = eventTitle.getText().toString();
-        String eventLocation = event.getLocation();
-        Double eventLatitude = event.getLatitude();
-        Double eventLongitude = event.getLongitude();
-        String eventTime = startTime.getText().toString();
-        String eventDate = startDate.getText().toString();
-        String eventDescr = eventDescription.getText().toString();
+        event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, eventPost);;
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventName.matches("") || eventLocation.matches("")
-                || eventTime.matches("") || eventDate.matches("")
-                || eventDescr.matches("")) {
-            //empty string check
-            Toast message = Toast.makeText(getBaseContext(), "Please Fill All Text Fields", Toast.LENGTH_LONG);
-            message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
-            message.show();
-        } else {
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("organizer", currentUserUID);
-            data.put("id", event.getId());
-            data.put("title", event.getTitle());
-            data.put("location", event.getLocation());
-            data.put("latitude", event.getLatitude());
-            data.put("longitude", event.getLongitude());
-            data.put("time", event.getTime());
-            data.put("date", event.getDate());
-            data.put("description", event.getDescription());
 
-            FirebaseMessaging.getInstance().getToken()
-                    .addOnCompleteListener(new OnCompleteListener<String>() {
-                        @Override
-                        public void onComplete(@NonNull Task<String> task) {
-                            if (task.isSuccessful()) {
-                                Log.w(TAG, "Fetching FCM token failed", task.getException());
-                                String token = task.getResult().toString();
-                                data.put("organizer_token", token);
-                            }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("organizer", currentUserUID);
+        data.put("id", event.getId());
+        data.put("title", event.getTitle());
+        data.put("location", event.getLocation());
+        data.put("latitude", event.getLatitude());
+        data.put("longitude", event.getLongitude());
+        data.put("time", event.getTime());
+        data.put("date", event.getDate());
+        data.put("description", event.getDescription());
 
-
-                            if (event.getPoster() != null) {
-                                data.put("poster", event.getPoster());
-                            } else {
-                                data.put("poster", "");
-                            }
-                            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
-                            data.put("signed_up", emptySignUpList);
-
-                            CollectionReference eventsRef = db.collection("events");
-                            eventsRef.document(eventId).set(data)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("FireStore", "DocumentSnapshot successfully written!");
-                                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                                    });
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM token failed", task.getException());
+                            String token = task.getResult().toString();
+                            data.put("organizer_token", token);
                         }
-                    });
-        }
+
+
+                        if (eventPost != null) {
+                            data.put("poster", eventPost);
+                        } else {
+                            data.put("poster", "");
+                        }
+                        List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+                        data.put("signed_up", emptySignUpList);
+
+                        CollectionReference eventsRef = db.collection("events");
+                        eventsRef.document(eventId).set(data)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                    Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                });
+
     }
 
             /**
