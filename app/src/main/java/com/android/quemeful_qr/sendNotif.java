@@ -51,7 +51,25 @@ public class sendNotif {
             notification.put("icon", icon_id);
 
             jsonObject.put("notification",notification);
+            JSONObject apnsHeaders = new JSONObject();
+            apnsHeaders.put("apns-priority", "10");
 
+            JSONObject apns = new JSONObject();
+            apns.put("headers", apnsHeaders);
+
+            JSONObject webpushHeaders = new JSONObject();
+            webpushHeaders.put("Urgency", "high");
+
+            JSONObject webpush = new JSONObject();
+            webpush.put("headers", webpushHeaders);
+
+            JSONObject android = new JSONObject();
+            android.put("priority", "high");
+
+            jsonObject.put("apns", apns);
+            jsonObject.put("webpush", webpush);
+            jsonObject.put("android", android);
+            jsonObject.put("priority", 10);
             jsonObject.put("to",sendID);
             callApi(jsonObject);
         }
