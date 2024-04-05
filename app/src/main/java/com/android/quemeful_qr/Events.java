@@ -6,63 +6,67 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import androidx.fragment.app.Fragment;
-import org.osmdroid.views.MapView;
 
-/**
- * This class is used to set up create a new event button and handle the location map.
- */
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 public class Events extends Fragment {
-    private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    private MapView map = null;
+
     Button createEventButton;
 
-    /**
-     * Events default constructor (no parameters)
-     */
-    public Events() {}
+    public Events() {
+    }
 
-    /**
-     * This onCreate method is used to set up a create event button,
-     * to navigate to the CreateNewEventActivity to create a new event.
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return view
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.events, container, false);
 
-
-        View view = inflater.inflate(R.layout.fragment_events, container, false);
         // Inflate the layout for this fragment
         createEventButton = view.findViewById(R.id.create_event_button);
-
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // allow user to select image from gallery
                 openCreateNewEventActivity();
             }
         });
 
+        addCalendarFragment();
+        addEventFragment();
+
         return view;
     }
 
-    /**
-     * This method is used to start the CreateNewEventActivity when create event button is clicked.
-     */
-    protected void openCreateNewEventActivity(){
-        Intent intent = new Intent(Events.this.getActivity(), CreateNewEventActivity.class);
+    private void openCreateNewEventActivity() {
+        Intent intent = new Intent(getActivity(), CreateNewEventActivity.class);
         startActivity(intent);
     }
 
+    private void addCalendarFragment() {
+        calender_fragment calendarFragment = new calender_fragment();
 
-} // class closing
+        FragmentManager fragmentManager = getChildFragmentManager();
 
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+        fragmentTransaction.replace(R.id.calendar_container, calendarFragment);
+
+        fragmentTransaction.commit();
+    }
+
+    private void addEventFragment() {
+
+        eventFragment eventFragment = new eventFragment();
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.event_container, eventFragment);
+
+        fragmentTransaction.commit();
+    }
+
+}
