@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/gradient_background"
     tools:context=".MapActivity">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="150dp"
-        android:orientation="horizontal"
-        android:background="@color/black">
-        <EditText
-            android:id="@+id/address_text"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_width="295dp"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:textColor="@color/black"
-            android:textSize="20dp"
-            android:hint="Enter address to search"
-            android:layout_marginStart="10dp"
-            android:minHeight="48dp"
-            android:textColorHint="@color/black" />
-        <Button
-            android:id="@+id/search_map_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Search"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/black"
-            android:backgroundTint="#E3D39E"/>
 
-    </LinearLayout>
-
-    <org.osmdroid.views.MapView
-        android:id="@+id/map"
+    <EditText
+        android:id="@+id/search_map_edittext"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_background"
+        android:hint="@string/enter_address_to_see_location"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_gravity="center" />
+        android:padding="12dp"
+        android:textColorHint="@color/black" />
 
+    <ImageButton
+        android:id="@+id/search_map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/baseline_location_searching_24"
+        android:layout_alignEnd="@+id/search_map_edittext" />
+
+    <TextView
+        android:id="@+id/clear_address_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_map_edittext"
+        android:layout_marginTop="10dp"
+        android:text="Clear Search"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:layout_centerInParent="true"/>
 
     <Button
         android:id="@+id/return_to_current_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go to my location"
+        android:layout_below="@+id/map"
+        android:layout_marginTop="20dp"
+        android:text="Go to My Location"
         android:textColor="@color/black"
-        android:backgroundTint="#E3D39E"/>
+        android:backgroundTint="#E3D39E"
+        android:layout_centerInParent="true"/>
 
     <Button
         android:id="@+id/confirm_location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/return_to_current_location"
         android:text="Confirm Location"
         android:textColor="@color/black"
         android:backgroundTint="#E3D39E"/>
@@ -63,15 +63,21 @@
         android:id="@+id/location_settings_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change location settings"
+        android:layout_below="@+id/confirm_location_button"
+        android:layout_marginTop="10dp"
+        android:text="Change Location Settings"
         android:textColor="@color/black"
-        android:backgroundTint="#E3D39E"/>
-    <Button
-        android:id="@+id/clear_address_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Clear search bar"
-        android:textColor="@color/black"
-        android:backgroundTint="#E3D39E"/>
+        android:backgroundTint="#E3D39E"
+        android:layout_centerInParent="true"/>
 
-</LinearLayout>
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_below="@id/clear_address_button"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_gravity="center" />
+
+</RelativeLayout>
