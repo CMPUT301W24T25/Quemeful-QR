@@ -57,9 +57,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -306,9 +307,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
-//                event.setLocation(locationString);
-//                event.setLatitude(locationLatitude);
-//                event.setLongitude(locationLongitude);
 
                 eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();

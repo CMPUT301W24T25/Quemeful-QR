@@ -1,8 +1,6 @@
 package com.android.quemeful_qr;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -17,11 +15,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -30,6 +29,7 @@ import java.net.URL;
 /**
  * This is a class activity that handles the profile editing functionality for a user.
  */
+
 public class EditProfileActivity extends AppCompatActivity {
     private EditText firstNameEditText;
     private EditText lastNameEditText;
@@ -47,7 +47,9 @@ public class EditProfileActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     imageUri = result.getData().getData();
-                    loadFromUri(imageUri); // Load and display the new image based on its type
+                    Glide.with(this)
+                            .load(imageUri)
+                            .into(avatarImageView); // Display the selected image.
                 }
             }
     );
@@ -73,6 +75,7 @@ public class EditProfileActivity extends AppCompatActivity {
         avatarImageView = findViewById(R.id.avatarImageView);
         deletePic = findViewById(R.id.profilePicDelete);
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         changeAvatarTextView.setOnClickListener(v -> openFileChooser());
@@ -91,9 +94,14 @@ public class EditProfileActivity extends AppCompatActivity {
                 contactEditText.setText(contact);
                 bioEditText.setText(bio);
 
+                // Load existing profile image with cache invalidation
                 String avatarUrl = documentSnapshot.getString("avatarUrl");
                 if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                    loadFromUri(Uri.parse(avatarUrl));
+                    Glide.with(this)
+                            .load(avatarUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)  // <- This will force Glide to re-fetch the image
+                            .skipMemoryCache(true)  // <- This skips memory cache
+                            .into(avatarImageView);
                 }
             }
         });
@@ -113,14 +121,20 @@ public class EditProfileActivity extends AppCompatActivity {
                         db.collection("users").document(deviceId)
                                 .update("firstName", updatedFirstName, "lastName", updatedLastName, "homePage", updatedHomePage, "contact", updatedContact, "bio", updatedBio, "avatarUrl", profileImageUrl)
                                 .addOnSuccessListener(aVoid -> {
-                                    loadFromUri(Uri.parse(profileImageUrl)); // Reload using the correct format
-                                    onBackPressed();
+                                    // After successful upload and Firestore update, reload the image with updated URL
+                                    Glide.with(this)
+                                            .load(profileImageUrl)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)  // This forces Glide to re-fetch the image
+                                            .skipMemoryCache(true)  // This skips the memory cache
+                                            .into(avatarImageView);
+                                    finish(); // Successfully updated profile, go back to the Profile fragment
                                 })
                                 .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
                     });
                 }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to upload image", Toast.LENGTH_SHORT).show());
             } else {
                 db.collection("users").document(deviceId)
+
                         .update("firstName", updatedFirstName, "lastName", updatedLastName, "homePage", updatedHomePage, "contact", updatedContact, "bio", updatedBio)
                         .addOnSuccessListener(aVoid -> onBackPressed())
                         .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update profile", Toast.LENGTH_SHORT).show());
@@ -154,53 +168,8 @@ public class EditProfileActivity extends AppCompatActivity {
         getContent.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    /**
-     * This method is used to load the selected image from uri and display it in the imageview.
-     * @param uri the selected image's URI.
-     */
-    private void loadFromUri(Uri uri) {
-        if (uri.toString().contains("avataaars.io")) {
-            loadSvgFromUrl(uri.toString());
-        } else {
-            String fileExtension = getFileExtension(uri);
-            if ("svg".equalsIgnoreCase(fileExtension)) {
-                loadSvgFromUrl(uri.toString());
-            } else {
-                Glide.with(this).load(uri).into(avatarImageView);
-            }
-        }
-    }
 
-    /**
-     * This method is used to fetch the file extension from uri of the selected image.
-     * It works by splitting the uri at '/' into an array then fetches the remaining part.
-     * @param uri the selected image's URI.
-     * @return String
-     */
-    private String getFileExtension(Uri uri) {
-        ContentResolver contentResolver = getContentResolver();
-        String type = contentResolver.getType(uri);
-        if (type != null) {
-            return type.split("/")[1];
-        }
-        return null;
-    }
+}
 
-    /**
-     * This method is used to retrieve the image in SVG format from its url.
-     * @param url the url of the image in svg format.
-     */
-    private void loadSvgFromUrl(String url) {
-        new Thread(() -> {
-            try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                InputStream inputStream = connection.getInputStream();
-                SVG svg = SVG.getFromInputStream(inputStream);
-                final PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
-                runOnUiThread(() -> avatarImageView.setImageDrawable(drawable));
-            } catch (IOException | SVGParseException e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-} // class closing
+
+

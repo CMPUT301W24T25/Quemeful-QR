@@ -25,7 +25,7 @@ public class EventHelper implements Serializable {
         return organizer;
     }
 
-   // event organizer setter
+    // event organizer setter
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
@@ -148,4 +148,3 @@ public class EventHelper implements Serializable {
         this.poster = poster;
     }
 } // class closing
-
