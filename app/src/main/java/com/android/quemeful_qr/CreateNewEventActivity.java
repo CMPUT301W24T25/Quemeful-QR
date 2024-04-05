@@ -105,7 +105,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private TextView endDate;
     private TextView endTime;
     private AppCompatButton generateQRButton, reuseQRButton;
-    private ImageButton uploadPoster;
+    private ImageButton uploadPoster, limitAttendee;
 
     int LAUNCH_MAP_ACTIVITY = 1;
     // fragment frame
@@ -156,6 +156,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         uploadPoster = findViewById(R.id.add_poster_button);
         eventLocation = findViewById(R.id.enter_location);
 
+        limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
@@ -276,7 +277,19 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             finish();
         });
 
+        limitAttendee.setOnClickListener(v -> {
+            navigateToLimitAttendeeDialogFragment(eventId);
+        });
+
     } // onCreate closing
+
+    /**
+     * This method is used to show the pop up dialog to set limit for attendees.
+     */
+    private void navigateToLimitAttendeeDialogFragment(String eventId) {
+        LimitAttendeeDialogFragment dialogFragment = new LimitAttendeeDialogFragment(eventId);
+        dialogFragment.show(getSupportFragmentManager(), "Limit Attendee Dialog");
+    }
 
     /**
      * This method is used to show the fragment pop up with the list of event check in Qr codes,
