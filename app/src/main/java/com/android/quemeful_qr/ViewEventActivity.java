@@ -87,9 +87,6 @@ public class ViewEventActivity extends AppCompatActivity {
         title = event.getTitle();
         eventId = event.getId();
         eventName.setText(title);
-        assert poster != null;
-        byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
-        eventPoster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
         confirmCheckInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

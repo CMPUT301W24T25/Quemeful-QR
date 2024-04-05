@@ -69,6 +69,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ShowNotificationsActivity"
+            android:exported="true">
+        </activity>
         <activity android:name=".EventDetailsActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".AdminEventDetailsActivity" />
@@ -89,16 +93,15 @@
         <service
             android:name=".ReceiveNotifications"
             android:exported="true">
-            <intent-filter>
 
-               <action android:name="com.google.firebase.MESSAGING_EVENT"/>          </intent-filter>
+            <intent-filter>
+               <action android:name="com.google.firebase.MESSAGING_EVENT"/>
                 <action android:name="android.intent.action.GET_NOTIFICATION" />
             </intent-filter>
+
         </service>
-        <activity android:name=".ShowNotificationsActivity"
-            android:exported="true">
-            ]
-        </activity>
+
+
     </application>
 
 </manifest>

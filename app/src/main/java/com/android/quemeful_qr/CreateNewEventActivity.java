@@ -23,9 +23,6 @@ package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -51,12 +48,14 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -64,10 +63,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.text.SimpleDateFormat;
-
-import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -173,23 +169,17 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         });
         eventLocation.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 openMapActivity();
             }
         });
-        /**
-         * This method to set the start time opens a fragment to pick the starting time of the event.
-         */
-        startTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startTimeTextClicked = true;
-                DialogFragment timePicker = new TimePickerFragment();
-                timePicker.show(getSupportFragmentManager(), "start time picker");
+
 
         // calls the imageChooser() to upload an image/poster for the event,
         // when clicked on the plus icon under 'Add Poster'.
-        uploadPoster.setOnClickListener(v -> imageChooser());
+        uploadPoster.setOnClickListener(v -> {
+            imageChooser();
+        });
 
         // opens a fragment to pick the starting time of the event.
         startTime.setOnClickListener(v -> {
@@ -369,17 +359,16 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         String eventDescr = eventDescription.getText().toString();
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if ( eventName.matches("") || eventLocation.matches("")
+        if (eventName.matches("") || eventLocation.matches("")
                 || eventTime.matches("") || eventDate.matches("")
-                || eventDescr.matches("")){
+                || eventDescr.matches("")) {
             //empty string check
             Toast message = Toast.makeText(getBaseContext(), "Please Fill All Text Fields", Toast.LENGTH_LONG);
             message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
             message.show();
-        }
-        else {
+        } else {
             HashMap<String, Object> data = new HashMap<>();
-            data.put("organizer",currentUserUID);
+            data.put("organizer", currentUserUID);
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
@@ -400,88 +389,87 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                             }
 
 
+                            if (event.getPoster() != null) {
+                                data.put("poster", event.getPoster());
+                            } else {
+                                data.put("poster", "");
+                            }
+                            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+                            data.put("signed_up", emptySignUpList);
 
-            if (event.getPoster() != null) {
-                data.put("poster", event.getPoster());
-            }
-            else {
-                data.put("poster", "");
-            }
-            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
-            data.put("signed_up", emptySignUpList);
-
-            CollectionReference eventsRef = db.collection("events");
-            eventsRef.document(eventId).set(data)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("FireStore", "DocumentSnapshot successfully written!");
-                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                            CollectionReference eventsRef = db.collection("events");
+                            eventsRef.document(eventId).set(data)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                                    });
+                        }
                     });
         }
     }
 
-    /**
-     * This method sets time in a certain format after user picks a time from the pop out window.
-     * @param view the view associated with this listener
-     * @param hourOfDay the hour that was set
-     * @param minute the minute that was set
-     */
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        startTime = findViewById(R.id.enter_startTime);
-        if (startTimeTextClicked){
-            String startTimeString = String.format("%02d:%02d", hourOfDay, minute);
-            startTime.setText(startTimeString);
-            startTimeTextClicked = false;
-        }else if (endTimeTextClicked){
-            String endTimeString = String.format("%02d:%02d", hourOfDay, minute);
-            endTime.setText(endTimeString);
-            endTimeTextClicked = false;
-        }
-
-    }
-
-    /**
-     * This method sets date and displays the time selected on the text views.
-     * @param view the picker associated with the dialog
-     * @param year the selected year
-     * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
-     * @param dayOfMonth the selected day of the month (1-31, depending on month)
-     */
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-        String formatDateString = format1.format(calendar.getTime());
-        if (startDateTextClicked){
-            startDate.setText(formatDateString);
-            startDateTextClicked = false;
-        }
-        else if(endDateTextClicked){
-            endDate.setText(formatDateString);
-            endDateTextClicked = false;
-        }
-    }
-
-    /**
-     * This method selects an image for the event poster and saves the uri to a variable.
-     */
-    private void imageChooser() {
-        Intent i = new Intent();
-        i.setType("image/*");
-        i.setAction(Intent.ACTION_GET_CONTENT);
-        launchSomeActivity.launch(i);
-    }
-    ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null && data.getData() != null) {
-                        selectedImageUri = data.getData();
-                        uploadPoster.setImageURI(selectedImageUri);
-                    }
+            /**
+             * This method sets time in a certain format after user picks a time from the pop out window.
+             * @param view the view associated with this listener
+             * @param hourOfDay the hour that was set
+             * @param minute the minute that was set
+             */
+            @Override
+            public void onTimeSet (TimePicker view,int hourOfDay, int minute){
+                startTime = findViewById(R.id.enter_startTime);
+                if (startTimeTextClicked) {
+                    String startTimeString = String.format("%02d:%02d", hourOfDay, minute);
+                    startTime.setText(startTimeString);
+                    startTimeTextClicked = false;
+                } else if (endTimeTextClicked) {
+                    String endTimeString = String.format("%02d:%02d", hourOfDay, minute);
+                    endTime.setText(endTimeString);
+                    endTimeTextClicked = false;
                 }
-            });
-} // closing CreateNewEventActivity
+
+            }
+
+            /**
+             * This method sets date and displays the time selected on the text views.
+             * @param view the picker associated with the dialog
+             * @param year the selected year
+             * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
+             * @param dayOfMonth the selected day of the month (1-31, depending on month)
+             */
+            @Override
+            public void onDateSet (DatePicker view,int year, int month, int dayOfMonth){
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                String formatDateString = format1.format(calendar.getTime());
+                if (startDateTextClicked) {
+                    startDate.setText(formatDateString);
+                    startDateTextClicked = false;
+                } else if (endDateTextClicked) {
+                    endDate.setText(formatDateString);
+                    endDateTextClicked = false;
+                }
+            }
+
+            /**
+             * This method selects an image for the event poster and saves the uri to a variable.
+             */
+            private void imageChooser () {
+                Intent i = new Intent();
+                i.setType("image/*");
+                i.setAction(Intent.ACTION_GET_CONTENT);
+                launchSomeActivity.launch(i);
+            }
+            ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            if (data != null && data.getData() != null) {
+                                selectedImageUri = data.getData();
+                                uploadPoster.setImageURI(selectedImageUri);
+                            }
+                        }
+                    });
+        } // closing CreateNewEventActivity
