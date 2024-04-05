@@ -57,5 +57,14 @@
     <string name="please_scan_the_above_qr_code_to_check_in_for_this_event">Please scan the above QR Code to Check In for this Event</string>
     <string name="event_qr_code_n_reused">Event QR Code\n(reused)</string>
     <string name="enter_address_to_see_location">Enter address to see location</string>
+    <string name="next_milestone_0_1">Next Milestone: 0/1</string>
+    <string name="congratulations_nyou_hit_a_milestone">Congratulations 🎉\nYou hit a milestone!</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="about">About</string>
+    <string name="description">Description</string>
+    <string name="see_event_location">See Event Location</string>
+    <string name="address">Address</string>
     >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>

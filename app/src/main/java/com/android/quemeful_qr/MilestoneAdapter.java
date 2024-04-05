@@ -1,9 +1,6 @@
 package com.android.quemeful_qr;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +16,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class milstoneAdapter extends RecyclerView.Adapter<milstoneAdapter.ViewHolder> {
+public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.ViewHolder> {
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
     private String eventId;
@@ -40,7 +36,7 @@ public class milstoneAdapter extends RecyclerView.Adapter<milstoneAdapter.ViewHo
             R.drawable.milestone_200_grayscale,
             R.drawable.milestone_500_grayscale};
 
-    public milstoneAdapter(String eventId) {
+    public MilestoneAdapter(String eventId) {
         this.eventId = eventId;
         DocumentReference eventRef = db.collection("events").document(eventId);
 

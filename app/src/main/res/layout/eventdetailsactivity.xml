@@ -10,7 +10,7 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/gradient_background"
         tools:context=".EventDetailsActivity">
 
@@ -26,7 +26,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="98dp"
                 android:gravity="center"
-                android:text="Event Details"
+                android:text="@string/event_details"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:fontFamily="serif"
@@ -83,7 +83,7 @@
                         android:fontFamily="monospace"
                         android:outlineSpotShadowColor="#272626"
                         android:shadowColor="#2B683F"
-                        android:text="Next Milestone: 0/1"
+                        android:text="@string/next_milestone_0_1"
                         android:textColor="#000000"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -102,7 +102,7 @@
                         android:fontFamily="serif-monospace"
                         android:outlineSpotShadowColor="#767676"
                         android:shadowColor="#272727"
-                        android:text="Congratulations 🎉. You hit a milestone"
+                        android:text="@string/congratulations_nyou_hit_a_milestone"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -112,7 +112,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-                >
+
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -149,7 +149,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Event Title"
+                        android:text="@string/event_title"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +160,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Date"
+                        android:text="@string/date"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageViewEvent" />
@@ -171,7 +171,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Time"
+                        android:text="@string/time"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textViewEventDate" />
@@ -182,7 +182,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="Location"
+                        android:text="@string/location"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/imageView2"
                         app:layout_constraintTop_toBottomOf="@+id/textViewEventTitle" />
@@ -223,7 +223,7 @@
                         android:id="@+id/textViewAbout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="About"
+                        android:text="@string/about"
                         android:textAlignment="viewStart"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -236,7 +236,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Description"
+                        android:text="@string/description"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -260,16 +260,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                 android:id="@+id/scanQRButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
-                android:drawableStart="@drawable/baseline_barcode_reader_24"
                 android:textColor="@color/black"
                 android:text="@string/check_in"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scanQRTitle" />
@@ -278,11 +278,12 @@
                 android:id="@+id/promotionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="180dp"
+                android:layout_marginTop="30dp"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:text="@string/promotion"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
@@ -319,7 +320,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:textColor="@color/white"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="50dp"
                 android:text="@string/view_attendees_announcements"
                 android:textStyle="bold"
                 android:textSize="18sp"
@@ -329,8 +330,12 @@
             <org.osmdroid.views.MapView
                 android:id="@+id/map"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="250dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -340,13 +345,14 @@
                 android:id="@+id/display_map_pins_activity_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="80dp"
                 android:backgroundTint="@color/white"
-                android:drawableLeft="@drawable/baseline_barcode_reader_24"
+                android:drawableEnd="@drawable/baseline_location_pin_24"
                 android:gravity="center"
-                android:text="Map"
+                android:text="@string/see_event_location"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scanQRTitle" />
 
 

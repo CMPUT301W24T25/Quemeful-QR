@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".milestone"
+    tools:context=".Milestone"
     tools:listitem="@layout/fragment_milstones">
 
 

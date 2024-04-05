@@ -15,14 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 
-public class milestone extends Fragment {
+public class Milestone extends Fragment {
 
     private String eventId;
 
     private RecyclerView recyclerView;
-    private milstoneAdapter adapter;
+    private MilestoneAdapter adapter;
 
-    public milestone(String eventId) {
+    public Milestone(String eventId) {
         this.eventId = eventId;
     }
 
@@ -39,7 +39,7 @@ public class milestone extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_milstones_list, container, false);
 
-        adapter = new milstoneAdapter(eventId);
+        adapter = new MilestoneAdapter(eventId);
         recyclerView = view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);

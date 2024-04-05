@@ -22,6 +22,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -43,7 +44,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
-    private Button buttonCheckIn, buttonSignUp, buttonPromotion;
+    private Button buttonSignUp, buttonPromotion;
+    private ExtendedFloatingActionButton buttonCheckIn;
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
 
@@ -97,7 +99,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonPromotion = findViewById(R.id.promotionButton);
 
         String eventId = getIntent().getStringExtra("event_id");
-
 
 
         if (eventId != null) {
@@ -228,7 +229,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 description = "You have reached " + milestone + " attendees!";
                                             }
                                             String token = document.getString("organizer_token");
-                                            sendNotif sendNotif = new sendNotif();
+                                            SendNotifications sendNotif = new SendNotifications();
                                             sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
                                         }}}}}});
 
@@ -258,7 +259,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void navigateToLMilestone(String eventId) {
-        milestone milestoneFragment = new milestone(eventId);
+        Milestone milestoneFragment = new Milestone(eventId);
 
         // Begin a transaction
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

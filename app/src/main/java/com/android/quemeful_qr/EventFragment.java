@@ -19,17 +19,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class eventFragment extends Fragment {
+public class EventFragment extends Fragment {
 
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventAdapter;
@@ -39,7 +37,7 @@ public class eventFragment extends Fragment {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private Calendar selectedDate = Calendar.getInstance(); // Default to today, can be updated via SharedViewModel.
 
-    public eventFragment() {
+    public EventFragment() {
         // Required empty public constructor
     }
 

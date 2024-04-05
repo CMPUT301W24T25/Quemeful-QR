@@ -24,7 +24,7 @@
         android:fontFamily="serif"
         android:text="@string/create_event"
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="28sp"
         android:textAlignment="center"/>
 
 <!--    Event Title or the Event Name -->
@@ -118,6 +118,7 @@
         android:textColor="@color/white"
         android:textSize="22sp" />
 
+<!--    Event desc input field -->
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/enter_event_details"
         android:layout_width="wrap_content"
@@ -134,7 +135,24 @@
         android:textSize="20sp"
         app:cornerRadius="10dp"/>
 
-<!--    Event Starting Date and Time -->
+<!--    Event location input field -->
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/enter_event_location"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_details"
+        android:layout_marginStart="242dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/rounded_background"
+        android:hint="@string/address"
+        android:inputType="text"
+        android:padding="4dp"
+        android:textSize="20sp"
+        app:cornerRadius="10dp" />
+
+    <!--    Event Starting Date and Time -->
     <LinearLayout
         android:id="@+id/event_starting"
         android:layout_width="match_parent"
@@ -282,8 +300,7 @@
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textSize="19sp"
-            android:padding="10dp"
-            android:visibility="invisible" />
+            android:padding="10dp" />
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/ReuseQRButton"
             android:layout_width="wrap_content"
@@ -295,8 +312,7 @@
             android:text="@string/reuse_existing"
             android:textSize="19sp"
             android:textAllCaps="false"
-            android:textAlignment="center"
-            android:visibility="invisible"/>
+            android:textAlignment="center" />
     </LinearLayout>
 
 <!--    Button Choices to Create or Cancel creating the New Event -->

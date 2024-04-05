@@ -4,6 +4,7 @@ import static android.graphics.Color.BLACK; // black qr code
 import static android.graphics.Color.WHITE; // white background
 import static android.service.controls.ControlsProviderService.TAG;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -76,6 +78,14 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
             // back clicked
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag("Events");
+            if(fragment instanceof Events)
+                onBackPressed();
+            else {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new Events(), "Events")
+                        .commit();
+            }
             finish();
         });
 

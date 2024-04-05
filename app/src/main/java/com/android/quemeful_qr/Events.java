@@ -45,7 +45,7 @@ public class Events extends Fragment {
     }
 
     private void addCalendarFragment() {
-        calender_fragment calendarFragment = new calender_fragment();
+        CalenderFragment calendarFragment = new CalenderFragment();
 
         FragmentManager fragmentManager = getChildFragmentManager();
 
@@ -58,7 +58,7 @@ public class Events extends Fragment {
 
     private void addEventFragment() {
 
-        eventFragment eventFragment = new eventFragment();
+        EventFragment eventFragment = new EventFragment();
 
         FragmentManager fragmentManager = getChildFragmentManager();
 

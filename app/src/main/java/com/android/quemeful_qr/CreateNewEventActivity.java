@@ -19,7 +19,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -33,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -79,12 +79,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         TimePickerDialog.OnTimeSetListener,
         TimePickerFragment.TimePickerDialogListener{
     // xml variables
-    private EditText eventTitle;
-    private EditText eventDescription;
-    private TextView startDate;
-    private TextView startTime;
-    private TextView endDate;
-    private TextView endTime;
+    private TextInputEditText eventTitle, eventDescription, eventLocation;
+    private TextView startDate, startTime, endDate, endTime;
     private AppCompatButton generateQRButton, reuseQRButton;
     private ImageButton uploadPoster, limitAttendee;
 
@@ -100,10 +96,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     // attributes for event class
     private String eventId, eventName;
    // private String eventId;
-    private boolean startDateTextClicked;
-    private boolean endDateTextClicked;
-    private boolean startTimeTextClicked;
-    private boolean endTimeTextClicked;
+    private boolean startDateTextClicked, endDateTextClicked, startTimeTextClicked, endTimeTextClicked;
     private EventHelper event;
 
 
@@ -121,6 +114,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // initialize xml variables
         eventTitle = findViewById(R.id.enter_title);
         eventDescription = findViewById(R.id.enter_event_details);
+        // location
+        eventLocation = findViewById(R.id.enter_event_location);
+
         startDate = findViewById(R.id.enter_startDate);
         startTime = findViewById(R.id.enter_startTime);
         endDate = findViewById(R.id.enter_endDate);
@@ -227,9 +223,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         });
 
-        // on click re-uses existing QR code by retrieving from the firebase db.
-        // since the re-use data is handled in a fragment, instead of starting activity,
-        // need to load the fragment into the frame layout
         // call the navigateToReuseQRFragment method to load the fragment pop up.
         reuseQRButton.setOnClickListener(v -> navigateToReuseQRFragment(eventId));
 
@@ -239,11 +232,25 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             finish();
         });
 
+        // call method to pop up limit attendee dialog fragment
         limitAttendee.setOnClickListener(v -> {
             navigateToLimitAttendeeDialogFragment(eventId);
         });
 
+        // call method to open MapActivity
+        eventLocation.setOnClickListener(v -> {
+            openMapActivity();
+        });
+
     } // onCreate closing
+
+    /**
+     * This method is used to start the MapActivity when map/location button is clicked.
+     */
+    private void openMapActivity() {
+        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
+        startActivity(intent);
+    }
 
     /**
      * This method is used to show the pop up dialog to set limit for attendees.
@@ -318,8 +325,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
-
-
             if (event.getPoster() != null) {
                 data.put("poster", event.getPoster());
             }
@@ -354,9 +359,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
     }
 
-
-    
-
     /**
      * This method sets date and displays the time selected on the text views.
      * @param view the picker associated with the dialog
@@ -380,18 +382,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             endDate.setText(formatDateString);
             endDateTextClicked = false;
         }
-    }
-    private void updateUserEvents(String userId, String eventId) {
-        CollectionReference usersRef = db.collection("users");
-        usersRef.document(userId)
-                .update("events_organized", FieldValue.arrayUnion(eventId))
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error updating user", e);
-                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
-                });
     }
 
     /**
