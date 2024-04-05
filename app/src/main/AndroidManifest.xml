@@ -91,14 +91,14 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.GET_NOTIFICATION" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
 
-               <action android:name="com.google.firebase.MESSAGING_EVENT"/>          </intent-filter>
         </service>
-        <activity android:name=".ShowNotificationsActivity"
-            android:exported="true">
-            ]
-        </activity>
+        <activity
+            android:name=".ShowNotificationsActivity"
+            android:exported="true" />
+
     </application>
 
 </manifest>
