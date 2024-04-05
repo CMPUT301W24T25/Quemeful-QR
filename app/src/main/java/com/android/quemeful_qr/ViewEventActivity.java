@@ -137,9 +137,9 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
                                String date = df.format(Calendar.getInstance().getTime());
                                Log.d("date", date);
                                getLocation();
-                               Log.d("location", attendeeLocation);
-                               Log.d("latitude", attendeeLatitude.toString());
-                               Log.d("longitude", attendeeLongitude.toString());
+//                               Log.d("location", attendeeLocation);
+//                               Log.d("latitude", attendeeLatitude.toString());
+//                               Log.d("longitude", attendeeLongitude.toString());
 
 
                                for (int i = 0; i < signupList.size(); i++){
