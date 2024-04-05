@@ -16,7 +16,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/name_of_attendee"
+            android:id="@+id/body_notificationShow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="0.0dp"
@@ -35,7 +35,7 @@
             android:paddingTop="5dp"
             app:layout_constraintBottom_toTopOf="@id/times_checked_in"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/name_of_attendee"
+            app:layout_constraintStart_toEndOf="@+id/body_notificationShow"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -45,7 +45,7 @@
             android:padding="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/name_of_attendee"
+            app:layout_constraintStart_toEndOf="@+id/body_notificationShow"
             app:layout_constraintTop_toBottomOf="@+id/checkin_icon" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

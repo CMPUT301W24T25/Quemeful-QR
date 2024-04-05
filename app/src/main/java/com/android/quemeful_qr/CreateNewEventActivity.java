@@ -1,5 +1,8 @@
 package com.android.quemeful_qr;
 
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -35,6 +38,13 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -42,6 +52,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,11 +105,17 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
     // attributes for event class
     private String eventId, eventName;
+   // private String eventId;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
     private boolean endTimeTextClicked;
     private EventHelper event;
+
+   // location
+    private String locationString;
+    private Double locationLatitude;
+    private Double locationLongitude;
 
     /**
      * This method sets the clickable property of the buttons and text boxes for user to enter event details.
@@ -126,9 +143,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         Button createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
         limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
+        eventLocation = findViewById(R.id.enter_location);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
 
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = findViewById(R.id.backTool);
@@ -170,6 +189,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             endDateTextClicked = true;
             DialogFragment newFragment = new DatePickerFragment();
             newFragment.show(getSupportFragmentManager(), "EndDatePicker");
+        });
+
+        eventLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openMapActivity();
+            }
         });
 
         // after taking user input for a new event, creates the new event using the create button, and
@@ -309,6 +335,17 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
+
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(new OnCompleteListener<String>() {
+                        @Override
+                        public void onComplete(@NonNull Task<String> task) {
+                            if (task.isSuccessful()) {
+                                Log.w(TAG, "Fetching FCM token failed", task.getException());
+                                String token = task.getResult().toString();
+                                data.put("organizer_token", token);
+                            }
+
             if (event.getPoster() != null) {
                 data.put("poster", event.getPoster());
             }
@@ -318,14 +355,23 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             List<Map<String, Object>> emptySignUpList = new ArrayList<>();
             data.put("signed_up", emptySignUpList);
 
-            CollectionReference eventsRef = db.collection("events");
-            eventsRef.document(eventId).set(data)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("FireStore", "DocumentSnapshot successfully written!");
-                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+            eventsRef
+                    .document(eventId)
+                    .set(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firestore", "DocumentSnapshot successfully written!");
+                            Toast.makeText(CreateNewEventActivity.this, "Create New " +
+                                    "Event Successful\n id: " + eventId, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                        }
                     });
         }
     }
+    
 
     /**
      * This method sets time in a certain format after user picks a time from the pop out window.
@@ -347,6 +393,42 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         }
 
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_MAP_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                locationString = data.getStringExtra("location string");
+                locationLatitude = data.getDoubleExtra("location latitude", 0);
+                locationLongitude = data.getDoubleExtra("location longitude", 0);
+//                event.setLocation(locationString);
+//                event.setLatitude(locationLatitude);
+//                event.setLongitude(locationLongitude);
+
+                eventLocation.setText(locationString);
+                Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    } //onActivityResult
+
+    
+    /**
+     * This method is used to start the MapActivity when map/location button is clicked.
+     */
+    protected void openMapActivity(){
+        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
+        startActivityForResult(intent, LAUNCH_MAP_ACTIVITY);
+
+    }
+
+    
 
     /**
      * This method sets date and displays the time selected on the text views.

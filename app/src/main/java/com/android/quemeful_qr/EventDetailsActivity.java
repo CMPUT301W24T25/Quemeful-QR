@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -25,6 +26,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.osmdroid.views.MapView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +39,18 @@ import java.util.Map;
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
-    private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription;
+    private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription, current_milestone_text, congradulatoryText;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
     private Button buttonCheckIn, buttonSignUp, buttonPromotion;
 
+    private int[] MILESTONES = {1, 10, 100, 200, 500};
+
+    private CardView milestoneCardView;
+
+    private MapView map;
+    private Button displayMapPinsActivityButton;
 
     /**
      * This onCreate method is used to set up an interface with all event details.
@@ -58,7 +68,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
-
+        map = findViewById(R.id.map);
+        displayMapPinsActivityButton = findViewById(R.id.display_map_pins_activity_button);
         // navigate back to previous page on clicking the back arrow.
         imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +84,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
         textViewEventDescription = findViewById(R.id.textViewEventDescription);
         viewAttendee = findViewById(R.id.viewAttendee);
+
+        milestoneCardView = findViewById(R.id.milestone_cardView);
+        current_milestone_text = findViewById(R.id.current_milestone_text);
+        congradulatoryText = findViewById(R.id.congratulatory_message);
         imageViewEventImage = findViewById(R.id.imageViewEvent);
 
         textViewScanQR = findViewById(R.id.scanQRTitle);
@@ -82,6 +97,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonPromotion = findViewById(R.id.promotionButton);
 
         String eventId = getIntent().getStringExtra("event_id");
+
+
 
         if (eventId != null) {
             fetchEventDetails(eventId);
@@ -96,9 +113,39 @@ public class EventDetailsActivity extends AppCompatActivity {
                     navigateToListOfAttendees(eventId);
                 }
             });
+
+            milestoneCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    navigateToLMilestone(eventId);
+                }
+            });
+
         } else {
             // Handle the error
         }
+        DocumentReference eventRef = db.collection("events").document(eventId);
+
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+                    if (signedUpUsers.size() > 0) {
+
+                        congradulatoryText.setVisibility(View.VISIBLE);
+                    }
+
+                    int nextMilestone = 0;
+                    for (int milestone : MILESTONES) {
+                        if (signedUpUsers.size() < milestone) {
+                            nextMilestone = milestone;
+                            break;
+                        }
+                    }
+                    current_milestone_text.setText( "Next Milestone: " + signedUpUsers.size() + "/" + nextMilestone);
+                }}});
+
     }
 
     /**
@@ -146,10 +193,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference eventRef = db.collection("events").document(eventId);
 
+
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", currentUserUID);
         userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
-
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId);
+        DocumentReference user = db.collection("users").document(currentUserUID);
+        user.update("events", FieldValue.arrayUnion(eventId));
         eventRef.update("signed_up", FieldValue.arrayUnion(userMap))
                 .addOnSuccessListener(aVoid -> {
                     // Update UI to reflect that the user has signed up
@@ -161,6 +211,27 @@ public class EventDetailsActivity extends AppCompatActivity {
                             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
                         }
                     }
+                    eventRef.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                String title = document.getString("title");
+                                List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+                                String description;
+                                for (int milestone : MILESTONES) {
+                                    if (document.get("signed_up") != null) {
+
+                                        if (signedUpUsers.size() == milestone) {
+                                            if (milestone == 1){
+                                                 description = "You just got your first attendee!";
+                                            } else {
+                                                description = "You have reached " + milestone + " attendees!";
+                                            }
+                                            String token = document.getString("organizer_token");
+                                            sendNotif sendNotif = new sendNotif();
+                                            sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
+                                        }}}}}});
+
                 })
                 .addOnFailureListener(e -> {
                     // Handle the error
@@ -180,6 +251,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back
         transaction.replace(R.id.fragment_container, attendeesFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    private void navigateToLMilestone(String eventId) {
+        milestone milestoneFragment = new milestone(eventId);
+
+        // Begin a transaction
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, milestoneFragment);
         transaction.addToBackStack(null);
 
         // Commit the transaction
@@ -236,6 +322,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonSignUp.setVisibility(View.GONE);
         viewAttendee.setVisibility(View.VISIBLE);
         buttonPromotion.setVisibility(View.VISIBLE);
+        map.setVisibility(View.VISIBLE);
+        displayMapPinsActivityButton.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -275,12 +363,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button buttonCheckIn = findViewById(R.id.scanQRButton);
         TextView textViewSignUp = findViewById(R.id.signUpTitle);
         Button buttonSignUp = findViewById(R.id.signUpButton);
+        CardView milestone = findViewById(R.id.milestone_cardView);
 
         if (isUserSignedUp) {
             textViewSignUp.setVisibility(View.GONE);
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
             buttonPromotion.setVisibility(View.GONE); // show promotion button for signed up users
+            milestone.setVisibility(View.GONE);
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
@@ -299,6 +389,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
             buttonPromotion.setVisibility(View.GONE); // show promotion button for not signed up users
+            milestone.setVisibility(View.GONE);
         }
     }
 

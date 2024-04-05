@@ -1,19 +1,24 @@
 package com.android.quemeful_qr;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is a fragment subclass.
@@ -25,6 +30,7 @@ public class AttendeesList extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     // TODO: Rename and change types of parameters
     private String Eventid;
+    private String EventName;
 
     /**
      * This is a constructor with eventid as parameter.
@@ -56,31 +62,41 @@ public class AttendeesList extends Fragment {
      *
      * @return View
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_of_attendees, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.list_of_attendees_recycleView);
+        RecyclerView recyclerView = view.findViewById(R.id.Show_Notification_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // replace "eventId" with the actual event id
         RecyclerView.Adapter adapter = new AttendeeAdapter(Eventid);
         recyclerView.setAdapter(adapter);
         TextView totalAttendeeTextView = view.findViewById(R.id.total_attendee);
-
+        TextView check_inTextView = view.findViewById(R.id.total_checked_in);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference eventRef = db.collection("events").document(Eventid);
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    List<String> users = (List<String>) document.get("users");
+                    List<Map<String, String>> users = (List<Map<String, String>>) document.get("signed_up");
+                    EventName = (String) document.get("title");
                     if (users != null) {
-                        totalAttendeeTextView.setText(String.valueOf(users.size()));
+                        totalAttendeeTextView.setText("Total Attendee: " + users.size());
                     }
-                }
+                    Integer checkedIn = 0;
+                    for (Map<String, String> user : users) {
+                       checkedIn += Integer.parseInt( user.get("checked_in"));
+                        }
+
+                    check_inTextView.setText("Check-in: " + checkedIn);
+                    }
             }
+
         });
+
 
         ImageButton back_button = view.findViewById(R.id.back_button);
 
@@ -113,7 +129,7 @@ public class AttendeesList extends Fragment {
         announcement_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment announcementFragment = new Announcement(Eventid);
+                Fragment announcementFragment = new Announcement(Eventid, EventName);
 
                 // Use the FragmentManager to start a FragmentTransaction
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();

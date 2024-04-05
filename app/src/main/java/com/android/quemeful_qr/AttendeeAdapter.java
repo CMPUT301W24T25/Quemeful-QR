@@ -111,7 +111,7 @@ public class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.Attend
         ImageView logo_checked_in;
         AttendeeViewHolder(View view) {
             super(view);
-            nameTextView = view.findViewById(R.id.name_of_attendee);
+            nameTextView = view.findViewById(R.id.body_notificationShow);
             times_checked_in = view.findViewById(R.id.times_checked_in);
             logo_checked_in = view.findViewById(R.id.checkin_icon);
         }
