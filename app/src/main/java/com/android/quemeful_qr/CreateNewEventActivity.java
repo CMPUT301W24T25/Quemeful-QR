@@ -219,11 +219,12 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
             //generates random id for the event
-            eventId = UUID.randomUUID().toString();
-            eventName = eventTitle.getText().toString();
-            String eventLocation = "location";
+            eventId = db.collection("events").document().getId();
+
+            String eventName = eventTitle.getText().toString();
             String eventTime = startTime.getText().toString();
             String eventDate = startDate.getText().toString();
+
             String eventDescr = eventDescription.getText().toString();
 
             try {
