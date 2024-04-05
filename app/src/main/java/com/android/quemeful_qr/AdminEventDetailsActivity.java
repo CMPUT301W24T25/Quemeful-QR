@@ -1,16 +1,20 @@
 package com.android.quemeful_qr;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -30,11 +34,14 @@ public class AdminEventDetailsActivity extends AppCompatActivity {
      *                           previously being shut down then this Bundle contains the data it most
      *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_event_details);
 
+        String eventId = getIntent().getStringExtra("event_id");
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID); //new
         db = FirebaseFirestore.getInstance();
 
         imageViewBackArrow = findViewById(R.id.backArrow);
@@ -54,10 +61,6 @@ public class AdminEventDetailsActivity extends AppCompatActivity {
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
         textViewEventDescription = findViewById(R.id.textViewEventDescription);
         imageViewEventImage = findViewById(R.id.imageViewEvent);
-
-
-        String eventId = getIntent().getStringExtra("event_id");
-        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID); //new
 
         if (eventId != null) {
             fetchEventDetails(eventId);

@@ -57,7 +57,7 @@ public class UnitTest {
         events = new ArrayList<>();
 
         itemView = View.inflate(ApplicationProvider.getApplicationContext(), R.layout.eventstodaycard, null);
-        viewHolder = new EventsTodayAdapter.EventViewHolder(itemView);
+        viewHolder = new EventsTodayAdapter.EventViewHolder(itemView, testIsAdmin);
 
         event = new EventHelper(
                 "eventId1",
@@ -66,8 +66,7 @@ public class UnitTest {
                 "Test Time1",
                 "Test Date1",
                 "Test Description1",
-                "Test Poster1",
-                "Test token1"
+                "Test Poster1"
         );
         events.add(event);
 
@@ -100,8 +99,7 @@ public class UnitTest {
               "Test Time",
               "Test Date",
               "Test Description",
-              "Test Poster",
-              "Test token"
+              "Test Poster"
       );
 
       // Add the event to Firestore
@@ -135,8 +133,7 @@ public class UnitTest {
                 "Test Time1",
                 "Test Date1",
                 "Test Description1",
-                "Test Poster1",
-                "Test token1"
+                "Test Poster1"
         ));
         events.add( new EventHelper(
                 "eventId2",
@@ -145,8 +142,7 @@ public class UnitTest {
                 "Test Time2",
                 "Test Date2",
                 "Test Description2",
-                "Test Poster2",
-                "Test token2"
+                "Test Poster2"
         ));
 
         EventsTodayAdapter adapter = new EventsTodayAdapter(context, events, null, testIsAdmin);
@@ -165,7 +161,7 @@ public class UnitTest {
 
         EventsTodayAdapter adapter = new EventsTodayAdapter(ApplicationProvider.getApplicationContext(), events, null, testIsAdmin);
         adapter.onBindViewHolder(viewHolder, 0);
-        EventsTodayAdapter.EventViewHolder viewHolder = new EventsTodayAdapter.EventViewHolder(itemView);
+        EventsTodayAdapter.EventViewHolder viewHolder = new EventsTodayAdapter.EventViewHolder(itemView, testIsAdmin);
 
         assertNotNull(viewHolder);
         assertNotNull(viewHolder.eventImage);
