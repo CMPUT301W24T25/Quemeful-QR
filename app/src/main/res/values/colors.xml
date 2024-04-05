@@ -3,4 +3,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="button_green">#397975</color>
+    <color name="use_existing_fragment_bg">#FFF1E0</color>
 </resources>

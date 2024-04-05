@@ -45,5 +45,17 @@
     <string name="confirm_checkin">Confirm Check in</string>
     <string name="Location">Location</string>
     <string name="Address">Address</string>
+    <string name="generate_new">Generate New</string>
+    <string name="share">Share</string>
+    <string name="view_attendees_announcements"><![CDATA[View Attendees & Announcements]]></string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_for_this_event">Sign Up For this Event</string>
+    <string name="promotion">Promotion</string>
+    <string name="scan_event_qr_code">Scan Event QR Code</string>
+    <string name="reuse_existing">Reuse Existing</string>
+    <string name="qr_code_click_create_event_first">QR Code (click create event first)</string>
+    <string name="use_existing_event_qr_code">Use Existing Event QR Code</string>
+    <string name="please_scan_the_above_qr_code_to_check_in_for_this_event">Please scan the above QR Code to Check In for this Event</string>
+    <string name="event_qr_code_n_reused">Event QR Code\n(reused)</string>
     >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>

@@ -95,6 +95,7 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.3.1") //
 
 
+    implementation("androidx.activity:activity:1.8.0") //
 }
 
 
