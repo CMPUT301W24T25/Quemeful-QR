@@ -65,7 +65,7 @@ public class ViewEventActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
         // initialize instances from xml
-        TextView eventName = findViewById(R.id.textview_event_name);
+        TextView eventName = findViewById(R.id.event_name_textview);
         ImageView eventPoster = findViewById(R.id.poster_view);
         TextView eventDesc = findViewById(R.id.textview_event_description);
         TextView eventDate = findViewById(R.id.textview_event_date);
