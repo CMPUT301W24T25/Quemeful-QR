@@ -43,7 +43,7 @@ android {
         dependencies {
 
 //            updated to a general file path for Javadocs.
-            compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
+            //compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
             implementation("com.squareup.okhttp3:okhttp:4.10.0") //
             implementation("org.apache.directory.studio:org.apache.commons.io:2.4") //
             implementation("com.google.firebase:firebase-messaging:23.4.1") // firebase
