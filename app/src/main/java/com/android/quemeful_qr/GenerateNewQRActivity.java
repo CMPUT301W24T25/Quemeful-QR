@@ -78,9 +78,10 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
-            // back clicked go to dashboard
-            Intent intent = new Intent(GenerateNewQRActivity.this, MainActivity.class);
-            startActivity(intent);
+//            // back clicked go to dashboard
+//            Intent intent = new Intent(GenerateNewQRActivity.this, MainActivity.class);
+//            startActivity(intent);
+            finish();
         });
 
     } // onCreate closing

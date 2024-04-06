@@ -3,6 +3,7 @@ package com.android.quemeful_qr;
 
 import static android.service.controls.ControlsProviderService.TAG;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -15,12 +16,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -77,6 +80,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         TimePickerFragment.TimePickerDialogListener{
     // xml variables
     private TextInputEditText eventTitle, eventDescription;
+    private EditText inputLimit;
     private TextView startDate, startTime, endDate, endTime, eventLocation;
     private AppCompatButton generateQRButton, reuseQRButton;
     private ImageButton uploadPoster;
@@ -90,10 +94,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
     //firebase
     private FirebaseFirestore db;
-    private CollectionReference eventsRef = db.collection("events");
+    private CollectionReference eventsRef;
 
     // attributes for event class
     private String eventId, eventName, locationString;
+
    // private String eventId;
     private boolean startDateTextClicked, endDateTextClicked, startTimeTextClicked, endTimeTextClicked;
     private EventHelper event;
@@ -130,7 +135,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
 
+        //generates firebase id for the event
+        eventId = db.collection("events").document().getId();
 
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = findViewById(R.id.backTool);
@@ -178,8 +186,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
-            //generates firebase id for the event
-            eventId = db.collection("events").document().getId();
+//            //generates firebase id for the event
+//            eventId = db.collection("events").document().getId();
             eventName = eventTitle.getText().toString();
             String eventTime = startTime.getText().toString();
             String eventDate = startDate.getText().toString();
@@ -227,13 +235,81 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             finish();
         });
 
-        // call method to pop up limit attendee dialog fragment
-        limitAttendee.setOnClickListener(v -> navigateToLimitAttendeeDialogFragment(eventId));
+        // pop up limit attendee dialog
+        limitAttendee.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewEventActivity.this);
+            builder.setTitle("Limit Attendee");
+            // take user input
+            inputLimit = new EditText(CreateNewEventActivity.this);
+            inputLimit.setInputType(InputType.TYPE_CLASS_TEXT);
+            inputLimit.setHint("Enter a limit");
+            builder.setView(inputLimit);
+            builder.setPositiveButton("Save", (dialog, which) -> {
+                String attendeeLimit = inputLimit.getText().toString();
+                // save the limit to firebase
+                AddLimitToFirebase(attendeeLimit, eventId);
+            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.cancel();
+            });
+            builder.show();
+        });
 
         // call method to open MapActivity
         eventLocation.setOnClickListener(v -> openMapActivity());
 
     } // onCreate closing
+
+    private void AddLimitToFirebase(String attendeeLimit, String eventId) {
+        eventsRef.document(eventId)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    EventHelper event = documentSnapshot.toObject(EventHelper.class);
+                    if (event != null) {
+                        // if the event exists retrieve data
+                        if (documentSnapshot.getData() != null) {
+                            // assign the data to a compatible type variable
+                            Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
+                            String limitForAttendee = (String) eventData.get("Attendee Limit");
+                            if (limitForAttendee == null) {
+                                Map<String, Object> limit = new HashMap<>();
+                                limit.put("Attendee Limit", attendeeLimit);
+                                db.collection("events")
+                                        .document(eventId)
+                                        .update(limit)
+                                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully updated db document with limit attendee field."))
+                                        .addOnFailureListener(e -> {
+                                            // handle fail to update event document with specific eventId
+                                            Log.d(TAG, "Failed to add attendee limit field to db document.");
+                                        });
+                            } else {
+                                // display dialog if field already exists for that eventId
+                                showUpdateLimitDialog();
+                            }
+                        }
+
+                    }
+                });
+    }
+
+    /**
+     * This method is used to display a dialog to the user if user wants to update the attendee limit,
+     * when the attendee limit field in firebase already exists.
+     */
+    private void showUpdateLimitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewEventActivity.this);
+        builder.setTitle("An attendee limit already exists for this Event");
+        builder.setMessage("Do you want to update limit?");
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            // update firebase
+            String updatedLimit = inputLimit.getText().toString();
+            AddLimitToFirebase(updatedLimit, eventId);
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            // don't update dismiss
+            dialog.dismiss();
+        });
+        builder.show();
+    }
 
     /**
      * This method is used to start the MapActivity when map/location button is clicked.
@@ -241,14 +317,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private void openMapActivity() {
         Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
         startActivity(intent);
-    }
-
-    /**
-     * This method is used to show the pop up dialog to set limit for attendees.
-     */
-    private void navigateToLimitAttendeeDialogFragment(String eventId) {
-        LimitAttendeeDialogFragment dialogFragment = new LimitAttendeeDialogFragment(eventId);
-        dialogFragment.show(getSupportFragmentManager(), "Limit Attendee Dialog");
     }
 
     /**
