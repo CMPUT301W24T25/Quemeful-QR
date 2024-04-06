@@ -47,16 +47,23 @@ public class ViewEventActivity extends AppCompatActivity {
      * It displays the event title and its poster.
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
 
+        confirmCheckInButton = findViewById(R.id.confirm_check_in_button);
+        cancelButton = findViewById(R.id.cancel_button);
+
+        //initialize firebase
+        db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
+        
         // initialize instances from xml
-        TextView eventName = findViewById(R.id.textview_event_name);
+        TextView eventName = findViewById(R.id.event_name_textview);
         ImageView eventPoster = findViewById(R.id.poster_view);
         TextView eventDesc = findViewById(R.id.textview_event_description);
         TextView eventDate = findViewById(R.id.textview_event_date);
@@ -98,9 +105,6 @@ public class ViewEventActivity extends AppCompatActivity {
             public void onClick(View v) {
                 DocumentReference eventsDocRef = db.collection("events").document(eventId);
                 String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//                String currentUserUID = "d06f09a667154775";
-//                String currentUserUID = "439cd80ba5572b17";
-
                 eventsDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                            @Override
                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -123,15 +127,12 @@ public class ViewEventActivity extends AppCompatActivity {
                                    Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
 
                                }); //replaces the old sign up list with the new one
-
-
                        }
                });
-
-
             }
 
         });
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

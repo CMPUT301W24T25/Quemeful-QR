@@ -27,21 +27,25 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 import com.google.firebase.firestore.FieldValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
@@ -50,7 +54,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class has an interface for user/organizer to create new event and enter details for new event
@@ -84,6 +87,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private AppCompatButton generateQRButton, reuseQRButton;
     private ImageButton uploadPoster, limitAttendee;
 
+    int LAUNCH_MAP_ACTIVITY = 1;
     // fragment frame
     private FrameLayout reuseFragmentFrame;
 
@@ -128,8 +132,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         Button cancelButton = findViewById(R.id.cancel_button);
         Button createButton = findViewById(R.id.create_button);
         uploadPoster = findViewById(R.id.add_poster_button);
-        limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
+        eventLocation = findViewById(R.id.enter_location);
 
+        limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
@@ -141,10 +146,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             // back clicked
             finish();
         });
-
+        
+        
         // calls the imageChooser() to upload an image/poster for the event,
         // when clicked on the plus icon under 'Add Poster'.
-        uploadPoster.setOnClickListener(v -> imageChooser());
+        uploadPoster.setOnClickListener(v -> {
+            imageChooser();
+        });
 
         // opens a fragment to pick the starting time of the event.
         startTime.setOnClickListener(v -> {
@@ -177,16 +185,16 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             newFragment.show(getSupportFragmentManager(), "EndDatePicker");
         });
 
-
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
             //generates random id for the event
-            eventId = UUID.randomUUID().toString();
-            eventName = eventTitle.getText().toString();
-            String eventLocation = "location";
+            eventId = db.collection("events").document().getId();
+
+            String eventName = eventTitle.getText().toString();
             String eventTime = startTime.getText().toString();
             String eventDate = startDate.getText().toString();
+
             String eventDescr = eventDescription.getText().toString();
 
             try {
@@ -199,7 +207,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     // create new event
-                    event = new EventHelper(eventId, eventName, event.getLocation(), event.getLatitude(), event.getLongitude(), eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                     event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
                     //empty poster check
                     Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
                     message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -279,6 +287,26 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         transaction.commit();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_MAP_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                locationString = data.getStringExtra("location string");
+                locationLatitude = data.getDoubleExtra("location latitude", 0);
+                locationLongitude = data.getDoubleExtra("location longitude", 0);
+
+                eventLocation.setText(locationString);
+                Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
+            }
+        }
+    } //onActivityResult
+
     /**
      * This method is used to tell which time textview (start time or end time) is pressed/clicked on.
      */
@@ -315,25 +343,41 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             Toast message = Toast.makeText(getBaseContext(), "Please Fill All Text Fields", Toast.LENGTH_LONG);
             message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
             message.show();
-        }
-        else {
+        } else {
             HashMap<String, Object> data = new HashMap<>();
-            data.put("organizer",currentUserUID);
+            data.put("organizer", currentUserUID);
             data.put("id", event.getId());
             data.put("title", event.getTitle());
             data.put("location", event.getLocation());
             data.put("time", event.getTime());
             data.put("date", event.getDate());
             data.put("description", event.getDescription());
-            if (event.getPoster() != null) {
-                data.put("poster", event.getPoster());
-            }
-            else {
-                data.put("poster", "");
-            }
-            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
-            data.put("signed_up", emptySignUpList);
 
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(new OnCompleteListener<String>() {
+                        @Override
+                        public void onComplete(@NonNull Task<String> task) {
+                            if (task.isSuccessful()) {
+                                Log.w(TAG, "Fetching FCM token failed", task.getException());
+                                String token = task.getResult().toString();
+                                data.put("organizer_token", token);
+                            }
+                            if (event.getPoster() != null) {
+                                data.put("poster", event.getPoster());
+                            } else {
+                                data.put("poster", "");
+                            }
+                            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+                            data.put("signed_up", emptySignUpList);
+
+                            CollectionReference eventsRef = db.collection("events");
+                            eventsRef.document(eventId).set(data)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                                    });
+                        }
+                    });
         }
     }
     
@@ -393,6 +437,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         i.setAction(Intent.ACTION_GET_CONTENT);
         launchSomeActivity.launch(i);
     }
+    
     ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -402,5 +447,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         uploadPoster.setImageURI(selectedImageUri);
                     }
                 }
+
             });
-} // closing CreateNewEventActivity
+
+        } // closing CreateNewEventActivity

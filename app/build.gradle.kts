@@ -103,6 +103,7 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.3.1") //
 
 
+    implementation("androidx.activity:activity:1.8.0") //
 }
 dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")

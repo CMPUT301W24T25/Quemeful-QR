@@ -20,6 +20,12 @@ public class EventHelper implements Serializable {
     private Double latitude;
     private Double longitude;
 
+    /**
+     * EventHelper default constructor (no parameters)
+     */
+    EventHelper() {
+    }
+
     // event organizer getter
     public String getOrganizer() {
         return organizer;
@@ -33,12 +39,8 @@ public class EventHelper implements Serializable {
     /**
      * EventHelper default constructor (no parameters)
      */
-    EventHelper(){
 
-    }
-
-    /**
-     * EventHelper constructor with its attributes as parameters,
+     /** EventHelper constructor with its attributes as parameters,
      * which is used to initialize all the event attributes.
      * @param id the event with the specific id.
      * @param title the name of the event.
