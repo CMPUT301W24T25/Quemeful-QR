@@ -90,6 +90,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
     //firebase
     private FirebaseFirestore db;
+    private CollectionReference eventsRef = db.collection("events");
 
     // attributes for event class
     private String eventId, eventName, locationString;
@@ -177,7 +178,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
-            //generates random id for the event
+            //generates firebase id for the event
             eventId = db.collection("events").document().getId();
             eventName = eventTitle.getText().toString();
             String eventTime = startTime.getText().toString();
@@ -195,6 +196,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     // create new event
                      event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+                } else {
                     //empty poster check
                     Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
                     message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -202,8 +204,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 }
                 // create new event
                 addNewEvent(event);
-                generateQRButton.setVisibility(View.VISIBLE);
-                reuseQRButton.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -344,14 +344,15 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                             data.put("organizer_token", token);
                         }
                         if (event.getPoster() != null) {
-                            data.put("poster", event.getPoster());
-                        } else {
-                            data.put("poster", ""); // need fix uploading
+                            String posterUriString = event.getPoster();
+                            UploadPosterToFirebase(eventId, posterUriString);
+                        } // handle else
+                        else{
+                            Log.d(TAG, "event.getPoster() return is null");
                         }
                         List<Map<String, Object>> emptySignUpList = new ArrayList<>();
                         data.put("signed_up", emptySignUpList);
 
-                        CollectionReference eventsRef = db.collection("events");
                         eventsRef.document(eventId).set(data)
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("FireStore", "DocumentSnapshot successfully written!");
@@ -360,7 +361,48 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     });
         }
     }
-    
+
+    /**
+     * This method is used to upload the event poster to fireStore storage,
+     * and add the poster uri String to the db.
+     * @param eventId the event newly created with specific eventId
+     * @param posterUriString the event poster
+     */
+    private void UploadPosterToFirebase(String eventId, String posterUriString) {
+        // get the document with the event id.
+        eventsRef.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+            // if document trying to retrieve exists
+            if(documentSnapshot.exists()){
+                EventHelper event = documentSnapshot.toObject(EventHelper.class);
+                if (event != null) {
+                    // if the event exists retrieve data
+                    if(documentSnapshot.getData() != null) {
+                        // assign the data to a compatible type variable
+                        Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
+                        // the poster field check
+                        String event_poster = (String) eventData.get("poster");
+                        if(event_poster == null){
+                            // poster field does not exists so add field poster
+                            Map<String, Object> Poster = new HashMap<>();
+                            Poster.put("Event-poster", posterUriString);
+                            db.collection("events")
+                                    .document(eventId)
+                                    .update(Poster)
+                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "event document successfully updated with poster field."))
+                                    .addOnFailureListener(e -> Log.d(TAG, "event document failed to update with poster field."));
+                        } else {
+                            // handle if event_poster is not null
+                            Log.d(TAG, "poster field for this event already exists");
+                        }
+                    } // handle if documentSnapshot.getData is null
+                        } else {
+                    // display toast if the event is not found in the database
+                    Toast.makeText(getBaseContext(), "Event not found", Toast.LENGTH_SHORT).show();
+                }}
+        }).addOnFailureListener(e -> {
+            // handle fail to get document
+        });
+    } // UploadPosterToFirebase method closing
 
     /**
      * This method sets time in a certain format after user picks a time from the pop out window.

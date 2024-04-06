@@ -4,6 +4,7 @@ import static android.service.controls.ControlsProviderService.TAG;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import android.util.Log;
@@ -11,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
+
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class LimitAttendeeDialogFragment extends DialogFragment {
 
     String attendeeLimit, eventId;
+    private TextInputEditText limitInput;
 
     public LimitAttendeeDialogFragment(String eventId) {
         this.eventId = eventId;
@@ -33,15 +35,15 @@ public class LimitAttendeeDialogFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_limit_attendee_dialog, container, false);
 
-        TextInputEditText limitInput = view.findViewById(R.id.enter_limit);
-        limitInput.setOnClickListener(v -> {
-            attendeeLimit = limitInput.getText().toString();
-        });
+        limitInput = view.findViewById(R.id.enter_limit);
+        // get the user input limit
+        attendeeLimit = limitInput.getText().toString();
 
         Button saveLimit = view.findViewById(R.id.save_limit_button);
         saveLimit.setOnClickListener(v -> {
             // save the limit to firebase
             AddLimitToFirebase(attendeeLimit, eventId);
+            dismiss();
         });
         return view;
     }
@@ -70,10 +72,35 @@ public class LimitAttendeeDialogFragment extends DialogFragment {
                                             Log.d(TAG, "failed to add event check in QR Code field to document eventId in events collection.");
                                         });
                             } else {
+                                // display dialog
+                                showUpdateLimitDialog();
                             }
                         }
 
                     }
                 });
+    }
+
+    /**
+     * This method is used to display a dialog to the user if user wants to update the attendee limit,
+     * when the attendee limit field in firebase already exists.
+     */
+    private void showUpdateLimitDialog() {
+        if(getContext() != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("An attendee limit already exists for this Event");
+            builder.setMessage("Do you want to update limit?");
+            builder.setPositiveButton("Update", (dialog, which) -> {
+                // update firebase
+                String updatedLimit = limitInput.getText().toString();
+                AddLimitToFirebase(updatedLimit, eventId);
+            });
+            builder.setNegativeButton("No", (dialog, which) -> {
+                // don't update dismiss
+                dismiss();
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 }
