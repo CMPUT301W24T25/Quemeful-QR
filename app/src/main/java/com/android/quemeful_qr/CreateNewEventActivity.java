@@ -58,6 +58,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -396,11 +397,24 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         eventsRef.document(eventId).set(data)
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                    updateUserEvents(currentUserUID, event.getId());
                                     Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
                                 });
                     }
                 });
 
+    }
+    private void updateUserEvents(String userId, String eventId) {
+        CollectionReference usersRef = db.collection("users");
+        usersRef.document(userId)
+                .update("events_organized", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating user", e);
+                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
+                });
     }
 
             /**
@@ -423,6 +437,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 }
 
             }
+
 
             /**
              * This method sets date and displays the time selected on the text views.
