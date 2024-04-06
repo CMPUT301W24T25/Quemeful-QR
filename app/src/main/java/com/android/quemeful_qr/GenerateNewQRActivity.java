@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -78,15 +79,12 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
             // back clicked
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag("Events");
-            if(fragment instanceof Events)
-                onBackPressed();
-            else {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new Events(), "Events")
-                        .commit();
-            }
             finish();
+//            Events events = new Events();
+//            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//            transaction.replace(R.id.fragment_container, events);
+//            transaction.addToBackStack(null);
+//            transaction.commit();
         });
 
     } // onCreate closing

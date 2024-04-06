@@ -319,30 +319,31 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:textColor="@color/white"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="200dp"
                 android:text="@string/view_attendees_announcements"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/scanQRButton" />
+                app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
                 
             <org.osmdroid.views.MapView
                 android:id="@+id/map"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/promotionButton" />
+                app:layout_constraintTop_toBottomOf="@+id/viewAttendee" />
 
 
             <Button
                 android:id="@+id/display_map_pins_activity_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="140dp"
                 android:backgroundTint="@color/white"
                 android:drawableEnd="@drawable/baseline_location_pin_24"
                 android:gravity="center"
@@ -350,7 +351,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/scanQRTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

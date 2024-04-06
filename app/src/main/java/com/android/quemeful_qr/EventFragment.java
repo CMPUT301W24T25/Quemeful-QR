@@ -63,7 +63,7 @@ public class EventFragment extends Fragment {
 
         TabLayout tabLayout = view.findViewById(R.id.tabs);
         tabLayout.addTab(tabLayout.newTab().setText("Events Organized"));
-        tabLayout.addTab(tabLayout.newTab().setText("Checked in"));
+        tabLayout.addTab(tabLayout.newTab().setText("Checked In"));
 
         fetchEventsForSelectedDate(); // Initial fetch for events.
 

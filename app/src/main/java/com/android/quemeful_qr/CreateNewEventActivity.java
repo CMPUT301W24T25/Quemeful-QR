@@ -179,11 +179,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         createButton.setOnClickListener(v -> {
             //generates random id for the event
             eventId = db.collection("events").document().getId();
-
             eventName = eventTitle.getText().toString();
             String eventTime = startTime.getText().toString();
             String eventDate = startDate.getText().toString();
-
             String eventDescr = eventDescription.getText().toString();
 
             try {
@@ -348,7 +346,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         if (event.getPoster() != null) {
                             data.put("poster", event.getPoster());
                         } else {
-                            data.put("poster", "");
+                            data.put("poster", ""); // need fix uploading
                         }
                         List<Map<String, Object>> emptySignUpList = new ArrayList<>();
                         data.put("signed_up", emptySignUpList);

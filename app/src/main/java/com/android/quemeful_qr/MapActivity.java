@@ -89,7 +89,7 @@ public class MapActivity extends AppCompatActivity {
         Button confirmLocationButton = findViewById(R.id.confirm_location_button);
         Button locationSettingsButton = findViewById(R.id.location_settings_button);
         TextView clearAddressButton = findViewById(R.id.clear_address_button);
-        addressText = findViewById(R.id.address_text);
+        addressText = findViewById(R.id.search_map_edittext);
 
         loadMap();
         onPause();
