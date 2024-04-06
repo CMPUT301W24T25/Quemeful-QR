@@ -298,7 +298,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     for (int i = 0; i < signupList.size(); i++) {
                             attId = (String) signupList.get(i).get("uid");
                             Log.d("attId", attId);
-                            if ((Double) signupList.get(i).get("attendee_latitude") != null || (Double) signupList.get(i).get("attendee_latitude") != null){
+                            if ((Double) signupList.get(i).get("attendee_latitude") != null && (Double) signupList.get(i).get("attendee_latitude") != null){
                                 attLatitude = (Double) signupList.get(i).get("attendee_latitude");
                                 attLongitude = (Double) signupList.get(i).get("attendee_longitude");
                                 AttendeeMapPin attendeePin = new AttendeeMapPin(attId, attLatitude,attLongitude);
