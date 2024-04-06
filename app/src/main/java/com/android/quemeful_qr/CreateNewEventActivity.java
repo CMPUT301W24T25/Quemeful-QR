@@ -1,6 +1,8 @@
 package com.android.quemeful_qr;
 
 
+import static android.service.controls.ControlsProviderService.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -27,22 +29,15 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-
-import com.google.firebase.firestore.FieldValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,7 +45,6 @@ import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
 import java.util.ArrayList;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,10 +76,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         TimePickerDialog.OnTimeSetListener,
         TimePickerFragment.TimePickerDialogListener{
     // xml variables
-    private TextInputEditText eventTitle, eventDescription, eventLocation;
-    private TextView startDate, startTime, endDate, endTime;
+    private TextInputEditText eventTitle, eventDescription;
+    private TextView startDate, startTime, endDate, endTime, eventLocation;
     private AppCompatButton generateQRButton, reuseQRButton;
-    private ImageButton uploadPoster, limitAttendee;
+    private ImageButton uploadPoster;
 
     int LAUNCH_MAP_ACTIVITY = 1;
     // fragment frame
@@ -98,11 +92,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private FirebaseFirestore db;
 
     // attributes for event class
-    private String eventId, eventName;
+    private String eventId, eventName, locationString;
    // private String eventId;
     private boolean startDateTextClicked, endDateTextClicked, startTimeTextClicked, endTimeTextClicked;
     private EventHelper event;
-
+    private Double locationLatitude, locationLongitude;
 
     /**
      * This method sets the clickable property of the buttons and text boxes for user to enter event details.
@@ -118,9 +112,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // initialize xml variables
         eventTitle = findViewById(R.id.enter_title);
         eventDescription = findViewById(R.id.enter_event_details);
-        // location
-        eventLocation = findViewById(R.id.enter_event_location);
-
         startDate = findViewById(R.id.enter_startDate);
         startTime = findViewById(R.id.enter_startTime);
         endDate = findViewById(R.id.enter_endDate);
@@ -134,7 +125,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         uploadPoster = findViewById(R.id.add_poster_button);
         eventLocation = findViewById(R.id.enter_location);
 
-        limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
+        ImageButton limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
@@ -150,9 +141,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         
         // calls the imageChooser() to upload an image/poster for the event,
         // when clicked on the plus icon under 'Add Poster'.
-        uploadPoster.setOnClickListener(v -> {
-            imageChooser();
-        });
+        uploadPoster.setOnClickListener(v -> imageChooser());
 
         // opens a fragment to pick the starting time of the event.
         startTime.setOnClickListener(v -> {
@@ -191,7 +180,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             //generates random id for the event
             eventId = db.collection("events").document().getId();
 
-            String eventName = eventTitle.getText().toString();
+            eventName = eventTitle.getText().toString();
             String eventTime = startTime.getText().toString();
             String eventDate = startDate.getText().toString();
 
@@ -241,14 +230,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         });
 
         // call method to pop up limit attendee dialog fragment
-        limitAttendee.setOnClickListener(v -> {
-            navigateToLimitAttendeeDialogFragment(eventId);
-        });
+        limitAttendee.setOnClickListener(v -> navigateToLimitAttendeeDialogFragment(eventId));
 
         // call method to open MapActivity
-        eventLocation.setOnClickListener(v -> {
-            openMapActivity();
-        });
+        eventLocation.setOnClickListener(v -> openMapActivity());
 
     } // onCreate closing
 
@@ -354,29 +339,26 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             data.put("description", event.getDescription());
 
             FirebaseMessaging.getInstance().getToken()
-                    .addOnCompleteListener(new OnCompleteListener<String>() {
-                        @Override
-                        public void onComplete(@NonNull Task<String> task) {
-                            if (task.isSuccessful()) {
-                                Log.w(TAG, "Fetching FCM token failed", task.getException());
-                                String token = task.getResult().toString();
-                                data.put("organizer_token", token);
-                            }
-                            if (event.getPoster() != null) {
-                                data.put("poster", event.getPoster());
-                            } else {
-                                data.put("poster", "");
-                            }
-                            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
-                            data.put("signed_up", emptySignUpList);
-
-                            CollectionReference eventsRef = db.collection("events");
-                            eventsRef.document(eventId).set(data)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("FireStore", "DocumentSnapshot successfully written!");
-                                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                                    });
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM token failed", task.getException());
+                            String token = task.getResult().toString();
+                            data.put("organizer_token", token);
                         }
+                        if (event.getPoster() != null) {
+                            data.put("poster", event.getPoster());
+                        } else {
+                            data.put("poster", "");
+                        }
+                        List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+                        data.put("signed_up", emptySignUpList);
+
+                        CollectionReference eventsRef = db.collection("events");
+                        eventsRef.document(eventId).set(data)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                    Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                                });
                     });
         }
     }

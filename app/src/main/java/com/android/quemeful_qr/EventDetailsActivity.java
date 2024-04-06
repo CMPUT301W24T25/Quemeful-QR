@@ -29,15 +29,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.osmdroid.views.MapView;
@@ -50,7 +46,6 @@ import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
-import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
@@ -73,7 +68,7 @@ import java.util.Map;
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
-    private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription, current_milestone_text, congradulatoryText;
+    private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription, current_milestone_text, congratulatoryText;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
@@ -93,10 +88,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Double longitude;
 
 
-    //firestore variables
-    private CollectionReference eventsRef;
-    private CollectionReference attendeesRef;
-
     /**
      * This onCreate method is used to set up an interface with all event details.
      * @param savedInstanceState If the activity is being re-initialized after
@@ -111,8 +102,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         //firebase setup
         db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("events");
-        attendeesRef = db.collection("attendees");
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
@@ -125,7 +114,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         milestoneCardView = findViewById(R.id.milestone_cardView);
         current_milestone_text = findViewById(R.id.current_milestone_text);
-        congradulatoryText = findViewById(R.id.congratulatory_message);
+        congratulatoryText = findViewById(R.id.congratulatory_message);
         imageViewEventImage = findViewById(R.id.imageViewEvent);
 
         textViewScanQR = findViewById(R.id.scanQRTitle);
@@ -143,52 +132,40 @@ public class EventDetailsActivity extends AppCompatActivity {
         onPause();
 
 
-        displayMapPinsActivityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                db.collection("events").get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        displayMapPinsActivityButton.setOnClickListener(v -> db.collection("events").get()
+                .addOnCompleteListener(task -> {
 
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
-                                        //brings the user to a new activity with event details
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
+                            //brings the user to a new activity with event details
 
-                                        String eventName = document.getData().get("title").toString();
-                                        String eventLocation = document.getData().get("location").toString();
-                                        double eventLatitude = (Double) document.getData().get("latitude");
-                                        double eventLongitude = (Double) document.getData().get("longitude");
+                            String eventName = document.getData().get("title").toString();
+                            String eventLocation = document.getData().get("location").toString();
+                            double eventLatitude = (Double) document.getData().get("latitude");
+                            double eventLongitude = (Double) document.getData().get("longitude");
 
-                                        MapPin eventPin = new MapPin(eventName, eventLocation, eventLatitude, eventLongitude);
-                                        List<MapPin> eventPinList = new ArrayList<MapPin>();
-                                        eventPinList.add(eventPin);
+                            MapPin eventPin = new MapPin(eventName, eventLocation, eventLatitude, eventLongitude);
+                            List<MapPin> eventPinList = new ArrayList<MapPin>();
+                            eventPinList.add(eventPin);
 
-                                        Toast.makeText(EventDetailsActivity.this,
-                                                "added: " +
-                                                        eventLocation + "\nLatitude: " +
-                                                        eventLatitude + "\nLongitude: " +
-                                                        eventLongitude, Toast.LENGTH_SHORT).show();
-                                        for (int i = 0; i < eventPinList.size(); i++){
-                                            Log.d("value is", eventPinList.get(i).getLocation().toString());
-                                            GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
-                                            displayMarker(eventPinGeoPoint, eventPin);
-                                        }
-
-                                    }
-                                } else {
-                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                    //set the error message onto the camera textview "QR code not recognized"
-                                    Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
-                                }
+                            Toast.makeText(EventDetailsActivity.this,
+                                    "added: " +
+                                            eventLocation + "\nLatitude: " +
+                                            eventLatitude + "\nLongitude: " +
+                                            eventLongitude, Toast.LENGTH_SHORT).show();
+                            for (int i = 0; i < eventPinList.size(); i++){
+                                Log.d("value is", eventPinList.get(i).getLocation().toString());
+                                GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
+                                displayMarker(eventPinGeoPoint, eventPin);
                             }
-                        });
 
-
-
-
-            }
-        }); // closing displayMapPinsActivityButton onClickListener
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        //set the error message onto the camera textview "QR code not recognized"
+                        Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
+                    }
+                })); // closing displayMapPinsActivityButton onClickListener
 
         //add pins when tap on map
         MapEventsReceiver mReceive = new MapEventsReceiver() {
@@ -215,12 +192,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
 
         // navigate back to previous page on clicking the back arrow.
-        imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        imageViewBackArrow.setOnClickListener(v -> finish());
 
     
 
@@ -233,19 +205,9 @@ public class EventDetailsActivity extends AppCompatActivity {
             setupPromotionButton();
 
             // on click on viewAttendee it navigates to the list of attendees.
-            viewAttendee.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    navigateToListOfAttendees(eventId);
-                }
-            });
+            viewAttendee.setOnClickListener(v -> navigateToListOfAttendees(eventId));
 
-            milestoneCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    navigateToLMilestone(eventId);
-                }
-            });
+            milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
 
         } else {
             // Handle the error
@@ -259,7 +221,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
                     if (signedUpUsers.size() > 0) {
 
-                        congradulatoryText.setVisibility(View.VISIBLE);
+                        congratulatoryText.setVisibility(View.VISIBLE);
                     }
 
                     int nextMilestone = 0;
@@ -385,11 +347,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(data);
                     String addressName = jsonObject.getString("display_name");
                     Log.d("address name", addressName);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Stuff that updates the UI
-                        }
+                    runOnUiThread(() -> {
+                        // Stuff that updates the UI
                     });
                 }
 
@@ -405,36 +364,21 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param eventId the event being signed up for (identified with its specific id).
      */
     private void setupSignUpButton(String eventId) {
-        buttonSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signUpForEvent(eventId);
-            }
-        });
+        buttonSignUp.setOnClickListener(view -> signUpForEvent(eventId));
     }
 
     /**
      * This method is used to set the button to check-in to an event using the QR code.
      */
     private void setupCheckInButton(){
-        buttonCheckIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openScanQRActivity();
-            }
-        });
+        buttonCheckIn.setOnClickListener(v -> openScanQRActivity());
     }
 
     /**
      * This method is used to set the button to add promotions (by organizer) for an event.
      */
     private void setupPromotionButton() {
-        buttonPromotion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openEventPromotionActivity();
-            }
-        });
+        buttonPromotion.setOnClickListener(v -> openEventPromotionActivity());
     }
 
     /**
@@ -478,8 +422,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 description = "You have reached " + milestone + " attendees!";
                                             }
                                             String token = document.getString("organizer_token");
-                                            SendNotifications sendNotif = new SendNotifications();
-                                            sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
+                                            SendNotifications sendNotifications = new SendNotifications();
+                                            sendNotifications.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
                                         }}}}}});
 
                 })
