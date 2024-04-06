@@ -1,3 +1,4 @@
+
 package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
@@ -47,9 +48,7 @@ public class ScanQRActivity extends AppCompatActivity {
     private String eventTime;
     private String eventDate;
     private String eventDescription;
-    private String eventLocation;
-    private Double eventLatitude;
-    private Double eventLongitude;
+
 
     /**
      * The onCreate method of this activity is used to set a listener on the camera icon button to scan a QR code.
@@ -122,7 +121,7 @@ public class ScanQRActivity extends AppCompatActivity {
                 //if not exist, error message
                 db.collection("events")
                         .whereEqualTo("id", result
-                        .getContents()).get()
+                                .getContents()).get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
                             /**
@@ -130,38 +129,35 @@ public class ScanQRActivity extends AppCompatActivity {
                              * and if finds a match, then fetches the data and switch to next page.
                              * @param task the task to be done on complete.
                              */
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
-                                Log.d(TAG, document.getId() + "=>>" + document.getData().values());
-                                //brings the user to a new activity with event details
-                                eventUUID = result.getContents();
-                                eventName = document.getData().get("title").toString();
-                                eventLocation = document.getData().get("location").toString();
-                                eventLatitude = (Double) document.getData().get("latitude");
-                                eventLongitude = (Double) document.getData().get("longitude");
-                                eventPoster = document.getData().get("poster").toString();
-                                eventTime = document.getData().get("time").toString();
-                                eventDate = document.getData().get("date").toString();
-                                eventDescription = document.getData().get("description").toString();
-                                confirm.setText(eventPoster);
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
+                                        Log.d(TAG, document.getId() + "=>>" + document.getData().values());
+                                        //brings the user to a new activity with event details
+                                        eventUUID = result.getContents();
+                                        eventName = document.getData().get("title").toString();
+                                        eventPoster = document.getData().get("poster").toString();
+                                        eventTime = document.getData().get("time").toString();
+                                        eventDate = document.getData().get("date").toString();
+                                        eventDescription = document.getData().get("description").toString();
+                                        confirm.setText(eventPoster);
 
-                                EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventLatitude, eventLongitude, eventTime, eventDate, eventDescription, eventPoster);
-                                Intent intent = new Intent(ScanQRActivity.this, ViewEventActivity.class);
+                                        EventHelper event = new EventHelper(eventUUID, eventName, "location", eventTime, eventDate, eventDescription, eventPoster);
+                                        Intent intent = new Intent(ScanQRActivity.this, ViewEventActivity.class);
 
-                                intent.putExtra("event", event);
-                                startActivity(intent);
+                                        intent.putExtra("event", event);
+                                        startActivity(intent);
 
+                                    }
+                                } else {
+                                    Log.d(TAG, "Error getting documents: ", task.getException());
+                                    confirm.setText("QR code not recognized");
+                                    //set the error message onto the camera textview "QR code not recognized"
+                                }
                             }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                            confirm.setText("QR code not recognized");
-                            //set the error message onto the camera textview "QR code not recognized"
-                        }
-                    }
-                });
+                        });
             }
 
         }
