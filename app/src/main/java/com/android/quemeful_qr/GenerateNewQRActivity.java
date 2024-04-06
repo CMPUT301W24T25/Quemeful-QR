@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -78,10 +80,9 @@ public class GenerateNewQRActivity extends AppCompatActivity {
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
-//            // back clicked go to dashboard
-//            Intent intent = new Intent(GenerateNewQRActivity.this, MainActivity.class);
-//            startActivity(intent);
-            finish();
+            // back clicked go to dashboard
+            Intent intent = new Intent(GenerateNewQRActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
     } // onCreate closing
@@ -148,25 +149,44 @@ public class GenerateNewQRActivity extends AppCompatActivity {
             QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                 // get the uri consisting the download url to string
                 String CheckInQRCodeURI = uri.toString();
-                // add this uri to the specific event in the firebase
-                Map<String, Object> eventData = new HashMap<>();
-                eventData.put("CheckIn QR Code", CheckInQRCodeURI);
-                db.collection("events")
-                        .document(eventId)
-                        .update(eventData)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d(TAG,"Event with specific eventId successfully updated with check in QR field.");
-                        }).addOnFailureListener(e -> {
-                            // handle fail to update event document with specific eventId
-                            Log.d(TAG, "failed to add event check in QR Code field to events collection with document eventId.");
-                        });
-
-            }).addOnFailureListener(e -> {
-                // handle fail to download url
-            });
-        }).addOnFailureListener(e -> {
-            // handle upload to storage failure
-        });
-    }
+                // to check if Check-In field already exists
+                CollectionReference ref = db.collection("events");
+                ref.document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+                    // if document trying to retrieve exists
+                    if (documentSnapshot.exists()) {
+                        EventHelper event = documentSnapshot.toObject(EventHelper.class);
+                        if (event != null) {
+                            // if the event exists retrieve data
+                            if (documentSnapshot.getData() != null) {
+                                // assign the data to a compatible type variable
+                                Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
+                                // retrieve the CheckIn QR Code field
+                                String checkInQR = (String) eventData.get("CheckIn QR Code");
+                                // if the field already exists ie. not null then display a toast
+                                if (checkInQR != null) {
+                                    Toast.makeText(getBaseContext(), "CheckIn QR Code Already Exists", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // add this uri to the specific event in the firebase
+                                    Map<String, Object> eventCheckInData = new HashMap<>();
+                                    eventCheckInData.put("CheckIn QR Code", CheckInQRCodeURI);
+                                    db.collection("events")
+                                            .document(eventId)
+                                            .update(eventCheckInData)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Log.d(TAG, "Event with specific eventId successfully updated with check in QR field.");
+                                            }).addOnFailureListener(e -> {
+                                                // handle fail to update event document with specific eventId
+                                                Log.d(TAG, "failed to add event check in QR Code field to events collection with document eventId.");
+                                            });
+                                } // else closing
+                            } // else documentSnapshot.getDate() is null
+                        } // else event is null
+                    } // else documentSnapshot does not exists
+                }).addOnFailureListener(e -> {
+                    // handle fail to retrieve document
+                });
+            }); // handle fail to get download url
+        }); // handle fail to upload data
+    } // method closing
 
 } // activity class closing
