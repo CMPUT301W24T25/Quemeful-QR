@@ -23,6 +23,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <ImageView
+            android:id="@+id/posterDelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="2dp"
+            android:clickable="true"
+            android:layout_marginBottom="2dp"
+            android:src="@drawable/bin"
+            android:elevation="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/admin_event_image"
+            app:layout_constraintEnd_toEndOf="@+id/admin_event_image" />
+
         <TextView
             android:id="@+id/event_title"
             android:layout_width="wrap_content"
