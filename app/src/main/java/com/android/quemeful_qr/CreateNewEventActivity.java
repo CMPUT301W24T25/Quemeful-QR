@@ -118,7 +118,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private FirebaseFirestore db;
 
     // attributes for event class
-    private String eventId, eventName, eventLoc, eventLat, eventLong, eventTime, eventDate, eventDescr, eventPost;
+    private String eventId, eventName, eventTime, eventDate, eventDescr, eventPost;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
@@ -215,9 +215,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
-            //generates random id for the event
-            eventId = db.collection("events").document().getId();
-            eventName = eventTitle.getText().toString();
+
+
 
 
             try {
@@ -231,9 +230,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-
-    
-                    addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
 
                     // create new event
@@ -246,7 +242,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     message.show();
                 }
                 // create new event
-                addNewEvent(event);
+                addNewEvent();
                 generateQRButton.setVisibility(View.VISIBLE);
                 reuseQRButton.setVisibility(View.VISIBLE);
             } catch (IOException e) {
@@ -317,8 +313,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
+                eventLocation.setText(locationString); //brings location from map activity to the location textbox
 
-                eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
 
             }
@@ -352,15 +348,19 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         endDateTextClicked = false;
     }
 
-    /**
-     * This method is used to add the new event created with all its attributes to the firebase collection db.
-     * @param event The new event created that is to be added to the firebase.
-     */
-    private void addNewEvent(EventHelper event) {
 
-        event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, eventPost);;
+    private void addNewEvent() {
+        //generates random id for the event
+        eventId = db.collection("events").document().getId();
+        eventName = eventTitle.getText().toString();
+        eventTime = startTime.getText().toString();
+        eventDate = startDate.getText().toString();
+        eventDescr = eventDescription.getText().toString();
+
+
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, eventPost);
 
         HashMap<String, Object> data = new HashMap<>();
         data.put("organizer", currentUserUID);
