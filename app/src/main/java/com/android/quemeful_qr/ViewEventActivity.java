@@ -1,7 +1,9 @@
 //https://stackoverflow.com/a/50236950
 //https://stackoverflow.com/a/26880148
 //https://www.youtube.com/watch?v=qY-xFxZ7HKY
-//https://stackoverflow.com/a/4981063
+//https://stackoverflow.com/a/4981063 thread
+//https://stackoverflow.com/a/2227299
+
 package com.android.quemeful_qr;
 
 import android.Manifest;
@@ -20,6 +22,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,12 +38,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,8 +63,7 @@ import java.util.Map;
  * This is an activity class used to handle the view for the user after scanning an event QR code.
  */
 public class ViewEventActivity extends AppCompatActivity implements LocationListener{
-    private ImageView posterView;
-    private TextView textview_EventName;
+
     private Button confirmCheckInButton;
     private Button cancelButton;
     private String poster;
@@ -62,14 +72,20 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
     private String saveUID;
     private String checkInString;
     private FirebaseFirestore db;
-    private Date currentTime;
+    private TextView eventName;
+    private ImageView eventPoster;
+    private TextView eventDesc;
+    private TextView eventDate;
+    private TextView eventTime;
 
     private CollectionReference eventsRef;
-    LocationManager locationManager;
-    String attendeeLocation;
-    Double attendeeLatitude;
-    Double attendeeLongitude;
-    Map<String,Object> locationMap;
+    private LocationManager locationManager;
+
+    private Double attendeeLatitude;
+    private Double attendeeLongitude;
+    private EditText addressText;
+
+
 
     /**
      * This onCreate method is used to create the view that appears after scanning a QR code.
@@ -93,16 +109,19 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
         
         confirmCheckInButton = findViewById(R.id.confirm_check_in_button);
         cancelButton = findViewById(R.id.cancel_button);
+        addressText = findViewById(R.id.address_text);
+
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
         // initialize instances from xml
-        TextView eventName = findViewById(R.id.event_name_textview);
-        ImageView eventPoster = findViewById(R.id.poster_view);
-        TextView eventDesc = findViewById(R.id.textview_event_description);
-        TextView eventDate = findViewById(R.id.textview_event_date);
-        TextView eventTime = findViewById(R.id.textview_event_time);
+        eventName = findViewById(R.id.event_name_textview);
+        eventPoster = findViewById(R.id.poster_view);
+        eventDesc = findViewById(R.id.textview_event_description);
+        eventDate = findViewById(R.id.textview_event_date);
+        eventTime = findViewById(R.id.textview_event_time);
+
 
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
@@ -120,14 +139,15 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
         title = event.getTitle();
         eventId = event.getId();
         eventName.setText(title);
+
         confirmCheckInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DocumentReference eventsDocRef = db.collection("events").document(eventId);
-                String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//                String currentUserUID = "d06f09a667154775";
-//                String currentUserUID = "439cd80ba5572b17";
 
+                String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                DocumentReference user = db.collection("users").document(currentUserUID);
+                Map<String, Object> locationMap = getLocation();
                 eventsDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                            @Override
                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -136,32 +156,68 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd, HH:mm");
                                String date = df.format(Calendar.getInstance().getTime());
                                Log.d("date", date);
-                               getLocation();
-                               Log.d("location", attendeeLocation);
-                               Log.d("latitude", attendeeLatitude.toString());
-                               Log.d("longitude", attendeeLongitude.toString());
+
+                               Log.d("latitude", locationMap.get("attendee_latitude").toString());
+                               Log.d("longitude", locationMap.get("attendee_longitude").toString());
+                               attendeeLatitude = (Double) locationMap.get("attendee_latitude");
+                               attendeeLongitude = (Double) locationMap.get("attendee_longitude");
+
+                               Log.d("aLatitude", attendeeLatitude.toString());
 
 
-                               for (int i = 0; i < signupList.size(); i++){
-                                   if (signupList.get(i).get("uid").toString().equals(currentUserUID)){
+                               boolean attendeeFound = false;
+                               for (int i = 0; i < signupList.size(); i++){ //looks through sign up list to see if the user has already signed in
+
+                                   if (signupList.get(i).get("uid").toString().equals(currentUserUID)){ //user already signed in
+                                       attendeeFound = true;
                                        saveUID = signupList.get(i).get("uid").toString();
                                        checkInString = signupList.get(i).get("checked_in").toString();
                                        int checkInInt = Integer.parseInt(checkInString);
-                                       signupList.get(i).replace("checked_in",String.valueOf(checkInInt+1));
-                                       if (signupList.get(i).get("date_time") != null){
-                                           signupList.get(i).replace("date_time", date);
+                                       signupList.get(i).replace("checked_in",String.valueOf(checkInInt+1)); //increases check in by 1 for each time user checks in
+                                       if (signupList.get(i).get("date_time") != null){ //if date_time key already exists in the specific user's map of signup list
+                                           signupList.get(i).replace("date_time", date); //update its value
                                        }else{
-                                           signupList.get(i).put("date_time", date);
+                                           signupList.get(i).put("date_time", date); //otherwise add key value pair date_time: value
+                                       }
+                                       if(signupList.get(i).get("attendee_latitude") != null){
+                                           signupList.get(i).replace("attendee_latitude", attendeeLatitude);
+                                       }else{
+                                           signupList.get(i).put("attendee_latitude", attendeeLatitude);
+                                       }
+                                       if(signupList.get(i).get("attendee_longitude") != null){
+                                           signupList.get(i).replace("attendee_longitude", attendeeLongitude);
+                                       }else{
+                                           signupList.get(i).put("attendee_longitude", attendeeLongitude);
                                        }
                                    }
                                }
+                               if (attendeeFound){// user already signed in and is checking in
+                                   attendeeFound = false;
+                                   eventsDocRef.update("signed_up", signupList)
+                                           .addOnCompleteListener(aVoid -> {
+                                               // Update UI to reflect that the user has signed up
+                                               Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
 
-                               eventsDocRef.update("signed_up", signupList)
-                                       .addOnCompleteListener(aVoid -> {
-                                   // Update UI to reflect that the user has signed up
-                                   Toast.makeText(ViewEventActivity.this, "Added check in event successfully!", Toast.LENGTH_SHORT).show();
+                                           }); //replaces the old sign up list with the new one
+                               }else{ //user has not signed up yet but is scanning the check in barcode
 
-                               }); //replaces the old sign up list with the new one
+                                   Map<String,Object> userMap = new HashMap<>();
+                                   userMap.put("uid", currentUserUID);
+                                   userMap.put("checked_in", "1");
+                                   userMap.put("date_time", date);
+                                   userMap.put("attendee_latitude", attendeeLatitude);
+                                   userMap.put("attendee_longitude", attendeeLongitude);
+                                   signupList.add(userMap);
+                                   eventsDocRef.update("signed_up", signupList)
+                                           .addOnCompleteListener(aVoid -> {
+                                               // Update UI to reflect that the user has signed up
+                                               Toast.makeText(ViewEventActivity.this, "Signed up and checked in successfully!", Toast.LENGTH_SHORT).show();
+
+                                           }); //replaces the old sign up list with the new one
+
+                                   user.update("events", FieldValue.arrayUnion(eventId));
+                               }
+
 
 
 
@@ -201,36 +257,41 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
 
     }//closing onCreate
     @SuppressLint("MissingPermission")
-    private void getLocation(){
+    private Map<String, Object> getLocation(){
+        Map<String,Object> latlongMap = new HashMap<>();
         try{
             locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, ViewEventActivity.this);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            latlongMap.put("attendee_latitude", location.getLatitude());
+            latlongMap.put("attendee_longitude", location.getLongitude());
+
+
         }catch(Exception e){
             e.printStackTrace();
         }
+        return latlongMap;
 
     }
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Toast.makeText(this,""+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,""+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_LONG).show();
         Geocoder geocoder = new Geocoder(ViewEventActivity.this, Locale.getDefault());
 
-        geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 10, new Geocoder.GeocodeListener() {
+        geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 5, new Geocoder.GeocodeListener() {
             @Override
             public void onGeocode(List<Address> addresses) {
                 for (int i = 0; i < addresses.size(); i++){
                     Log.d("address", addresses.get(i).toString());
                 }
                 String address = addresses.get(0).getAddressLine(0);
-
-                attendeeLocation = address;
-                attendeeLatitude = location.getLatitude();
-                attendeeLongitude = location.getLongitude();
-
+//                addressText.setText(address);
 
             }
 
         });
+
 
     }
 

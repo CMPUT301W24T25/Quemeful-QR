@@ -89,6 +89,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 //    private Double longitude = -8.5856;
     private Double latitude;
     private Double longitude;
+    private TextView addressText;
 
 
     //firestore variables
@@ -114,6 +115,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
+        addressText = findViewById(R.id.address_text);
 
         //map xml
         map = findViewById(R.id.map);
@@ -623,6 +625,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonPromotion.setVisibility(View.VISIBLE);
         map.setVisibility(View.VISIBLE);
         displayMapPinsActivityButton.setVisibility(View.VISIBLE);
+        addressText.setVisibility(View.VISIBLE);
     }
 
     /**

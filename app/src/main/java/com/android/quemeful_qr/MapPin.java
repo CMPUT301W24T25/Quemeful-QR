@@ -14,6 +14,9 @@ public class MapPin {
         this.longitude = longitude;
     }
 
+    public MapPin() {
+    }
+
     public String getTitle() {
         return title;
     }
