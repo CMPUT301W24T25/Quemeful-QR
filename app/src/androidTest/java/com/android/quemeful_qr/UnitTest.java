@@ -57,7 +57,7 @@ public class UnitTest {
         events = new ArrayList<>();
 
         itemView = View.inflate(ApplicationProvider.getApplicationContext(), R.layout.eventstodaycard, null);
-        viewHolder = new EventsTodayAdapter.EventViewHolder(itemView);
+        viewHolder = new EventsTodayAdapter.EventViewHolder(itemView, testIsAdmin);
 
         event = new EventHelper(
                 "eventId1",
@@ -165,7 +165,7 @@ public class UnitTest {
 
         EventsTodayAdapter adapter = new EventsTodayAdapter(ApplicationProvider.getApplicationContext(), events, null, testIsAdmin);
         adapter.onBindViewHolder(viewHolder, 0);
-        EventsTodayAdapter.EventViewHolder viewHolder = new EventsTodayAdapter.EventViewHolder(itemView);
+        EventsTodayAdapter.EventViewHolder viewHolder = new EventsTodayAdapter.EventViewHolder(itemView, testIsAdmin);
 
         assertNotNull(viewHolder);
         assertNotNull(viewHolder.eventImage);

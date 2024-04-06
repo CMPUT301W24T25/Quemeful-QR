@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -57,7 +58,7 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.eventstodaycard, parent, false);
-        return new EventViewHolder(view);
+        return new EventViewHolder(view, isAdmin);
     }
 
     /**
@@ -116,6 +117,25 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
             }
             return true;
         });
+
+        holder.posterDelete.setOnClickListener(view -> {
+            // URL of the new poster
+//            String newPosterUrl = "";
+
+            String eventId = (String) event.getId();
+            if (eventId != null) {
+                db.collection("events").document(eventId).update("poster", "")
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("EventsTodayAdapter for admin", "Poster successfully deleted for event: " + event);
+                            // Update poster shown in adapter
+                            Glide.with(holder.itemView.getContext())
+                                    .load("")
+                                    .into(holder.eventImage); // load and set new image
+                        })
+                        .addOnFailureListener(e -> Log.e("EventsTodayAdapter for admin", "Error deleting poster", e));
+            }
+        });
+
     }
 
     /**
@@ -131,19 +151,25 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
      * This event view holder child class is used to create the new view holder for events with its details.
      */
     public static class EventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        ImageView eventImage;
+        ImageView eventImage, posterDelete;
         TextView eventTitle, eventLocation, eventTime;
 
         /**
          * Defining a click listener for the ViewHolder's View.
          * @param itemView used to initialize the event attributes.
          */
-        public EventViewHolder(View itemView) {
+        public EventViewHolder(View itemView, boolean isAdmin) {
             super(itemView);
             eventImage = itemView.findViewById(R.id.eventImage);
             eventTitle = itemView.findViewById(R.id.eventTitle);
             eventLocation = itemView.findViewById(R.id.eventLocation);
             eventTime = itemView.findViewById(R.id.eventTime);
+            posterDelete = itemView.findViewById(R.id.posterDelete);
+            if (!isAdmin) {
+                posterDelete.setVisibility(View.GONE);
+            } else {
+                posterDelete.setVisibility(View.VISIBLE);
+            }
             itemView.setOnClickListener(this);
         }
 
