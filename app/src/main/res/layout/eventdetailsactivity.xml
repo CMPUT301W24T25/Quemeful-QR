@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
-
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    android:background="@drawable/gradient_background"
+    tools:context=".EventDetailsActivity">
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/gradient_background"
-        tools:context=".EventDetailsActivity">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -354,9 +354,28 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
 
+                <!-- tools:layout_editor_absoluteY="852dp"
+                app:layout_constraintTop_toBottomOf="@+id/viewAttendee" /> -->
+
+            <TextView
+                android:id="@+id/address_text"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@color/white"
+                android:hint="address printed"
+                android:visibility="invisible"
+                android:minHeight="120dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
+                android:textSize="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/map" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-    </FrameLayout>
+</FrameLayout>
 
-</ScrollView>
+
 
