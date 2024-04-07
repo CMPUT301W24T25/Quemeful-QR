@@ -10,10 +10,13 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -43,6 +46,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
@@ -192,8 +197,19 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             String eventDescr = eventDescription.getText().toString();
             // get poster
             if(selectedImageUri != null) {
-                // convert uri to string to pass as event parameter
-                String poster = selectedImageUri.toString();
+                // converts uri to bitmap
+                Bitmap bitmap;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                // converts bitmap to base64 string
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    // In case you want to compress your image, here it's at 40%
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    String poster = Base64.encodeToString(byteArray, Base64.DEFAULT);
                 // create new event
                  event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, poster);
             } else {
