@@ -1,5 +1,6 @@
 package com.android.quemeful_qr;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -15,19 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class eventFragment extends Fragment {
 
@@ -37,7 +33,8 @@ public class eventFragment extends Fragment {
     private SharedViewModel sharedViewModel;
     private String deviceUserId;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private Calendar selectedDate = Calendar.getInstance(); // Default to today, can be updated via SharedViewModel.
+    private Calendar selectedDate = Calendar.getInstance();
+    private int selectedTabPosition = 0;
 
     public eventFragment() {
         // Required empty public constructor
@@ -49,7 +46,12 @@ public class eventFragment extends Fragment {
 
         eventsRecyclerView = view.findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        eventAdapter = new EventAdapter(getContext(), new ArrayList<>());
+        eventAdapter = new EventAdapter(new ArrayList<>(), event -> {
+            // Handle event click
+            Intent intent = new Intent(getContext(), EventDetailsActivity.class);
+            intent.putExtra("eventId", event.getId());
+            startActivity(intent);
+        });
         eventsRecyclerView.setAdapter(eventAdapter);
 
         db = FirebaseFirestore.getInstance();
@@ -57,70 +59,70 @@ public class eventFragment extends Fragment {
 
         deviceUserId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Observe selected date changes.
         sharedViewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {
-            selectedDate = date; // Update the current selected date.
-            fetchEventsForSelectedDate(); // Refetch events whenever the selected date changes.
+            selectedDate = date;
+            fetchEventsForSelectedTab(selectedTabPosition);
         });
 
         TabLayout tabLayout = view.findViewById(R.id.tabs);
         tabLayout.addTab(tabLayout.newTab().setText("Events Organized"));
         tabLayout.addTab(tabLayout.newTab().setText("Checked in"));
+        tabLayout.getTabAt(selectedTabPosition).select();
 
-        fetchEventsForSelectedDate(); // Initial fetch for events.
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                selectedTabPosition = tab.getPosition();
+                fetchEventsForSelectedTab(selectedTabPosition);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                fetchEventsForSelectedTab(tab.getPosition());
+            }
+        });
 
         return view;
     }
 
-    private void fetchEventsForSelectedDate() {
+    private void fetchEventsForSelectedTab(int tabIndex) {
         String formattedDate = sdf.format(selectedDate.getTime());
+        String eventsKey = tabIndex == 0 ? "events_organized" : "events";
 
-        db.collection("users").document(deviceUserId).addSnapshotListener((documentSnapshot, e) -> {
-            if (e != null) {
-                showToast("Error getting user events: " + e.getMessage());
-                return;
-            }
-
-            if (documentSnapshot != null && documentSnapshot.exists()) {
-                List<String> eventIds = (List<String>) documentSnapshot.get("events_organized");
+        db.collection("users").document(deviceUserId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                List<String> eventIds = (List<String>) task.getResult().get(eventsKey);
                 if (eventIds != null && !eventIds.isEmpty()) {
                     fetchEventsDetails(eventIds, formattedDate);
                 } else {
-                    showToast("No events organized by user");
-                    eventAdapter.setEvents(new ArrayList<>()); // Clear events as there are none.
+                    showToast("No events available for selected date");
+                    eventAdapter.setEvents(new ArrayList<>());
                 }
+            } else {
+                showToast("Error getting user events");
             }
         });
     }
 
     private void fetchEventsDetails(List<String> eventIds, String formattedDate) {
-        List<Map<String, Object>> eventsData = new ArrayList<>();
-
+        List<EventHelper> eventsData = new ArrayList<>();
         for (String eventId : eventIds) {
-            db.collection("events").document(eventId)
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot,
-                                            @Nullable FirebaseFirestoreException e) {
-                            if (e != null) {
-                                showToast("Error getting event details: " + e.getMessage());
-                                return;
-                            }
-
-                            if (documentSnapshot != null && documentSnapshot.exists()) {
-                                Map<String, Object> event = documentSnapshot.getData();
-                                if (event != null && event.containsKey("date") && formattedDate.equals(event.get("date"))) {
-                                    eventsData.add(event);
-                                } else {
-                                    // If the event doesn't match the date or any other condition, handle accordingly.
-                                    // This else block could be empty if you only want to add matching events.
-                                }
-                                // This ensures the UI is updated after each document is evaluated, which may not be efficient.
-                                // Consider aggregating changes and updating the UI less frequently.
-                                eventAdapter.setEvents(eventsData);
-                            }
-                        }
-                    });
+            db.collection("events").document(eventId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    EventHelper event = task.getResult().toObject(EventHelper.class);
+                    if (event != null && formattedDate.equals(event.getDate())) {
+                        eventsData.add(event);
+                    }
+                    if (eventsData.size() == eventIds.size() || eventsData.isEmpty()) {
+                        eventAdapter.setEvents(eventsData);
+                    }
+                } else {
+                    showToast("Error getting event details");
+                }
+            });
         }
     }
 
