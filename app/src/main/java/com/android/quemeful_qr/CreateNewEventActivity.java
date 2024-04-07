@@ -57,12 +57,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -72,7 +69,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * This class has an interface for user/organizer to create new event and enter details for new event
@@ -109,7 +105,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private TextView endDate;
     private TextView endTime;
     private AppCompatButton generateQRButton, reuseQRButton;
-    private ImageButton uploadPoster;
+    private ImageButton uploadPoster, limitAttendee;
 
     int LAUNCH_MAP_ACTIVITY = 1;
     // fragment frame
@@ -122,7 +118,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private FirebaseFirestore db;
 
     // attributes for event class
-    private String eventId, eventName;
+    private String eventId, eventName, eventTime, eventDate, eventDescr, eventPost;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
@@ -160,6 +156,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         uploadPoster = findViewById(R.id.add_poster_button);
         eventLocation = findViewById(R.id.enter_location);
 
+        limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
@@ -218,14 +215,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
-            //generates random id for the event
-            eventId = db.collection("events").document().getId();
 
-            String eventName = eventTitle.getText().toString();
-            String eventTime = startTime.getText().toString();
-            String eventDate = startDate.getText().toString();
 
-            String eventDescr = eventDescription.getText().toString();
+
 
             try {
                 if(selectedImageUri != null) {
@@ -236,14 +228,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     // In case you want to compress your image, here it's at 40%
                     bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-
-    
-                    addNewEvent(event);
                     generateQRButton.setVisibility(View.VISIBLE);
 
                     // create new event
-                     event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, Base64.encodeToString(byteArray, Base64.DEFAULT));
+
+
                 } else {
                     //empty poster check
                     Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
@@ -251,7 +242,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     message.show();
                 }
                 // create new event
-                addNewEvent(event);
+                addNewEvent();
                 generateQRButton.setVisibility(View.VISIBLE);
                 reuseQRButton.setVisibility(View.VISIBLE);
             } catch (IOException e) {
@@ -280,7 +271,19 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             finish();
         });
 
+        limitAttendee.setOnClickListener(v -> {
+            navigateToLimitAttendeeDialogFragment(eventId);
+        });
+
     } // onCreate closing
+
+    /**
+     * This method is used to show the pop up dialog to set limit for attendees.
+     */
+    private void navigateToLimitAttendeeDialogFragment(String eventId) {
+        LimitAttendeeDialogFragment dialogFragment = new LimitAttendeeDialogFragment(eventId);
+        dialogFragment.show(getSupportFragmentManager(), "Limit Attendee Dialog");
+    }
 
     /**
      * This method is used to show the fragment pop up with the list of event check in Qr codes,
@@ -310,8 +313,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationString = data.getStringExtra("location string");
                 locationLatitude = data.getDoubleExtra("location latitude", 0);
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
+                eventLocation.setText(locationString); //brings location from map activity to the location textbox
 
-                eventLocation.setText(locationString);
                 Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
 
             }
@@ -345,69 +348,59 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         endDateTextClicked = false;
     }
 
-    /**
-     * This method is used to add the new event created with all its attributes to the firebase collection db.
-     * @param event The new event created that is to be added to the firebase.
-     */
-    private void addNewEvent(EventHelper event) {
 
-        String eventName = eventTitle.getText().toString();
-        String eventLocation = event.getLocation();
-        Double eventLatitude = event.getLatitude();
-        Double eventLongitude = event.getLongitude();
-        String eventTime = startTime.getText().toString();
-        String eventDate = startDate.getText().toString();
-        String eventDescr = eventDescription.getText().toString();
+    private void addNewEvent() {
+        //generates random id for the event
+        eventId = db.collection("events").document().getId();
+        eventName = eventTitle.getText().toString();
+        eventTime = startTime.getText().toString();
+        eventDate = startDate.getText().toString();
+        eventDescr = eventDescription.getText().toString();
+
+
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (eventName.matches("") || eventLocation.matches("")
-                || eventTime.matches("") || eventDate.matches("")
-                || eventDescr.matches("")) {
-            //empty string check
-            Toast message = Toast.makeText(getBaseContext(), "Please Fill All Text Fields", Toast.LENGTH_LONG);
-            message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
-            message.show();
-        } else {
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("organizer", currentUserUID);
-            data.put("id", event.getId());
-            data.put("title", event.getTitle());
-            data.put("location", event.getLocation());
-            data.put("latitude", event.getLatitude());
-            data.put("longitude", event.getLongitude());
-            data.put("time", event.getTime());
-            data.put("date", event.getDate());
-            data.put("description", event.getDescription());
+        event = new EventHelper(eventId, eventName, locationString, locationLatitude, locationLongitude, eventTime, eventDate, eventDescr, eventPost);
 
-            FirebaseMessaging.getInstance().getToken()
-                    .addOnCompleteListener(new OnCompleteListener<String>() {
-                        @Override
-                        public void onComplete(@NonNull Task<String> task) {
-                            if (task.isSuccessful()) {
-                                Log.w(TAG, "Fetching FCM token failed", task.getException());
-                                String token = task.getResult().toString();
-                                data.put("organizer_token", token);
-                            }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("organizer", currentUserUID);
+        data.put("id", event.getId());
+        data.put("title", event.getTitle());
+        data.put("location", event.getLocation());
+        data.put("latitude", event.getLatitude());
+        data.put("longitude", event.getLongitude());
+        data.put("time", event.getTime());
+        data.put("date", event.getDate());
+        data.put("description", event.getDescription());
 
-
-                            if (event.getPoster() != null) {
-                                data.put("poster", event.getPoster());
-                            } else {
-                                data.put("poster", "");
-                            }
-                            List<Map<String, Object>> emptySignUpList = new ArrayList<>();
-                            data.put("signed_up", emptySignUpList);
-
-                            CollectionReference eventsRef = db.collection("events");
-                            eventsRef.document(eventId).set(data)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("FireStore", "DocumentSnapshot successfully written!");
-                                        updateUserEvents(currentUserUID, event.getId());
-                                        Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                                    });
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM token failed", task.getException());
+                            String token = task.getResult().toString();
+                            data.put("organizer_token", token);
                         }
-                    });
-        }
+
+
+                        if (eventPost != null) {
+                            data.put("poster", eventPost);
+                        } else {
+                            data.put("poster", "");
+                        }
+                        List<Map<String, Object>> emptySignUpList = new ArrayList<>();
+                        data.put("signed_up", emptySignUpList);
+
+                        CollectionReference eventsRef = db.collection("events");
+                        eventsRef.document(eventId).set(data)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                    Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                });
+
     }
     private void updateUserEvents(String userId, String eventId) {
         CollectionReference usersRef = db.collection("users");

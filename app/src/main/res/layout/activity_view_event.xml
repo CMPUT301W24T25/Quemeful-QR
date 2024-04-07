@@ -9,7 +9,7 @@
     android:background="@drawable/gradient_background">
 
     <TextView
-        android:id="@+id/event_name_header"
+        android:id="@+id/event_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -18,6 +18,11 @@
         android:textColor="@color/white"
         android:textSize="26sp"
         android:textStyle="bold"/>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/backTool"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
 
     <TextView
         android:id="@+id/header"
@@ -30,11 +35,11 @@
         android:textSize="30sp"
         android:textAlignment="center"/>
 
-    <TextView
-        android:id="@+id/textview_event_name"
+    <EditText
+        android:id="@+id/address_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/event_name_header"
+        android:layout_height="160dp"
+        android:layout_below="@id/event_name_textview"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_background"
         android:gravity="center"
@@ -67,15 +72,13 @@
         android:layout_centerInParent="true"/>
 
 
-
-
     <ImageView
         android:id="@+id/poster_view"
-        android:layout_width="400dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="30dp"
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/textview_event_name"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/address_text"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent" />
 
     <TextView
@@ -85,6 +88,7 @@
         android:layout_below="@+id/poster_view"
         android:layout_marginTop="30dp"
         android:textSize="20sp"
+        android:textColor="@color/white"
         android:gravity="center" />
 
     <TextView
@@ -94,6 +98,7 @@
         android:layout_below="@+id/textview_event_description"
         android:layout_marginTop="30dp"
         android:textSize="20sp"
+        android:textColor="@color/white"
         android:gravity="center" />
 
     <TextView
@@ -103,6 +108,7 @@
         android:layout_below="@+id/textview_event_date"
         android:layout_marginTop="30dp"
         android:textSize="20sp"
+        android:textColor="@color/white"
         android:gravity="center" />
 
 

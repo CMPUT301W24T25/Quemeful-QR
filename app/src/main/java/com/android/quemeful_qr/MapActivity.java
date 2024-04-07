@@ -24,6 +24,7 @@ package com.android.quemeful_qr;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -87,6 +88,8 @@ public class MapActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private String locationName;
+    private SharedPreferences settings;
+    private boolean enableLocations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,8 @@ public class MapActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_map);
+        settings = getSharedPreferences(UserSettings.LOCATION_PREFERENCES, MODE_PRIVATE);
+        enableLocations = settings.getBoolean("custom_location",false);
 
         returnToCurrentLocation = (Button) findViewById(R.id.return_to_current_location);
         searchMapButton = (Button) findViewById(R.id.search_map_button);
@@ -149,6 +154,7 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // if location permissions are granted
+                if (!enableLocations){return;}
                 mapController.animateTo(myLocationOverlay.getMyLocation());
                 mapController.setZoom(15.5);
                 mapController.setCenter(myLocationOverlay.getMyLocation());
@@ -244,33 +250,36 @@ public class MapActivity extends AppCompatActivity {
         // Create MapController and set starting location
         mapController = map.getController();
 
-        // Create location overlay
-        myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
-        myLocationOverlay.enableMyLocation();
-        myLocationOverlay.enableFollowLocation();
-        myLocationOverlay.setDrawAccuracyEnabled(true);
-        myLocationOverlay.runOnFirstFix(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+        if (enableLocations) {
+            // Create location overlay
+            myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
+            myLocationOverlay.enableMyLocation();
+            myLocationOverlay.enableFollowLocation();
+            myLocationOverlay.setDrawAccuracyEnabled(true);
+            myLocationOverlay.runOnFirstFix(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        mapController.animateTo(myLocationOverlay.getMyLocation());
-                        mapController.setZoom(15.5);
-                        mapController.setCenter(myLocationOverlay.getMyLocation());
+                            mapController.animateTo(myLocationOverlay.getMyLocation());
+                            mapController.setZoom(15.5);
+                            mapController.setCenter(myLocationOverlay.getMyLocation());
 
-                    }
-                });
-            }
-        });
-        map.getOverlays().add(myLocationOverlay);
+                        }
+                    });
+                }
+            });
+
+            map.getOverlays().add(myLocationOverlay);
+        }else{
+
+        }
 
         // Set user agent
         Configuration.getInstance().setUserAgentValue("RossMaps");
 
-        System.out.println(myLocationOverlay.getMyLocation());
-        System.out.println("Create done");
 
     }
 
