@@ -19,23 +19,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Base64;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -92,8 +86,8 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
      * It displays the event title and its poster.
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +106,6 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
         addressText = findViewById(R.id.address_text);
 
 
-        //initialize firebase
-        db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("events");
         // initialize instances from xml
         eventName = findViewById(R.id.event_name_textview);
         eventPoster = findViewById(R.id.poster_view);
@@ -129,6 +120,10 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
             // back clicked - close this activity
             finish();
         });
+
+        //initialize firebase
+        db = FirebaseFirestore.getInstance();
+
 
         // get the event passed by ScanQRActivity result via intent
         Intent intent = getIntent();
@@ -238,6 +233,7 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
 
 
         if (event != null) {
+            eventId = event.getId();
             String title = event.getTitle();
             eventName.setText(title);
             String poster = event.getPoster();
@@ -251,7 +247,6 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
             eventDate.setText(date);
             String time = event.getTime();
             eventTime.setText(time);
-
         }
 
 
@@ -321,6 +316,5 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
 
 
 
-    // activity class closing
 
 

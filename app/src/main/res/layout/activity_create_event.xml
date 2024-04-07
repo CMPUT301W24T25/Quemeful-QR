@@ -24,7 +24,7 @@
         android:fontFamily="serif"
         android:text="@string/create_event"
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="28sp"
         android:textAlignment="center"/>
 
 <!--    Event Title or the Event Name -->
@@ -48,7 +48,8 @@
         android:layout_alignEnd="@+id/event_title"
         android:layout_below="@+id/header"
         android:layout_margin="5dp"
-        android:src="@drawable/baseline_attendee_limit_24" />
+        android:src="@drawable/baseline_attendee_limit_24"
+        android:visibility="invisible"/>
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/enter_title"
@@ -118,6 +119,7 @@
         android:textColor="@color/white"
         android:textSize="22sp" />
 
+<!--    Event desc input field -->
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/enter_event_details"
         android:layout_width="wrap_content"
@@ -144,15 +146,13 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:background="@drawable/rounded_background"
-        android:hint="@string/Address"
+        android:hint="@string/address"
+        android:inputType="text"
         android:padding="4dp"
         android:textSize="20sp"
-        app:cornerRadius="10dp"
-        android:scrollHorizontally="true"
-        android:ellipsize="end"
-        android:singleLine="true"/>
+        app:cornerRadius="10dp" />
 
-<!--    Event Starting Date and Time -->
+    <!--    Event Starting Date and Time -->
     <LinearLayout
         android:id="@+id/event_starting"
         android:layout_width="match_parent"
@@ -301,7 +301,7 @@
             android:textAllCaps="false"
             android:textSize="19sp"
             android:padding="10dp"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/ReuseQRButton"
             android:layout_width="wrap_content"

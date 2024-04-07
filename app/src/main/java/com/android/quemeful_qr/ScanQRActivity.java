@@ -5,22 +5,16 @@ import static android.content.ContentValues.TAG;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -35,8 +29,6 @@ import com.google.zxing.integration.android.IntentResult;
  */
 public class ScanQRActivity extends AppCompatActivity {
     private TextView confirm;
-
-    private CollectionReference eventsRef;
 
     private String eventPoster;
     private String eventName;
@@ -99,7 +91,6 @@ public class ScanQRActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("events");
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null){

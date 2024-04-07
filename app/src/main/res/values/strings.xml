@@ -30,10 +30,10 @@
     <string name="start_date">Start Date</string>
     <string name="start_time">Start Time</string>
     <string name="dd_mm_yyyy">yyyy-MM-dd</string>
-    <string name="_16_00">16:00</string>
+    <string name="_16_00">230pm</string>
     <string name="end_date">End Date</string>
     <string name="end_time">End Time</string>
-    <string name="_20_00">20:00</string>
+    <string name="_20_00">530pm</string>
     <string name="qr_code">QR Code</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
@@ -57,5 +57,15 @@
     <string name="use_existing_event_qr_code">Use Existing Event QR Code</string>
     <string name="please_scan_the_above_qr_code_to_check_in_for_this_event">Please scan the above QR Code to Check In for this Event</string>
     <string name="event_qr_code_n_reused">Event QR Code\n(reused)</string>
+    <string name="enter_address_to_see_location">Enter address to see location</string>
+    <string name="next_milestone_0_1">Next Milestone: 0/1</string>
+    <string name="congratulations_nyou_hit_a_milestone">Congratulations 🎉\nYou hit a milestone!</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="about">About</string>
+    <string name="description">Description</string>
+    <string name="see_event_location">See Event Location</string>
+    <string name="address">Address</string>
     >>>>>>> 835b82b (Admin and new no login requirement, and profile)
 </resources>

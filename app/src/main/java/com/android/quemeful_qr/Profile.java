@@ -5,7 +5,6 @@ package com.android.quemeful_qr;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -40,9 +39,7 @@ public class Profile extends Fragment {
     TextView homePageTextView;
     TextView contactTextView;
     TextView bioTextView;
-    private Button editProfileButton;
 
-    private Button showNotificationsButton;
     private ImageView avatarImageView;
     private String deviceId;
 
@@ -103,7 +100,7 @@ public class Profile extends Fragment {
         homePageTextView = view.findViewById(R.id.homePageTextView);
         contactTextView = view.findViewById(R.id.contactTextView);
         bioTextView = view.findViewById(R.id.bioTextView);
-        editProfileButton = view.findViewById(R.id.editProfileButton);
+        Button editProfileButton = view.findViewById(R.id.editProfileButton);
         avatarImageView = view.findViewById(R.id.avatarImageView);
         geolocationSwitch = view.findViewById(R.id.geolocationSwitch);
         //gets saved location permission, but if user hasn't picked user permission yet default is false

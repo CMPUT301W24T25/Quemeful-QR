@@ -25,12 +25,9 @@ public class Events extends Fragment {
 
         // Inflate the layout for this fragment
         createEventButton = view.findViewById(R.id.create_event_button);
-        createEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // allow user to select image from gallery
-                openCreateNewEventActivity();
-            }
+        createEventButton.setOnClickListener(v -> {
+            // allow user to select image from gallery
+            openCreateNewEventActivity();
         });
 
         addCalendarFragment();
@@ -45,7 +42,7 @@ public class Events extends Fragment {
     }
 
     private void addCalendarFragment() {
-        calender_fragment calendarFragment = new calender_fragment();
+        CalenderFragment calendarFragment = new CalenderFragment();
 
         FragmentManager fragmentManager = getChildFragmentManager();
 

@@ -1,27 +1,9 @@
-//https://stackoverflow.com/a/10407371
 package com.android.quemeful_qr;
 
-/**
- * References:
- *  URL- https://www.geeksforgeeks.org/how-to-select-an-image-from-gallery-in-android/
- *  Author- GeeksforGeeks, Published Date- May 17, 2022
- *  URL- https://www.youtube.com/watch?v=CQ5qcJetYAI
- *  Author- Ben O'Brien, Published Date- Apr 20, 2020
- *  URL- https://www.youtube.com/watch?v=_mo0vPfOaAQ
- *  Author- Everyday Programmer, Published Date- Jul 11, 2023
- *  URL- https://stackoverflow.com/questions/49831751/get-base64-string-from-image-uri
- *  Author- Oğuzhan Döngül, License- CC BY-SA 3.0, Published Date- Apr 14, 2018
- *  URL- https://firebase.google.com/docs/firestore/query-data/queries#java
- *  Author- Firebase Documentation, License- CC BY 4.0 and Apache 2.0, Published Date- 2024-03-14 UTC.
- *  URL- https://stackoverflow.com/questions/41396194/how-to-convert-image-to-string-in-android
- *  Author- Dilip Ati, License- CC BY-SA 3.0, Published Date- Nov 28, 2017
- *  URL- https://www.youtube.com/watch?v=cxEb4IafzZU
- *  Author- KD Techs, Published Date- Jun 1, 2022.
- *  URL- https://developer.android.com/training/data-storage/shared/photopicker
- *  Author- Android Developers, License- CC BY 2.5 and Apache 2.0, Published Date- 2024-03-12 UTC.
- */
+import static android.service.controls.ControlsProviderService.TAG;
 
-import static android.content.ContentValues.TAG;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -33,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -48,27 +31,32 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
+import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+
 import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This class has an interface for user/organizer to create new event and enter details for new event
@@ -97,15 +85,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         TimePickerDialog.OnTimeSetListener,
         TimePickerFragment.TimePickerDialogListener{
     // xml variables
-    private EditText eventTitle;
-    private EditText eventDescription;
-    private TextView eventLocation;
-    private TextView startDate;
-    private TextView startTime;
-    private TextView endDate;
-    private TextView endTime;
+    private TextInputEditText eventTitle, eventDescription;
+    private EditText inputLimit;
+    private TextView startDate, startTime, endDate, endTime, eventLocation;
     private AppCompatButton generateQRButton, reuseQRButton;
-    private ImageButton uploadPoster, limitAttendee;
+    private ImageButton uploadPoster, limitAttendeeButton;
 
     int LAUNCH_MAP_ACTIVITY = 1;
     // fragment frame
@@ -116,6 +100,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
     //firebase
     private FirebaseFirestore db;
+    private CollectionReference eventsRef;
 
     // attributes for event class
     private String eventId, eventName, eventTime, eventDate, eventDescr, eventPost;
@@ -125,9 +110,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean endTimeTextClicked;
     private EventHelper event;
 
-    private String locationString;
-    private Double locationLatitude;
-    private Double locationLongitude;
+   // private String eventId;
+    private boolean startDateTextClicked, endDateTextClicked, startTimeTextClicked, endTimeTextClicked;
+    private EventHelper event;
+    private Double locationLatitude, locationLongitude;
+    private Boolean updateLimitMethodCalled = false;
 
     /**
      * This method sets the clickable property of the buttons and text boxes for user to enter event details.
@@ -156,10 +143,14 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         uploadPoster = findViewById(R.id.add_poster_button);
         eventLocation = findViewById(R.id.enter_location);
 
-        limitAttendee = findViewById(R.id.limit_no_of_attendees_buttonIcon);
+        limitAttendeeButton = findViewById(R.id.limit_no_of_attendees_buttonIcon);
 
         //initialize firebase
         db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("events");
+
+        //generates firebase id for the event
+        eventId = db.collection("events").document().getId();
 
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = findViewById(R.id.backTool);
@@ -167,19 +158,10 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             // back clicked
             finish();
         });
-        eventLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openMapActivity();
-            }
-        });
-
 
         // calls the imageChooser() to upload an image/poster for the event,
         // when clicked on the plus icon under 'Add Poster'.
-        uploadPoster.setOnClickListener(v -> {
-            imageChooser();
-        });
+        uploadPoster.setOnClickListener(v -> imageChooser());
 
         // opens a fragment to pick the starting time of the event.
         startTime.setOnClickListener(v -> {
@@ -248,6 +230,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            // create new event
+            addNewEvent(event);
+            generateQRButton.setVisibility(View.VISIBLE);
+            reuseQRButton.setVisibility(View.VISIBLE);
+            limitAttendeeButton.setVisibility(View.VISIBLE);
         });
 
         // on click generates a new QR by starting Generate new QR activity
@@ -259,9 +246,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         });
 
-        // on click re-uses existing QR code by retrieving from the firebase db.
-        // since the re-use data is handled in a fragment, instead of starting activity,
-        // need to load the fragment into the frame layout
         // call the navigateToReuseQRFragment method to load the fragment pop up.
         reuseQRButton.setOnClickListener(v -> navigateToReuseQRFragment(eventId));
 
@@ -271,18 +255,94 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             finish();
         });
 
-        limitAttendee.setOnClickListener(v -> {
-            navigateToLimitAttendeeDialogFragment(eventId);
+        // pop up limit attendee dialog
+        limitAttendeeButton.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewEventActivity.this);
+            builder.setTitle("Limit Attendee");
+            // take user input
+            inputLimit = new EditText(CreateNewEventActivity.this);
+            inputLimit.setInputType(InputType.TYPE_CLASS_TEXT);
+            inputLimit.setHint("Enter a limit");
+            builder.setView(inputLimit);
+            builder.setPositiveButton("Save", (dialog, which) -> {
+                String attendeeLimit = inputLimit.getText().toString();
+                // save the limit to firebase
+                AddLimitToFirebase(attendeeLimit, eventId);
+            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.cancel();
+            });
+            builder.show();
         });
+
+        // call method to open MapActivity
+        eventLocation.setOnClickListener(v -> openMapActivity());
 
     } // onCreate closing
 
     /**
-     * This method is used to show the pop up dialog to set limit for attendees.
+     * This method is used to save the limit to the firebase.
+     * @param attendeeLimit the limit put on number of attendees for this event.
+     * @param eventId the event with the specific Id.
      */
-    private void navigateToLimitAttendeeDialogFragment(String eventId) {
-        LimitAttendeeDialogFragment dialogFragment = new LimitAttendeeDialogFragment(eventId);
-        dialogFragment.show(getSupportFragmentManager(), "Limit Attendee Dialog");
+    private void AddLimitToFirebase(String attendeeLimit, String eventId) {
+        eventsRef.document(eventId)
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    EventHelper event = documentSnapshot.toObject(EventHelper.class);
+                    if (event != null) {
+                        // if the event exists retrieve data
+                        if (documentSnapshot.getData() != null) {
+                            // assign the data to a compatible type variable
+                            Map<String, Object> eventData = new HashMap<>(documentSnapshot.getData());
+                            String limitForAttendee = (String) eventData.get("Attendee Limit");
+                            if ((limitForAttendee == null) || (updateLimitMethodCalled == true)) {
+                                Map<String, Object> limit = new HashMap<>();
+                                limit.put("Attendee Limit", attendeeLimit);
+                                db.collection("events")
+                                        .document(eventId)
+                                        .update(limit)
+                                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Event successfully updated db document with limit attendee field."))
+                                        .addOnFailureListener(e -> {
+                                            // handle fail to update event document with specific eventId
+                                            Log.d(TAG, "Failed to add attendee limit field to db document.");
+                                        });
+                            } else {
+                                // display dialog if field already exists for that eventId
+                                showUpdateLimitDialog();
+                            }
+                        }
+
+                    }
+                });
+    }
+
+    /**
+     * This method is used to display a dialog to the user if user wants to update the attendee limit,
+     * when the attendee limit field in firebase already exists.
+     */
+    private void showUpdateLimitDialog() {
+        updateLimitMethodCalled = true;
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewEventActivity.this);
+        builder.setTitle("An attendee limit already exists for this Event");
+        builder.setMessage("Do you want to update limit?");
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            // update firebase
+            String updatedLimit = inputLimit.getText().toString();
+            AddLimitToFirebase(updatedLimit, eventId);
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            // don't update dismiss
+            dialog.dismiss();
+        });
+        builder.show();
+    }
+
+    /**
+     * This method is used to start the MapActivity when map/location button is clicked.
+     */
+    private void openMapActivity() {
+        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -330,14 +390,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     public void setTimeClickFalse(){
         startTimeTextClicked = false;
         endTimeTextClicked = false;
-    }
-    /**
-     * This method is used to start the MapActivity when map/location button is clicked.
-     */
-    protected void openMapActivity(){
-        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
-        startActivityForResult(intent, LAUNCH_MAP_ACTIVITY);
-
     }
 
     /**
@@ -396,6 +448,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         eventsRef.document(eventId).set(data)
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                    updateUserEvents(currentUserUID, event.getId());
                                     Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
                                 });
                     }
@@ -414,69 +467,123 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
                 });
     }
+    private void updateUserEvents(String userId, String eventId) {
+        CollectionReference usersRef = db.collection("users");
+        usersRef.document(userId)
+                .update("events_organized", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating user", e);
+                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
+                });
+    }
 
-            /**
-             * This method sets time in a certain format after user picks a time from the pop out window.
-             * @param view the view associated with this listener
-             * @param hourOfDay the hour that was set
-             * @param minute the minute that was set
-             */
-            @Override
-            public void onTimeSet (TimePicker view,int hourOfDay, int minute){
-                startTime = findViewById(R.id.enter_startTime);
-                if (startTimeTextClicked) {
-                    String startTimeString = String.format("%02d:%02d", hourOfDay, minute);
-                    startTime.setText(startTimeString);
-                    startTimeTextClicked = false;
-                } else if (endTimeTextClicked) {
-                    String endTimeString = String.format("%02d:%02d", hourOfDay, minute);
-                    endTime.setText(endTimeString);
-                    endTimeTextClicked = false;
+    /**
+     * This method is used to upload the event poster to fireStore storage,
+     * and add the poster uri file path to the db.
+     * @param eventId the event newly created with specific eventId
+     * @param posterUri the event poster
+     */
+    private void UploadPosterToFirebaseStorage(String eventId, Uri posterUri) {
+        // upload the image file path instead of the image itself
+        // initialize firebase storage and its reference
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference();
+        // create a unique file path in the firebase storage to upload the poster
+        String eventPosterPath = "eventPosters/" + UUID.randomUUID().toString();
+        StorageReference eventPosterRef = storageReference.child(eventPosterPath);
+        // upload the path to the uri of the poster
+        UploadTask uploadTask = eventPosterRef.putFile(posterUri);
+        // listen to upload
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            // get the url of the uploaded poster
+            eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                // get the url string
+                String posterString = uri.toString();
+                // add to db
+                Map<String, Object> Poster = new HashMap<>();
+                Poster.put("poster", posterString);
+                db.collection("events")
+                        .document(eventId)
+                        .update(Poster)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "event document successfully updated with poster field."))
+                        .addOnFailureListener(e -> Log.d(TAG, "event document failed to update with poster field."));
+            });
+        }).addOnFailureListener(e -> {
+            Log.d(TAG,"Failed to upload poster to firebase storage");
+        });
+    } // UploadPosterToFirebaseStorage method closing
+
+    /**
+     * This method sets time in a certain format after user picks a time from the pop out window.
+     * @param view the view associated with this listener
+     * @param hourOfDay the hour that was set
+     * @param minute the minute that was set
+     */
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        startTime = findViewById(R.id.enter_startTime);
+        if (startTimeTextClicked){
+            String startTimeString = String.format("%02d:%02d", hourOfDay, minute);
+            startTime.setText(startTimeString);
+            startTimeTextClicked = false;
+        }else if (endTimeTextClicked){
+            String endTimeString = String.format("%02d:%02d", hourOfDay, minute);
+            endTime.setText(endTimeString);
+            endTimeTextClicked = false;
+        }
+
+    }
+
+    /**
+     * This method sets date and displays the time selected on the text views.
+     * @param view the picker associated with the dialog
+     * @param year the selected year
+     * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
+     * @param dayOfMonth the selected day of the month (1-31, depending on month)
+     */
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        String formatDateString = format1.format(calendar.getTime());
+        if (startDateTextClicked){
+            startDate.setText(formatDateString);
+            startDateTextClicked = false;
+        }
+        else if(endDateTextClicked){
+            endDate.setText(formatDateString);
+            endDateTextClicked = false;
+        }
+    }
+
+    /**
+     * This method selects an image for the event poster and saves the uri to a variable.
+     */
+    private void imageChooser() {
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+        launchSomeActivity.launch(i);
+    }
+    
+    ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null && data.getData() != null) {
+                        selectedImageUri = data.getData();
+                        // upload to firebase storage
+                        UploadPosterToFirebaseStorage(eventId, selectedImageUri);
+                        // display into imageview
+                        Glide.with(CreateNewEventActivity.this).load(selectedImageUri).into(uploadPoster);
+                    }
                 }
+            });
 
-            }
-
-            /**
-             * This method sets date and displays the time selected on the text views.
-             * @param view the picker associated with the dialog
-             * @param year the selected year
-             * @param month the selected month (0-11 for compatibility with {@link Calendar#MONTH})
-             * @param dayOfMonth the selected day of the month (1-31, depending on month)
-             */
-            @Override
-            public void onDateSet (DatePicker view,int year, int month, int dayOfMonth){
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-                String formatDateString = format1.format(calendar.getTime());
-                if (startDateTextClicked) {
-                    startDate.setText(formatDateString);
-                    startDateTextClicked = false;
-                } else if (endDateTextClicked) {
-                    endDate.setText(formatDateString);
-                    endDateTextClicked = false;
-                }
-            }
-
-            /**
-             * This method selects an image for the event poster and saves the uri to a variable.
-             */
-            private void imageChooser () {
-                Intent i = new Intent();
-                i.setType("image/*");
-                i.setAction(Intent.ACTION_GET_CONTENT);
-                launchSomeActivity.launch(i);
-            }
-            ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            if (data != null && data.getData() != null) {
-                                selectedImageUri = data.getData();
-                                uploadPoster.setImageURI(selectedImageUri);
-                            }
-                        }
-                    });
         } // closing CreateNewEventActivity

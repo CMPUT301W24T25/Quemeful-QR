@@ -1,27 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/calendar_pageHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Events"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:fontFamily="serif"
+        android:layout_margin="10dp"/>
 
     <Button
         android:id="@+id/create_event_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Event"
+        android:layout_margin="10dp"
+        android:layout_alignEnd="@+id/calendar_pageHeader"
+        android:text="Create New Event"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:backgroundTint="#E7EAE1"
         android:layout_gravity="end"/>
 
     <FrameLayout
         android:id="@+id/calendar_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5" />
+        android:layout_below="@+id/calendar_pageHeader"
+        android:layout_margin="20dp"
+        android:layout_centerInParent="true"/>
 
     <FrameLayout
         android:id="@+id/event_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/calendar_container"
         android:layout_weight="1" />
 
 
-</LinearLayout>
+</RelativeLayout>

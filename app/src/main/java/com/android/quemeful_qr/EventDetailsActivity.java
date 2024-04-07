@@ -30,16 +30,15 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.osmdroid.views.MapView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +48,6 @@ import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
-import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
@@ -77,7 +75,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
-    private Button buttonCheckIn, buttonSignUp, buttonPromotion;
+    private Button buttonSignUp, buttonPromotion;
+    private ExtendedFloatingActionButton buttonCheckIn;
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
     private String eventId;
@@ -90,8 +89,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button displayMapPinsActivityButton;
     private IMapController mapController;
     private MyLocationNewOverlay myLocationOverlay;
-//    private Double latitude = 41.1616;
-//    private Double longitude = -8.5856;
     private Double latitude;
     private Double longitude;
     private TextView addressText;
@@ -121,11 +118,26 @@ public class EventDetailsActivity extends AppCompatActivity {
         enableLocations = settings.getBoolean("custom_location",false);
         //firebase setup
         db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("events");
-        attendeesRef = db.collection("attendees");
 
         imageViewBackArrow = findViewById(R.id.backArrow);
         textViewEventLocation = findViewById(R.id.textViewEventLocation);
+        textViewEventTitle = findViewById(R.id.textViewEventTitle);
+        textViewEventDate = findViewById(R.id.textViewEventDate);
+        textViewEventTime = findViewById(R.id.textViewEventTime);
+        textViewEventLocation = findViewById(R.id.textViewEventLocation);
+        textViewEventDescription = findViewById(R.id.textViewEventDescription);
+        viewAttendee = findViewById(R.id.viewAttendee);
+
+        milestoneCardView = findViewById(R.id.milestone_cardView);
+        current_milestone_text = findViewById(R.id.current_milestone_text);
+        congratulatoryText = findViewById(R.id.congratulatory_message);
+        imageViewEventImage = findViewById(R.id.imageViewEvent);
+
+        textViewScanQR = findViewById(R.id.scanQRTitle);
+        textViewSignUp = findViewById(R.id.signUpTitle);
+        buttonCheckIn = findViewById(R.id.scanQRButton);
+        buttonSignUp = findViewById(R.id.signUpButton);
+        buttonPromotion = findViewById(R.id.promotionButton);
         addressText = findViewById(R.id.address_text);
 
         //map xml
@@ -137,10 +149,63 @@ public class EventDetailsActivity extends AppCompatActivity {
         onPause();
 
 
-        displayMapPinsActivityButton.setOnClickListener(new View.OnClickListener() {
+        displayMapPinsActivityButton.setOnClickListener(v -> db.collection("events").get()
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
+                            //brings the user to a new activity with event details
+
+                            String eventName = document.getData().get("title").toString();
+                            String eventLocation = document.getData().get("location").toString();
+                            double eventLatitude = (Double) document.getData().get("latitude");
+                            double eventLongitude = (Double) document.getData().get("longitude");
+
+                            MapPin eventPin = new MapPin(eventName, eventLocation, eventLatitude, eventLongitude);
+                            List<MapPin> eventPinList = new ArrayList<MapPin>();
+                            eventPinList.add(eventPin);
+
+                            Toast.makeText(EventDetailsActivity.this,
+                                    "added: " +
+                                            eventLocation + "\nLatitude: " +
+                                            eventLatitude + "\nLongitude: " +
+                                            eventLongitude, Toast.LENGTH_SHORT).show();
+                            for (int i = 0; i < eventPinList.size(); i++){
+                                Log.d("value is", eventPinList.get(i).getLocation().toString());
+                                GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
+                                displayMarker(eventPinGeoPoint, eventPin);
+                            }
+
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        //set the error message onto the camera textview "QR code not recognized"
+                        Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
+                    }
+                })); // closing displayMapPinsActivityButton onClickListener
+
+        //add pins when tap on map
+        MapEventsReceiver mReceive = new MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+
+                addEventMarker(p);
+                latitude = p.getLatitude();
+                longitude = p.getLongitude();
+                Toast.makeText(EventDetailsActivity.this,
+                        "Lat: " + p.getLatitude() + ", Long: " + p.getLongitude(), Toast.LENGTH_LONG).show();
+                new EventDetailsActivity.fetchData().start();
+                return true;
+            }
 
             @Override
-            public void onClick(View v) {
+            public boolean longPressHelper(GeoPoint p) {
+                // write your code here
+                return false;
+            }
+        };
+        MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
+        map.getOverlays().add(OverlayEvents);
 
                 displayEventPins();
                 displayAttendeePins();
@@ -172,12 +237,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 //        map.getOverlays().add(OverlayEvents);
 
         // navigate back to previous page on clicking the back arrow.
-        imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        imageViewBackArrow.setOnClickListener(v -> finish());
 
         textViewEventTitle = findViewById(R.id.textViewEventTitle);
         textViewEventDate = findViewById(R.id.textViewEventDate);
@@ -199,8 +259,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         eventId = getIntent().getStringExtra("event_id");
 
-
-
         if (eventId != null) {
             fetchEventDetails(eventId);
             setupSignUpButton(eventId);
@@ -208,14 +266,9 @@ public class EventDetailsActivity extends AppCompatActivity {
             setupPromotionButton();
 
             // on click on viewAttendee it navigates to the list of attendees.
-            viewAttendee.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    navigateToListOfAttendees(eventId);
-                }
-            });
+            viewAttendee.setOnClickListener(v -> navigateToListOfAttendees(eventId));
 
-
+            milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
 
         } else {
             // Handle the error
@@ -229,6 +282,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (document.exists()) {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
 
+                        congratulatoryText.setVisibility(View.VISIBLE);
+                    }
 
 
                     MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
@@ -358,15 +413,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         Marker marker = new Marker(map);
         marker.setId("Attendee pin overlay");
         marker.setPosition(center);
-
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         marker.setIcon(getDrawable(R.drawable.attendee_pin_icon));
         map.getOverlays().add(marker);
         marker.setTitle("Attendee point");
         map.invalidate();
     }
-    public void addEventMarker (GeoPoint center){
 
+    public void addEventMarker (GeoPoint center){
         //loop through array of overlays until find the correct overlay id to remove
         for(int i=0 ;i<map.getOverlays().size();i++){
             Overlay overlay=map.getOverlays().get(i);
@@ -381,7 +435,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         marker.setIcon(getDrawable(R.drawable.event_pin_icon));
         map.getOverlays().add(marker);
-
         marker.setTitle("Event point");
         map.invalidate();
     }
@@ -399,17 +452,17 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
     public void displayEventMarker (GeoPoint center, EventMapPin pin){
 
+    public void displayMarker (GeoPoint center, MapPin pin){
         Marker marker = new Marker(map);
         marker.setId("Display events overlay");
         marker.setPosition(center);
-
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         marker.setIcon(getDrawable(R.drawable.event_pin_icon));
-
         map.getOverlays().add(marker);
         marker.setTitle(pin.getTitle() + "\n" + pin.getLocation());
         map.invalidate();
     }
+
     protected void loadMap(){
         // Request runtime Location permissions
         if (ContextCompat.checkSelfPermission(
@@ -424,15 +477,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     1
             );
         }
-
         // Create MapView
         map = findViewById(R.id.map);
-
         // Set tile source + display settings
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
-
         // Create MapController and set starting location
         mapController = map.getController();
         if (enableLocations) {
@@ -454,6 +504,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
 
     }
+
     //map methods: onResume() and onPause()
     @Override
     protected void onResume() {
@@ -466,13 +517,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onPause();
         map.onPause();
     }
+
     class fetchData extends Thread{
         private String data = "";
-
         @Override
         public void run(){
             try{
-
                 URL url = new URL("https://nominatim.openstreetmap.org/reverse?lat=" + latitude +
                         "&lon=" + longitude + "&format=json");
                 Log.d("URL latitude", String.valueOf(latitude));
@@ -481,30 +531,17 @@ public class EventDetailsActivity extends AppCompatActivity {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
-
                 while ((line = bufferedReader.readLine()) != null){
                     data = data + line;
                 }
                 if(!data.isEmpty()){
-
                     JSONObject jsonObject = new JSONObject(data);
                     String addressName = jsonObject.getString("display_name");
                     Log.d("address name", addressName);
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-
-                            // Stuff that updates the UI
-//                            addressText.setText(addressName);
-
-                        }
+                    runOnUiThread(() -> {
+                        // Stuff that updates the UI
                     });
-
-
-
                 }
-
 
             } catch (JSONException | IOException ex) {
                 throw new RuntimeException(ex);
@@ -518,36 +555,21 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param eventId the event being signed up for (identified with its specific id).
      */
     private void setupSignUpButton(String eventId) {
-        buttonSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signUpForEvent(eventId);
-            }
-        });
+        buttonSignUp.setOnClickListener(view -> signUpForEvent(eventId));
     }
 
     /**
      * This method is used to set the button to check-in to an event using the QR code.
      */
     private void setupCheckInButton(){
-        buttonCheckIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openScanQRActivity();
-            }
-        });
+        buttonCheckIn.setOnClickListener(v -> openScanQRActivity());
     }
 
     /**
      * This method is used to set the button to add promotions (by organizer) for an event.
      */
     private void setupPromotionButton() {
-        buttonPromotion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openEventPromotionActivity();
-            }
-        });
+        buttonPromotion.setOnClickListener(v -> openEventPromotionActivity());
     }
 
     /**
@@ -557,8 +579,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void signUpForEvent(String eventId) {
         String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference eventRef = db.collection("events").document(eventId);
-
-
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", currentUserUID);
         userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
@@ -593,8 +613,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 description = "You have reached " + milestone + " attendees!";
                                             }
                                             String token = document.getString("organizer_token");
-                                            sendNotif sendNotif = new sendNotif();
-                                            sendNotif.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
+                                            SendNotifications sendNotifications = new SendNotifications();
+                                            sendNotifications.sendNotification(title, "You just hit a Milestone!\uD83C\uDF89. " + description, token, "party");
                                         }}}}}});
 
                 })
@@ -622,6 +642,20 @@ public class EventDetailsActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    private void navigateToLMilestone(String eventId) {
+        Milestone milestoneFragment = new Milestone(eventId);
+
+        // Begin a transaction
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, milestoneFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
 
     /**
      * This method is used to fetch the event details with its specific id from the firebase,
@@ -721,9 +755,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.GONE);
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
-            milestone.setVisibility(View.GONE);
-        
             buttonPromotion.setVisibility(View.GONE); // show promotion button for signed up users
+            milestone.setVisibility(View.GONE);
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
@@ -742,8 +775,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             viewAttendee.setVisibility(View.GONE);
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
-            milestone.setVisibility(View.GONE);
             buttonPromotion.setVisibility(View.GONE); // show promotion button for not signed up users
+            milestone.setVisibility(View.GONE);
         }
     }
 

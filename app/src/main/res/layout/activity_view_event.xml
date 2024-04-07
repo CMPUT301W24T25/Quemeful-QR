@@ -16,8 +16,8 @@
         android:layout_below="@+id/header"
         android:text="Event Name"
         android:textColor="@color/white"
-        android:textSize="26sp"
-        android:textStyle="bold"/>
+        android:textSize="26sp"/>
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/backTool"
         android:layout_width="match_parent"
@@ -56,7 +56,7 @@
         android:layout_below="@id/textview_event_time"
         android:layout_marginTop="10dp"
         android:backgroundTint="#E3D39E"
-        android:text="Confirm Check-in"
+        android:text="Confirm Check In"
         android:textColor="@color/black"
         android:layout_centerInParent="true"/>
 
