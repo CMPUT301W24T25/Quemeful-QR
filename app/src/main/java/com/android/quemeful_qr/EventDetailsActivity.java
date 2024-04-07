@@ -183,7 +183,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(v -> navigateToListOfAttendees(eventId));
 
-            milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
+           // milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
 
         } else {
             // Handle the error
@@ -585,20 +585,20 @@ public class EventDetailsActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    private void navigateToLMilestone(String eventId) {
-        Milestone milestoneFragment = new Milestone(eventId);
-
-        // Begin a transaction
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.fragment_container, milestoneFragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-    }
+//    private void navigateToLMilestone(String eventId) {
+//        MilestoneFragment milestoneFragment = new MilestoneFragment(eventId);
+//
+//        // Begin a transaction
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//
+//        // Replace whatever is in the fragment_container view with this fragment,
+//        // and add the transaction to the back stack so the user can navigate back
+//        transaction.replace(R.id.fragment_container, milestoneFragment);
+//        transaction.addToBackStack(null);
+//
+//        // Commit the transaction
+//        transaction.commit();
+//    }
 
     /**
      * This method is used to fetch the event details with its specific id from the firebase,
