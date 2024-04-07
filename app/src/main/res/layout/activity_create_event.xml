@@ -8,14 +8,14 @@
     android:background="@drawable/gradient_background"
     tools:context=".MainActivity">
 
-<!--    Tool back arrow to navigate back to previous page -->
+    <!--    Tool back arrow to navigate back to previous page -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/backTool"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="?attr/homeAsUpIndicator" />
 
-<!--    Header Page Title -->
+    <!--    Header Page Title -->
     <TextView
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
         android:textSize="28sp"
         android:textAlignment="center"/>
 
-<!--    Event Title or the Event Name -->
+    <!--    Event Title or the Event Name -->
     <TextView
         android:id="@+id/event_title"
         android:layout_width="match_parent"
@@ -66,7 +66,7 @@
         android:padding="4dp"
         android:textSize="20sp" />
 
-<!--    Event Poster -->
+    <!--    Event Poster -->
     <TextView
         android:id="@+id/event_poster"
         android:layout_width="match_parent"
@@ -92,7 +92,7 @@
         android:background="@drawable/rounded_background"
         android:src="@android:drawable/ic_menu_add" />
 
-<!--    Event Location/ Venue -->
+    <!--    Event Location/ Venue -->
     <TextView
         android:id="@+id/location"
         android:layout_width="wrap_content"
@@ -105,7 +105,7 @@
         android:textColor="@color/white"
         android:textSize="22sp" />
 
-<!--    Event Description -->
+    <!--    Event Description -->
     <TextView
         android:id="@+id/event_details"
         android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
         android:textColor="@color/white"
         android:textSize="22sp" />
 
-<!--    Event desc input field -->
+    <!--    Event desc input field -->
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/enter_event_details"
         android:layout_width="wrap_content"
@@ -270,7 +270,7 @@
             android:drawableEnd="@android:drawable/ic_menu_recent_history"/>
     </LinearLayout>
 
-<!--    Event QR code options for creating a New Event -->
+    <!--    Event QR code options for creating a New Event -->
     <TextView
         android:id="@+id/qr_code_title"
         android:textColor="@color/white"
@@ -317,7 +317,7 @@
             android:visibility="invisible"/>
     </LinearLayout>
 
-<!--    Button Choices to Create or Cancel creating the New Event -->
+    <!--    Button Choices to Create or Cancel creating the New Event -->
     <LinearLayout
         android:id="@+id/buttons_onTaskbar"
         android:layout_width="match_parent"
@@ -345,7 +345,7 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-<!--    Frame for the fragment pop up when Reuse existing QR button is clicked -->
+    <!--    Frame for the fragment pop up when Reuse existing QR button is clicked -->
     <FrameLayout
         android:id="@+id/reuse_qr_fragment_container"
         android:layout_width="match_parent"

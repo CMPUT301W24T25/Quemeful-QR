@@ -235,7 +235,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
-                    MilestoneAdapter pagerAdapter = new MilestoneAdapter (getSupportFragmentManager(), signedUpUsers.size());
+                    MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
                     milestone_scrollview.setAdapter(pagerAdapter);
                     congratulatoryText.setVisibility(View.VISIBLE);
                 }
