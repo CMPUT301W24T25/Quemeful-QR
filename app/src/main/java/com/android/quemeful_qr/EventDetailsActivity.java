@@ -2,8 +2,6 @@ package com.android.quemeful_qr;
 
 import static android.content.ContentValues.TAG;
 
-import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -81,7 +79,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ViewPager milestone_scrollview;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
-    private TextView viewAttendee, textViewScanQR, textViewSignUp;
+    private TextView viewAttendee, textViewScanQR, textViewSignUp, current_milestone_text, congratulatoryText;
     private Button buttonSignUp, buttonPromotion;
     private ExtendedFloatingActionButton buttonCheckIn;
 
@@ -237,15 +235,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
-
+                    MilestoneAdapter pagerAdapter = new MilestoneAdapter (getSupportFragmentManager(), signedUpUsers.size());
+                    milestone_scrollview.setAdapter(pagerAdapter);
                     congratulatoryText.setVisibility(View.VISIBLE);
                 }
-
-
-                MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
-
-
-                milestone_scrollview.setAdapter(pagerAdapter);
             }
         });
 
@@ -706,7 +699,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
             buttonPromotion.setVisibility(View.GONE); // show promotion button for signed up users
-            milestone.setVisibility(View.GONE);
+            milestone_scrollview.setVisibility(View.GONE);
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
@@ -726,7 +719,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
             buttonPromotion.setVisibility(View.GONE); // show promotion button for not signed up users
-            milestone.setVisibility(View.GONE);
+            milestone_scrollview.setVisibility(View.GONE);
         }
     }
 

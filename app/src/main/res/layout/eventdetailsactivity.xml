@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     tools:context=".EventDetailsActivity">
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -57,6 +56,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle" />
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/milestone_cardView"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_margin="16dp"
+                android:visibility="visible"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintBottom_toTopOf="@id/cardViewEventDetails"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -71,7 +82,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
 
                     <TextView
                         android:id="@+id/current_milestone_text"
@@ -125,7 +135,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/viewPagerMilestones">
+                app:layout_constraintTop_toBottomOf="@id/milestone_cardView">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -325,7 +335,7 @@
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
-                
+
             <org.osmdroid.views.MapView
                 android:id="@+id/map"
                 android:layout_width="match_parent"
@@ -354,8 +364,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
 
-                <!-- tools:layout_editor_absoluteY="852dp"
-                app:layout_constraintTop_toBottomOf="@+id/viewAttendee" /> -->
+            <!-- tools:layout_editor_absoluteY="852dp"
+            app:layout_constraintTop_toBottomOf="@+id/viewAttendee" /> -->
 
             <TextView
                 android:id="@+id/address_text"
