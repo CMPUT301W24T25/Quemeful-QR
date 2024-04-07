@@ -35,6 +35,8 @@ public class EventFragment extends Fragment {
     private Calendar selectedDate = Calendar.getInstance();
     private int selectedTabPosition = 0;
 
+    private String currentFetchDate = "";
+
     public EventFragment() {
         // Required empty public constructor
     }
@@ -43,6 +45,15 @@ public class EventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
 
+        initializeRecyclerView(view);
+        setupFirebase();
+        setupSharedViewModel();
+        setupTabLayout(view);
+
+        return view;
+    }
+
+    private void initializeRecyclerView(View view) {
         eventsRecyclerView = view.findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         eventAdapter = new EventAdapter(new ArrayList<>(), event -> {
@@ -51,17 +62,22 @@ public class EventFragment extends Fragment {
             startActivity(intent);
         });
         eventsRecyclerView.setAdapter(eventAdapter);
+    }
 
+    private void setupFirebase() {
         db = FirebaseFirestore.getInstance();
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
         deviceUserId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
 
+    private void setupSharedViewModel() {
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         sharedViewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {
             selectedDate = date;
             fetchEventsForSelectedTab(selectedTabPosition);
         });
+    }
 
+    private void setupTabLayout(View view) {
         TabLayout tabLayout = view.findViewById(R.id.tabs);
         tabLayout.addTab(tabLayout.newTab().setText("Events Organized"));
         tabLayout.addTab(tabLayout.newTab().setText("Checked in"));
@@ -82,17 +98,20 @@ public class EventFragment extends Fragment {
                 fetchEventsForSelectedTab(tab.getPosition());
             }
         });
-
-        return view;
     }
 
     private void fetchEventsForSelectedTab(int tabIndex) {
         String formattedDate = sdf.format(selectedDate.getTime());
-
+        currentFetchDate = formattedDate;
         String eventsKey = (tabIndex == 0) ? "events_organized" : "events";
-        db.collection("users").document(deviceUserId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult().exists()) {
-                List<String> eventIds = (List<String>) task.getResult().get(eventsKey);
+
+        db.collection("users").document(deviceUserId).addSnapshotListener((documentSnapshot, e) -> {
+            if (e != null) {
+                showToast("Error listening for event updates: " + e.getMessage());
+                return;
+            }
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                List<String> eventIds = (List<String>) documentSnapshot.get(eventsKey);
                 if (eventIds != null && !eventIds.isEmpty()) {
                     fetchEventsDetails(eventIds, formattedDate);
                 } else {
@@ -107,8 +126,13 @@ public class EventFragment extends Fragment {
 
     private void fetchEventsDetails(List<String> eventIds, String formattedDate) {
         List<EventHelper> eventsData = new ArrayList<>();
+
         for (String eventId : eventIds) {
             db.collection("events").document(eventId).get().addOnCompleteListener(task -> {
+                if (!formattedDate.equals(currentFetchDate)) {
+                    // If the fetch date does not match the current fetch date, ignore this result
+                    return;
+                }
                 if (task.isSuccessful() && task.getResult().exists()) {
                     EventHelper event = task.getResult().toObject(EventHelper.class);
                     if (event != null && formattedDate.equals(event.getDate())) {
@@ -118,9 +142,11 @@ public class EventFragment extends Fragment {
                     showToast("Error getting event details");
                 }
 
-                // This check ensures that the adapter is updated after processing each event
-                if (eventsData.size() == eventIds.size() || eventsData.isEmpty()) {
-                    eventAdapter.setEvents(eventsData);
+                // Since tasks are asynchronous, check again before updating the UI
+                if (formattedDate.equals(currentFetchDate)) {
+                    if (eventsData.size() == eventIds.size() || eventsData.isEmpty()) {
+                        eventAdapter.setEvents(eventsData);
+                    }
                 }
             });
         }
