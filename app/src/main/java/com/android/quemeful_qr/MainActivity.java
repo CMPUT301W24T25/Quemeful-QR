@@ -316,9 +316,9 @@ public class MainActivity extends AppCompatActivity {
             newUser.put("uid", deviceId);
             newUser.put("firstName", userFirstName);
             newUser.put("lastName", userLastName);
-            newUser.put("homePage", "N/A");
-            newUser.put("contact", "N/A");
-            newUser.put("bio", "N/A");
+            newUser.put("homePage", "");
+            newUser.put("contact", "");
+            newUser.put("bio", "");
             newUser.put("avatarUrl", avatarPath);
             newUser.put("Admin", false);
 

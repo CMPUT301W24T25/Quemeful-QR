@@ -74,12 +74,23 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
         holder.eventLocation.setText(event.getLocation());
         holder.eventTime.setText(event.getTime());
 
+//        if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+//            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+//            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//            holder.eventImage.setImageBitmap(decodedByte);
+//        } else {
+//            holder.eventImage.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+//        }
+        // Use Glide to load the image from the URI
         if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
-            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            holder.eventImage.setImageBitmap(decodedByte);
+            Glide.with(context)
+                    .load(event.getPoster()) // Load the image directly from the URI
+                    .placeholder(R.drawable.gradient_background) // Optional: a placeholder until the image loads
+                    .error(R.drawable.gradient_background) // Optional: an error image if the load fails
+                    .into(holder.eventImage);
         } else {
-            holder.eventImage.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+            // Use a default image if no poster URI is present
+            holder.eventImage.setImageResource(R.drawable.gradient_background);
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -164,13 +175,14 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
             eventTitle = itemView.findViewById(R.id.eventTitle);
             eventLocation = itemView.findViewById(R.id.eventLocation);
             eventTime = itemView.findViewById(R.id.eventTime);
+            itemView.setOnClickListener(this);
             posterDelete = itemView.findViewById(R.id.posterDelete);
             if (!isAdmin) {
                 posterDelete.setVisibility(View.GONE);
             } else {
                 posterDelete.setVisibility(View.VISIBLE);
             }
-            itemView.setOnClickListener(this);
+//            itemView.setOnClickListener(this);
         }
 
         /**

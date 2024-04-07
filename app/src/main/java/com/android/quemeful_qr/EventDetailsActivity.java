@@ -28,8 +28,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -100,6 +102,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     Double attLatitude;
     Double attLongitude;
     String attId;
+    CardView milestoneCardView;
 
 
     //firestore variables
@@ -147,7 +150,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         addressText = findViewById(R.id.address_text);
 
         MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
-        map.getOverlays().add(OverlayEvents);
+//        map.getOverlays().add(OverlayEvents);
+        map = (MapView) findViewById(R.id.map);
+        if (map != null) {
+            Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+            map.setTileSource(TileSourceFactory.MAPNIK);
+            map.setBuiltInZoomControls(true);
+            map.setMultiTouchControls(true);
+            // Further map setup
+        } else {
+            Log.e(TAG, "MapView is null");
+        }
         displayEventPins();
         displayAttendeePins();
 
@@ -171,6 +184,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
         buttonPromotion = findViewById(R.id.promotionButton);
+        milestoneCardView = findViewById(R.id.milestone_cardView);
 
         eventId = getIntent().getStringExtra("event_id");
 
@@ -183,7 +197,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(v -> navigateToListOfAttendees(eventId));
 
-           // milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
+            milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
 
         } else {
             // Handle the error
@@ -585,20 +599,20 @@ public class EventDetailsActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-//    private void navigateToLMilestone(String eventId) {
-//        MilestoneFragment milestoneFragment = new MilestoneFragment(eventId);
-//
-//        // Begin a transaction
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//
-//        // Replace whatever is in the fragment_container view with this fragment,
-//        // and add the transaction to the back stack so the user can navigate back
-//        transaction.replace(R.id.fragment_container, milestoneFragment);
-//        transaction.addToBackStack(null);
-//
-//        // Commit the transaction
-//        transaction.commit();
-//    }
+    private void navigateToLMilestone(String eventId) {
+        MilestoneFragment milestoneFragment = new MilestoneFragment(eventId);
+
+        // Begin a transaction
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, milestoneFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
 
     /**
      * This method is used to fetch the event details with its specific id from the firebase,
@@ -626,14 +640,24 @@ public class EventDetailsActivity extends AppCompatActivity {
                         updateUIForGeneralUser(currentUserUID, event, documentSnapshot);
                     }
 
-                    // Decode and set the image
+//                    // Decode and set the image
+//                    if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+//                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+//                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                        imageViewEventImage.setImageBitmap(decodedByte);
+//                    } else {
+//                        imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
+//                    }
+
+                    // Use Glide to load the image from a URL
                     if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
-                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        imageViewEventImage.setImageBitmap(decodedByte);
+                        Glide.with(EventDetailsActivity.this)
+                                .load(event.getPoster())
+                                .into(imageViewEventImage);
                     } else {
                         imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
                     }
+
                 }
             } else {}
         }).addOnFailureListener(e -> {

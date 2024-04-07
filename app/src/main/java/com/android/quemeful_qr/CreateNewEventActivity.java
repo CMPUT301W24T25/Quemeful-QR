@@ -113,9 +113,12 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private boolean endTimeTextClicked;
     private EventHelper event;
 
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
    // private String eventId;
     private Double locationLatitude, locationLongitude;
     private Boolean updateLimitMethodCalled = false;
+
+    private ActivityResultLauncher<String> mGetContent;
 
     /**
      * This method sets the clickable property of the buttons and text boxes for user to enter event details.
@@ -162,7 +165,21 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         // calls the imageChooser() to upload an image/poster for the event,
         // when clicked on the plus icon under 'Add Poster'.
-        uploadPoster.setOnClickListener(v -> imageChooser());
+//        uploadPoster.setOnClickListener(v -> imageChooser());
+
+        // Initialize the ActivityResultLauncher
+        mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                selectedImageUri = uri;
+                uploadPoster.setImageURI(uri); // Show the selected image on the ImageButton or ImageView
+//                uploadImageToFirebaseStorage(uri); // Proceed to upload after image is selected
+            }
+        });
+
+        uploadPoster.setOnClickListener(v -> mGetContent.launch("image/*")); // Open image chooser when button is clicked
+
+
+
 
         // opens a fragment to pick the starting time of the event.
         startTime.setOnClickListener(v -> {
@@ -198,36 +215,46 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
-            try {
-                if(selectedImageUri != null) {
-                    // converts uri to bitmap
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
-                    // converts bitmap to base64 string
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    // In case you want to compress your image, here it's at 40%
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    generateQRButton.setVisibility(View.VISIBLE);
-                } else {
-                    //empty poster check
-                    Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
-                    message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
-                    message.show();
-                }
-                // create new event
-                addNewEvent();
+//            try {
+//                if(selectedImageUri != null) {
+//                    // converts uri to bitmap
+//                    uploadImageToFirebaseStorage(selectedImageUri);
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
+//                    // converts bitmap to base64 string
+//                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                    // In case you want to compress your image, here it's at 40%
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
+//                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+//                    eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
+//                    generateQRButton.setVisibility(View.VISIBLE);
+//                } else {
+//                    //empty poster check
+//                    Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
+//                    message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+//                    message.show();
+//                }
+//                // create new event
+//                addNewEvent();
+//                generateQRButton.setVisibility(View.VISIBLE);
+//                reuseQRButton.setVisibility(View.VISIBLE);
+//                limitAttendeeButton.setVisibility(View.VISIBLE);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//            // create new event
+////            addNewEvent();
+////            generateQRButton.setVisibility(View.VISIBLE);
+////            reuseQRButton.setVisibility(View.VISIBLE);
+////            limitAttendeeButton.setVisibility(View.VISIBLE);
+
+            if (selectedImageUri != null) {
+                uploadImageToFirebaseStorage(selectedImageUri);
                 generateQRButton.setVisibility(View.VISIBLE);
                 reuseQRButton.setVisibility(View.VISIBLE);
                 limitAttendeeButton.setVisibility(View.VISIBLE);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } else {
+                Toast.makeText(this, "Please select an image for the event.", Toast.LENGTH_LONG).show();
             }
-            // create new event
-              addNewEvent();
-//            generateQRButton.setVisibility(View.VISIBLE);
-//            reuseQRButton.setVisibility(View.VISIBLE);
-//            limitAttendeeButton.setVisibility(View.VISIBLE);
         });
 
         // on click generates a new QR by starting Generate new QR activity
@@ -330,14 +357,29 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         builder.show();
     }
 
+    private void uploadImageToFirebaseStorage(Uri imageUri) {
+        String filePath = "eventPosters/" + eventId; // Unique path for each event poster
+        StorageReference fileRef = storageRef.child(filePath);
+
+        fileRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            String imageUrl = uri.toString();
+            addNewEvent(imageUrl); // Call method to create a new event with the image URL
+        })).addOnFailureListener(e -> Toast.makeText(CreateNewEventActivity.this, "Failed to upload image.", Toast.LENGTH_SHORT).show());
+    }
+
     /**
      * This method is used to start the MapActivity when map/location button is clicked.
      */
-    private void openMapActivity() {
-        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
-        startActivity(intent);
-    }
+//    private void openMapActivity() {
+//        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
+//        startActivity(intent);
+//    }
 
+    protected void openMapActivity(){
+        Intent intent = new Intent(CreateNewEventActivity.this, MapActivity.class);
+        startActivityForResult(intent, LAUNCH_MAP_ACTIVITY);
+
+    }
     /**
      * This method is used to show the fragment pop up with the list of event check in Qr codes,
      * to select one for reuse for the newly created event.
@@ -394,7 +436,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     }
 
 
-    private void addNewEvent() {
+    private void addNewEvent(String imageUrl) {
         //generates random id for the event
         eventId = db.collection("events").document().getId();
         eventName = eventTitle.getText().toString();
@@ -417,6 +459,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         data.put("time", event.getTime());
         data.put("date", event.getDate());
         data.put("description", event.getDescription());
+        data.put("poster", imageUrl);
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
@@ -428,11 +471,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                             data.put("organizer_token", token);
                         }
 
-                        if (eventPost != null) {
-                            data.put("poster", eventPost);
-                        } else {
-                            data.put("poster", "");
-                        }
+//                        if (eventPost != null) {
+////                            data.put("poster", eventPost);
+//                            data.put("poster", imageUrl);
+//                        } else {
+////                            data.put("poster", "");
+//                            data.put("poster", "");
+//                        }
                         List<Map<String, Object>> emptySignUpList = new ArrayList<>();
                         data.put("signed_up", emptySignUpList);
 
@@ -442,7 +487,9 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                                     Log.d("FireStore", "DocumentSnapshot successfully written!");
                                     updateUserEvents(currentUserUID, event.getId());
                                     Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                                });
+                                })
+                                .addOnFailureListener(e -> Log.e(TAG, "Error writing document", e));
+
                     }
                 });
 
@@ -467,35 +514,35 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
      * @param eventId the event newly created with specific eventId
      * @param posterUri the event poster
      */
-    private void UploadPosterToFirebaseStorage(String eventId, Uri posterUri) {
-        // upload the image file path instead of the image itself
-        // initialize firebase storage and its reference
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference();
-        // create a unique file path in the firebase storage to upload the poster
-        String eventPosterPath = "eventPosters/" + UUID.randomUUID().toString();
-        StorageReference eventPosterRef = storageReference.child(eventPosterPath);
-        // upload the path to the uri of the poster
-        UploadTask uploadTask = eventPosterRef.putFile(posterUri);
-        // listen to upload
-        uploadTask.addOnSuccessListener(taskSnapshot -> {
-            // get the url of the uploaded poster
-            eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                // get the url string
-                String posterString = uri.toString();
-                // add to db
-                Map<String, Object> Poster = new HashMap<>();
-                Poster.put("poster", posterString);
-                db.collection("events")
-                        .document(eventId)
-                        .update(Poster)
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "event document successfully updated with poster field."))
-                        .addOnFailureListener(e -> Log.d(TAG, "event document failed to update with poster field."));
-            });
-        }).addOnFailureListener(e -> {
-            Log.d(TAG,"Failed to upload poster to firebase storage");
-        });
-    } // UploadPosterToFirebaseStorage method closing
+//    private void UploadPosterToFirebaseStorage(String eventId, Uri posterUri) {
+//        // upload the image file path instead of the image itself
+//        // initialize firebase storage and its reference
+//        FirebaseStorage storage = FirebaseStorage.getInstance();
+//        StorageReference storageReference = storage.getReference();
+//        // create a unique file path in the firebase storage to upload the poster
+//        String eventPosterPath = "eventPosters/" + UUID.randomUUID().toString();
+//        StorageReference eventPosterRef = storageReference.child(eventPosterPath);
+//        // upload the path to the uri of the poster
+//        UploadTask uploadTask = eventPosterRef.putFile(posterUri);
+//        // listen to upload
+//        uploadTask.addOnSuccessListener(taskSnapshot -> {
+//            // get the url of the uploaded poster
+//            eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//                // get the url string
+//                String posterString = uri.toString();
+//                // add to db
+//                Map<String, Object> Poster = new HashMap<>();
+//                Poster.put("poster", posterString);
+//                db.collection("events")
+//                        .document(eventId)
+//                        .update(Poster)
+//                        .addOnSuccessListener(aVoid -> Log.d(TAG, "event document successfully updated with poster field."))
+//                        .addOnFailureListener(e -> Log.d(TAG, "event document failed to update with poster field."));
+//            });
+//        }).addOnFailureListener(e -> {
+//            Log.d(TAG,"Failed to upload poster to firebase storage");
+//        });
+//    } // UploadPosterToFirebaseStorage method closing
 
     /**
      * This method sets time in a certain format after user picks a time from the pop out window.
@@ -543,28 +590,28 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         }
     }
 
-    /**
-     * This method selects an image for the event poster and saves the uri to a variable.
-     */
-    private void imageChooser() {
-        Intent i = new Intent();
-        i.setType("image/*");
-        i.setAction(Intent.ACTION_GET_CONTENT);
-        launchSomeActivity.launch(i);
-    }
-    
-    ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null && data.getData() != null) {
-                        selectedImageUri = data.getData();
-                        // upload to firebase storage
-                        UploadPosterToFirebaseStorage(eventId, selectedImageUri);
-                        // display into imageview
-                        Glide.with(CreateNewEventActivity.this).load(selectedImageUri).into(uploadPoster);
-                    }
-                }
-            });
+//    /**
+//     * This method selects an image for the event poster and saves the uri to a variable.
+//     */
+//    private void imageChooser() {
+//        Intent i = new Intent();
+//        i.setType("image/*");
+//        i.setAction(Intent.ACTION_GET_CONTENT);
+//        launchSomeActivity.launch(i);
+//    }
+//
+//    ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+//            result -> {
+//                if (result.getResultCode() == Activity.RESULT_OK) {
+//                    Intent data = result.getData();
+//                    if (data != null && data.getData() != null) {
+//                        selectedImageUri = data.getData();
+//                        // upload to firebase storage
+//                        UploadPosterToFirebaseStorage(eventId, selectedImageUri);
+//                        // display into imageview
+//                        Glide.with(CreateNewEventActivity.this).load(selectedImageUri).into(uploadPoster);
+//                    }
+//                }
+//            });
 
-        } // closing CreateNewEventActivity
+} // closing CreateNewEventActivity
