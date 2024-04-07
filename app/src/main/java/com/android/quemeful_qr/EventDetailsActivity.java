@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -100,6 +101,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private CollectionReference eventsRef;
     private CollectionReference attendeesRef;
 
+    private SharedPreferences settings;
+    private boolean enableLocations;
     /**
      * This onCreate method is used to set up an interface with all event details.
      * @param savedInstanceState If the activity is being re-initialized after
@@ -111,7 +114,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.eventdetailsactivity);
-
+        settings = getSharedPreferences(UserSettings.LOCATION_PREFERENCES, MODE_PRIVATE);
+        enableLocations = settings.getBoolean("custom_location",false);
         //firebase setup
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
@@ -438,33 +442,17 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Create MapController and set starting location
         mapController = map.getController();
+        if (enableLocations) {
+            // Create location overlay
+            myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
+            myLocationOverlay.enableMyLocation();
+            myLocationOverlay.enableFollowLocation();
+            myLocationOverlay.setDrawAccuracyEnabled(true);
 
-        // Create location overlay
-        myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
-        myLocationOverlay.enableMyLocation();
-        myLocationOverlay.enableFollowLocation();
-        myLocationOverlay.setDrawAccuracyEnabled(true);
-//        myLocationOverlay.runOnFirstFix(new Runnable() {
-//            @Override
-//            public void run() {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        mapController.animateTo(myLocationOverlay.getMyLocation());
-//                        mapController.setZoom(15.5);
-//                        mapController.setCenter(myLocationOverlay.getMyLocation());
-//
-//
-//                    }
-//                });
-//            }
-//        });
-//        mapController.animateTo(myLocationOverlay.getMyLocation());
-        mapController.setZoom(15.5);
-//        mapController.setCenter(myLocationOverlay.getMyLocation());
-        map.getOverlays().add(myLocationOverlay);
+            mapController.setZoom(15.5);
 
+            map.getOverlays().add(myLocationOverlay);
+        }
 
 
 
