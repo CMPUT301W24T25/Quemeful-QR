@@ -402,6 +402,18 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 });
 
     }
+    private void updateUserEvents(String userId, String eventId) {
+        CollectionReference usersRef = db.collection("users");
+        usersRef.document(userId)
+                .update("events_organized", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating user", e);
+                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
+                });
+    }
 
             /**
              * This method sets time in a certain format after user picks a time from the pop out window.

@@ -58,7 +58,7 @@ public class Events extends Fragment {
 
     private void addEventFragment() {
 
-        eventFragment eventFragment = new eventFragment();
+        EventFragment eventFragment = new EventFragment();
 
         FragmentManager fragmentManager = getChildFragmentManager();
 
