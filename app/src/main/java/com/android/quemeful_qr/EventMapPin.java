@@ -1,18 +1,20 @@
 package com.android.quemeful_qr;
 
 
-public class MapPin {
+public class EventMapPin {
     private String title;
     private String location;
     private double latitude;
     private double longitude;
 
-    public MapPin(String title, String location, double latitude, double longitude) {
+    public EventMapPin(String title, String location, double latitude, double longitude) {
         this.title = title;
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+
 
     public String getTitle() {
         return title;

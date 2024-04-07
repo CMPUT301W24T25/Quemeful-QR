@@ -35,10 +35,11 @@
         android:textSize="30sp"
         android:textAlignment="center"/>
 
-    <TextView
+    <EditText
+        android:id="@+id/address_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/event_name_textview"
+        android:layout_height="160dp"
+        android:layout_below="@id/event_name_textview"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_background"
         android:gravity="center"
@@ -73,11 +74,11 @@
 
     <ImageView
         android:id="@+id/poster_view"
-        android:layout_width="400dp"
-        android:layout_height="250dp"
-        android:layout_below="@id/event_name_textview"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/address_text"
         android:layout_centerVertical="true"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent" />
 
     <TextView
