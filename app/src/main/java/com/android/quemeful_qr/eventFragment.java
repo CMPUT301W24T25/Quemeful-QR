@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class eventFragment extends Fragment {
         eventsRecyclerView = view.findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         eventAdapter = new EventAdapter(new ArrayList<>(), event -> {
-            // Handle event click
             Intent intent = new Intent(getContext(), EventDetailsActivity.class);
             intent.putExtra("eventId", event.getId());
             startActivity(intent);
@@ -90,8 +88,8 @@ public class eventFragment extends Fragment {
 
     private void fetchEventsForSelectedTab(int tabIndex) {
         String formattedDate = sdf.format(selectedDate.getTime());
-        String eventsKey = tabIndex == 0 ? "events_organized" : "events";
 
+        String eventsKey = (tabIndex == 0) ? "events_organized" : "events";
         db.collection("users").document(deviceUserId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult().exists()) {
                 List<String> eventIds = (List<String>) task.getResult().get(eventsKey);
@@ -116,11 +114,13 @@ public class eventFragment extends Fragment {
                     if (event != null && formattedDate.equals(event.getDate())) {
                         eventsData.add(event);
                     }
-                    if (eventsData.size() == eventIds.size() || eventsData.isEmpty()) {
-                        eventAdapter.setEvents(eventsData);
-                    }
                 } else {
                     showToast("Error getting event details");
+                }
+
+                // This check ensures that the adapter is updated after processing each event
+                if (eventsData.size() == eventIds.size() || eventsData.isEmpty()) {
+                    eventAdapter.setEvents(eventsData);
                 }
             });
         }
