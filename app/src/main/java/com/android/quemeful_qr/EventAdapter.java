@@ -2,6 +2,9 @@ package com.android.quemeful_qr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,31 +14,47 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Adapter class for displaying all upcoming events in a RecyclerView.
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
+    private static List<EventHelper> events;
     private Context context;
-    private List<Map<String, Object>> events;
+    private EventClickListenerInterface mClickListener;
 
-    public EventAdapter(Context context, List<Map<String, Object>> events) {
-        this.context = context;
+    /**
+     * Constructor for EventAdapter.
+     * @param events The upcoming events.
+     * @param clickListener The listener for event clicks.
+     */
+    public EventAdapter(List<EventHelper> events, EventClickListenerInterface clickListener) {
         this.events = events;
+        this.mClickListener = clickListener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.admin_event_card, parent, false);
-        return new ViewHolder(view);
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.event_item, parent, false);
+        return new ViewHolder(view, mClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Map<String, Object> event = events.get(position);
-        holder.bindEventData(event);
+        EventHelper event = events.get(position);
+        holder.title.setText(event.getTitle());
+        holder.date.setText(event.getDate()); // Make sure this method exists in EventHelper.
+
+        if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            holder.image.setImageBitmap(decodedByte);
+        } else {
+            holder.image.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+        }
     }
 
     @Override
@@ -43,50 +62,32 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         return events.size();
     }
 
-    // Method moved outside of ViewHolder class
-    public void setEvents(List<Map<String, Object>> newEvents) {
+    public void setEvents(List<EventHelper> newEvents) {
         events = newEvents;
-        notifyDataSetChanged(); // Notify the adapter to re-render
-    }
-
-    public void clearEvents() {
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView eventNameTextView;
-        private TextView eventDateTextView;
-        private ImageView eventImageView;
+    public interface EventClickListenerInterface {
+        void onEventClick(EventHelper event);
+    }
 
-        public ViewHolder(@NonNull View itemView) {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView title, date;
+        ImageView image;
+        EventClickListenerInterface clickListener;
+
+        public ViewHolder(@NonNull View itemView, EventClickListenerInterface clickListener) {
             super(itemView);
-            eventNameTextView = itemView.findViewById(R.id.event_title);
-            eventDateTextView = itemView.findViewById(R.id.event_date);
-            eventImageView = itemView.findViewById(R.id.admin_event_image);
-
-            itemView.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    Map<String, Object> event = events.get(position);
-                    Intent intent = new Intent(context, AdminEventDetailsActivity.class);
-                    intent.putExtra("eventId", (String) event.get("eventId"));
-                    context.startActivity(intent);
-                }
-            });
+            title = itemView.findViewById(R.id.event_title);
+            date = itemView.findViewById(R.id.event_date);
+            image = itemView.findViewById(R.id.admin_event_image);
+            this.clickListener = clickListener;
+            itemView.setOnClickListener(this);
         }
 
-
-
-        public void bindEventData(Map<String, Object> event) {
-            eventNameTextView.setText((String) event.get("title"));
-            eventDateTextView.setText((String) event.get("date"));
-
-            String imageUrl = (String) event.get("image");
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Glide.with(itemView.getContext()).load(imageUrl).into(eventImageView);
-            } else {
-                eventImageView.setImageResource(R.drawable.scan_logo); // Use a default image when necessary
-            }
+        @Override
+        public void onClick(View view) {
+            clickListener.onEventClick(events.get(getAdapterPosition()));
         }
     }
 }

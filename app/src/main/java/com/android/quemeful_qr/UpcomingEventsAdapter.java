@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.upcomingeventscard, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, isAdmin);
     }
 
     /**
@@ -110,6 +111,20 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
             }
             return true;
         });
+
+        holder.posterDelete.setOnClickListener(view -> {
+            String eventId = (String) event.getId();
+            if (eventId != null) {
+                db.collection("events").document(eventId).update("poster", "")
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("EventsUpcomingAdapter for admin", "Poster successfully deleted for event: " + event);
+                            Glide.with(holder.itemView.getContext())
+                                    .load("")
+                                    .into(holder.image);
+                        })
+                        .addOnFailureListener(e -> Log.e("EventsUpcomingAdapter for admin", "Error deleting poster", e));
+            }
+        });
     }
 
     /**
@@ -126,17 +141,23 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
      */
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView title, date;
-        ImageView image;
+        ImageView image, posterDelete;
 
         /**
          * Defining a click listener for the ViewHolder's View.
          * @param itemView used to initialize the event attributes.
          */
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, boolean isAdmin) {
             super(itemView);
             title = itemView.findViewById(R.id.event_title);
             date = itemView.findViewById(R.id.event_date);
             image = itemView.findViewById(R.id.admin_event_image);
+            posterDelete = itemView.findViewById(R.id.posterDelete);
+            if (!isAdmin) {
+                posterDelete.setVisibility(View.GONE);
+            } else {
+                posterDelete.setVisibility(View.VISIBLE);
+            }
             itemView.setOnClickListener(this);
         }
 
