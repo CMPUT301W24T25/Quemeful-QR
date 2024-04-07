@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class eventFragment extends Fragment {
+public class EventFragment extends Fragment {
 
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventAdapter;
@@ -35,7 +35,7 @@ public class eventFragment extends Fragment {
     private Calendar selectedDate = Calendar.getInstance();
     private int selectedTabPosition = 0;
 
-    public eventFragment() {
+    public EventFragment() {
         // Required empty public constructor
     }
 
