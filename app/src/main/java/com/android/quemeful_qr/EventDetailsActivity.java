@@ -30,14 +30,20 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 
 import org.json.JSONException;
@@ -45,9 +51,7 @@ import org.json.JSONObject;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
@@ -64,6 +68,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This is a class activity that handles the event details view for specific user type.
@@ -115,7 +120,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.eventdetailsactivity);
         settings = getSharedPreferences(UserSettings.LOCATION_PREFERENCES, MODE_PRIVATE);
-        enableLocations = settings.getBoolean("custom_location",false);
+        enableLocations = settings.getBoolean("custom_location", false);
         //firebase setup
         db = FirebaseFirestore.getInstance();
 
@@ -140,101 +145,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonPromotion = findViewById(R.id.promotionButton);
         addressText = findViewById(R.id.address_text);
 
-        //map xml
-        map = findViewById(R.id.map);
-        displayMapPinsActivityButton = findViewById(R.id.display_map_pins_activity_button);
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
-        loadMap();
-        onPause();
-
-
-        displayMapPinsActivityButton.setOnClickListener(v -> db.collection("events").get()
-                .addOnCompleteListener(task -> {
-
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
-                            //brings the user to a new activity with event details
-
-                            String eventName = document.getData().get("title").toString();
-                            String eventLocation = document.getData().get("location").toString();
-                            double eventLatitude = (Double) document.getData().get("latitude");
-                            double eventLongitude = (Double) document.getData().get("longitude");
-
-                            MapPin eventPin = new MapPin(eventName, eventLocation, eventLatitude, eventLongitude);
-                            List<MapPin> eventPinList = new ArrayList<MapPin>();
-                            eventPinList.add(eventPin);
-
-                            Toast.makeText(EventDetailsActivity.this,
-                                    "added: " +
-                                            eventLocation + "\nLatitude: " +
-                                            eventLatitude + "\nLongitude: " +
-                                            eventLongitude, Toast.LENGTH_SHORT).show();
-                            for (int i = 0; i < eventPinList.size(); i++){
-                                Log.d("value is", eventPinList.get(i).getLocation().toString());
-                                GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
-                                displayMarker(eventPinGeoPoint, eventPin);
-                            }
-
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                        //set the error message onto the camera textview "QR code not recognized"
-                        Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
-                    }
-                })); // closing displayMapPinsActivityButton onClickListener
-
-        //add pins when tap on map
-        MapEventsReceiver mReceive = new MapEventsReceiver() {
-            @Override
-            public boolean singleTapConfirmedHelper(GeoPoint p) {
-
-                addEventMarker(p);
-                latitude = p.getLatitude();
-                longitude = p.getLongitude();
-                Toast.makeText(EventDetailsActivity.this,
-                        "Lat: " + p.getLatitude() + ", Long: " + p.getLongitude(), Toast.LENGTH_LONG).show();
-                new EventDetailsActivity.fetchData().start();
-                return true;
-            }
-
-            @Override
-            public boolean longPressHelper(GeoPoint p) {
-                // write your code here
-                return false;
-            }
-        };
         MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
         map.getOverlays().add(OverlayEvents);
-
-                displayEventPins();
-                displayAttendeePins();
-
-            }
-        }); // closing displayMapPinsActivityButton onClickListener
-//        //add pins when tap on map
-//        MapEventsReceiver mReceive = new MapEventsReceiver() {
-//
-//            @Override
-//            public boolean singleTapConfirmedHelper(GeoPoint p) {
-//
-//                addEventMarker(p);
-//                latitude = p.getLatitude();
-//                longitude = p.getLongitude();
-//                Toast.makeText(EventDetailsActivity.this,
-//                        "Lat: " + p.getLatitude() + ", Long: " + p.getLongitude(), Toast.LENGTH_LONG).show();
-//                new EventDetailsActivity.fetchData().start();
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean longPressHelper(GeoPoint p) {
-//                // write your code here
-//                return false;
-//            }
-//        };
-//        MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
-//        map.getOverlays().add(OverlayEvents);
+        displayEventPins();
+        displayAttendeePins();
 
         // navigate back to previous page on clicking the back arrow.
         imageViewBackArrow.setOnClickListener(v -> finish());
@@ -274,6 +188,45 @@ public class EventDetailsActivity extends AppCompatActivity {
             // Handle the error
         }
 
+        //map xml
+        map = findViewById(R.id.map);
+        displayMapPinsActivityButton = findViewById(R.id.display_map_pins_activity_button);
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
+        loadMap();
+        onPause();
+
+
+        displayMapPinsActivityButton.setOnClickListener(v -> db.collection("events").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
+                            //brings the user to a new activity with event details
+                            String eventName = document.getData().get("title").toString();
+                            String eventLocation = document.getData().get("location").toString();
+                            double eventLatitude = (Double) document.getData().get("latitude");
+                            double eventLongitude = (Double) document.getData().get("longitude");
+                            MapPin eventPin = new MapPin(eventName, eventLocation, eventLatitude, eventLongitude);
+                            List<MapPin> eventPinList = new ArrayList<MapPin>();
+                            eventPinList.add(eventPin);
+                            Toast.makeText(EventDetailsActivity.this,
+                                    "added: " +
+                                            eventLocation + "\nLatitude: " +
+                                            eventLatitude + "\nLongitude: " +
+                                            eventLongitude, Toast.LENGTH_SHORT).show();
+                            for (int i = 0; i < eventPinList.size(); i++) {
+                                Log.d("value is", eventPinList.get(i).getLocation().toString());
+                                GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
+                                displayMarker(eventPinGeoPoint, eventPin);
+                            }
+
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        //set the error message onto the camera textview "QR code not recognized"
+                        Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
+                    }
+                })); // closing displayMapPinsActivityButton onClickListener
 
         DocumentReference eventRef = db.collection("events").document(eventId);
         eventRef.get().addOnCompleteListener(task -> {
@@ -282,37 +235,52 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (document.exists()) {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
 
-                        congratulatoryText.setVisibility(View.VISIBLE);
-                    }
+                    congratulatoryText.setVisibility(View.VISIBLE);
+                }
 
 
-                    MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
+                MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
 
 
-                    milestone_scrollview.setAdapter(pagerAdapter);
-                }}});
+                milestone_scrollview.setAdapter(pagerAdapter);
+            }});
 
-    }
+    } // on Create closing
+
+        //add pins when tap on map
+        MapEventsReceiver mReceive = new MapEventsReceiver() {
+            @Override
+            public boolean singleTapConfirmedHelper(GeoPoint p) {
+                addEventMarker(p);
+                latitude = p.getLatitude();
+                longitude = p.getLongitude();
+                Toast.makeText(EventDetailsActivity.this,
+                        "Lat: " + p.getLatitude() + ", Long: " + p.getLongitude(), Toast.LENGTH_LONG).show();
+                new EventDetailsActivity.fetchData().start();
+                return true;
+            }
+            @Override
+            public boolean longPressHelper(GeoPoint p) {
+                // write your code here
+                return false;
+            }
+        };
 
     public void displayEventPins(){
         db.collection("events").whereEqualTo("id", eventId).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
                                 //brings the user to a new activity with event details
-
                                 String eventName = document.getData().get("title").toString();
                                 String eventLocation = document.getData().get("location").toString();
                                 double eventLatitude = (Double) document.getData().get("latitude");
                                 double eventLongitude = (Double) document.getData().get("longitude");
-
                                 EventMapPin eventPin = new EventMapPin(eventName, eventLocation, eventLatitude, eventLongitude);
                                 List<EventMapPin> eventPinList = new ArrayList<EventMapPin>();
                                 eventPinList.add(eventPin);
-
                                 Toast.makeText(EventDetailsActivity.this,
                                         "added: " +
                                                 eventLocation + "\nLatitude: " +
@@ -333,12 +301,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
                 });
     }
+
     public void displayAttendeePins(){
-
-
-
         db.collection("events").whereEqualTo("id", eventId).get().addOnCompleteListener(task -> {
-
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     //for every document found (loop runs once - only 1 document matches uuid)
@@ -346,7 +311,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     //brings the user to a new activity with event details
                     List<Map<String, Object>> signupList = (List<Map<String, Object>>) document.get("signed_up");
                     List<AttendeeMapPin> attendeePinList = new ArrayList<AttendeeMapPin>();
-
                     for (int i = 0; i < signupList.size(); i++) {
                             attId = (String) signupList.get(i).get("uid");
                             Log.d("attId", attId);
@@ -360,9 +324,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 attLatitude + "\nLatitude: " +
                                                 attLongitude + "\nLongitude: " +
                                                 attId, Toast.LENGTH_SHORT).show();
-                            }
-
-                    }
+                            }}
                     if (!attendeePinList.isEmpty()){
                         for (int j = 0; j < attendeePinList.size(); j++) {
                             GeoPoint attendeePinGeoPoint = new GeoPoint(attendeePinList.get(j).getLatitude(), attendeePinList.get(j).getLongitude());
@@ -371,36 +333,20 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }else{
                         Toast.makeText(EventDetailsActivity.this,
                                 "no attendees", Toast.LENGTH_SHORT).show();
-                    }
+                    }}} }); }
 
 
-
-
-                }
-            }
-        });
-
-
-    }
     public void attendeeCollectionQuery(){
-//        String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//        Log.d("myid", currentUserUID);
-//        db.collection("users").whereEqualTo("uid", currentUserUID).get().addOnCompleteListener(task -> {
-//
-//            if (task.isSuccessful()) {
-//                for (QueryDocumentSnapshot document : task.getResult()) {
-//                    //for every document found (loop runs once - only 1 document matches uuid)
-//                    Log.d("first name", document.getData().get("firstName").toString());
-//                    //brings the user to a new activity with event details
-//                }
-//            }
-//        });
-    }
-//
+        String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d("myid", currentUserUID);
+        db.collection("users").whereEqualTo("uid", currentUserUID).get().addOnCompleteListener(task -> {
 
-
-
-
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    //for every document found (loop runs once - only 1 document matches uuid)
+                    Log.d("first name", document.getData().get("firstName").toString());
+                    //brings the user to a new activity with event details
+                } } }); }
 
     public void addAttendeeMarker (GeoPoint center){
         //loop through array of overlays until find the correct overlay id to remove
@@ -438,6 +384,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         marker.setTitle("Event point");
         map.invalidate();
     }
+
     public void displayAttendeeMarker(GeoPoint center, AttendeeMapPin pin){
         Marker marker = new Marker(map);
         marker.setId("Display events overlay");
@@ -450,7 +397,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         marker.setTitle(pin.getAttendeeId());
         map.invalidate();
     }
-    public void displayEventMarker (GeoPoint center, EventMapPin pin){
 
     public void displayMarker (GeoPoint center, MapPin pin){
         Marker marker = new Marker(map);
@@ -473,9 +419,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             System.out.println("Location Permission DENIED");
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    1
-            );
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
         // Create MapView
         map = findViewById(R.id.map);
@@ -491,18 +435,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             myLocationOverlay.enableMyLocation();
             myLocationOverlay.enableFollowLocation();
             myLocationOverlay.setDrawAccuracyEnabled(true);
-
             mapController.setZoom(15.5);
-
             map.getOverlays().add(myLocationOverlay);
         }
-
-
-
-        // Set user agent
-//        Configuration.getInstance().setUserAgentValue("RossMaps");
-
-
+        Set user agent;
+        Configuration.getInstance().setUserAgentValue("RossMaps");
     }
 
     //map methods: onResume() and onPause()
@@ -518,7 +455,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         map.onPause();
     }
 
-    class fetchData extends Thread{
+    class FetchData extends Thread{
         private String data = "";
         @Override
         public void run(){

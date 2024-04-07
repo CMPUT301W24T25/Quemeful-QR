@@ -2,6 +2,7 @@ package com.android.quemeful_qr;
 
 import static android.service.controls.ControlsProviderService.TAG;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,6 +39,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldValue;
@@ -103,7 +106,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private CollectionReference eventsRef;
 
     // attributes for event class
-    private String eventId, eventName, eventTime, eventDate, eventDescr, eventPost;
+    private String eventId, eventName, eventTime, eventDate, eventDescr, eventPost, locationString;
     private boolean startDateTextClicked;
     private boolean endDateTextClicked;
     private boolean startTimeTextClicked;
@@ -111,8 +114,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     private EventHelper event;
 
    // private String eventId;
-    private boolean startDateTextClicked, endDateTextClicked, startTimeTextClicked, endTimeTextClicked;
-    private EventHelper event;
     private Double locationLatitude, locationLongitude;
     private Boolean updateLimitMethodCalled = false;
 
@@ -197,10 +198,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         // after taking user input for a new event, creates the new event using the create button, and
         // reports all those attributes to the event class.
         createButton.setOnClickListener(v -> {
-
-
-
-
             try {
                 if(selectedImageUri != null) {
                     // converts uri to bitmap
@@ -211,12 +208,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                     bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
                     byte[] byteArray = byteArrayOutputStream.toByteArray();
                     eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
                     generateQRButton.setVisibility(View.VISIBLE);
-
-                    // create new event
-
-
                 } else {
                     //empty poster check
                     Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
@@ -227,14 +219,15 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 addNewEvent();
                 generateQRButton.setVisibility(View.VISIBLE);
                 reuseQRButton.setVisibility(View.VISIBLE);
+                limitAttendeeButton.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            // create new event
-            addNewEvent(event);
-            generateQRButton.setVisibility(View.VISIBLE);
-            reuseQRButton.setVisibility(View.VISIBLE);
-            limitAttendeeButton.setVisibility(View.VISIBLE);
+//            // create new event
+//            addNewEvent();
+//            generateQRButton.setVisibility(View.VISIBLE);
+//            reuseQRButton.setVisibility(View.VISIBLE);
+//            limitAttendeeButton.setVisibility(View.VISIBLE);
         });
 
         // on click generates a new QR by starting Generate new QR activity
@@ -435,7 +428,6 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                             data.put("organizer_token", token);
                         }
 
-
                         if (eventPost != null) {
                             data.put("poster", eventPost);
                         } else {
@@ -455,18 +447,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 });
 
     }
-    private void updateUserEvents(String userId, String eventId) {
-        CollectionReference usersRef = db.collection("users");
-        usersRef.document(userId)
-                .update("events_organized", FieldValue.arrayUnion(eventId))
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error updating user", e);
-                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
-                });
-    }
+
     private void updateUserEvents(String userId, String eventId) {
         CollectionReference usersRef = db.collection("users");
         usersRef.document(userId)

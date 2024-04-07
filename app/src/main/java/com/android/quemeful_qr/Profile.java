@@ -5,6 +5,7 @@ package com.android.quemeful_qr;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -39,6 +40,7 @@ public class Profile extends Fragment {
     TextView homePageTextView;
     TextView contactTextView;
     TextView bioTextView;
+    Button showNotificationsButton;
 
     private ImageView avatarImageView;
     private String deviceId;
