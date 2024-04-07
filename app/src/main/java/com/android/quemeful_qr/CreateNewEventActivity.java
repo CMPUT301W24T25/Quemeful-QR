@@ -223,8 +223,8 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-//            // create new event
-//            addNewEvent();
+            // create new event
+              addNewEvent();
 //            generateQRButton.setVisibility(View.VISIBLE);
 //            reuseQRButton.setVisibility(View.VISIBLE);
 //            limitAttendeeButton.setVisibility(View.VISIBLE);

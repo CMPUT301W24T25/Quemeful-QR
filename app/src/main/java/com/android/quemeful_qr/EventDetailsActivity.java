@@ -87,7 +87,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String eventId;
 
 
-    private CardView milestoneCardView;
+    //private CardView milestoneCardView;
 
     //location variables
     private MapView map;
@@ -134,7 +134,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewEventDescription = findViewById(R.id.textViewEventDescription);
         viewAttendee = findViewById(R.id.viewAttendee);
 
-        milestoneCardView = findViewById(R.id.milestone_cardView);
+        //milestoneCardView = findViewById(R.id.milestone_cardView);
         current_milestone_text = findViewById(R.id.current_milestone_text);
         congratulatoryText = findViewById(R.id.congratulatory_message);
         imageViewEventImage = findViewById(R.id.imageViewEvent);
