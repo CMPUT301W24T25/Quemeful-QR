@@ -21,37 +21,16 @@ public class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.Attend
     private List<Attendee> attendees = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private String eventid;
+
     /**
      * This method is used to fetch all the attendees that are checked in for a specific event and put them in a list
      * @param eventId The checked in event with the specific Id.
      */
     public AttendeeAdapter(String eventId) {
-        DocumentReference eventRef = db.collection("events").document(eventId);
+        this.eventid = eventId;
+        fetchdata();
 
-        eventRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
-                    for (Map<String, Object> userMap : signedUpUsers) {
-                        String attendeeId = (String) userMap.get("uid");
-                        Integer checkedIn =  Integer.parseInt( userMap.get("checked_in").toString());
-                        DocumentReference userRef = db.collection("users").document(attendeeId);
-                        userRef.get().addOnCompleteListener(userTask -> {
-                            if (userTask.isSuccessful()) {
-                                DocumentSnapshot userDocument = userTask.getResult();
-                                if (userDocument.exists()) {
-                                    String firstName = userDocument.getString("firstName");
-                                    String lastName = userDocument.getString("lastName");
-                                    attendees.add(new Attendee(attendeeId, firstName, lastName, checkedIn));
-                                    notifyDataSetChanged();
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        });
     }
 
     /**
@@ -115,5 +94,42 @@ public class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.Attend
             times_checked_in = view.findViewById(R.id.times_checked_in);
             logo_checked_in = view.findViewById(R.id.checkin_icon);
         }
+    }
+// Inside AttendeeAdapter class
+
+    public void refreshData() {
+
+        attendees.clear();
+        fetchdata();
+    }
+
+
+    public void fetchdata(){
+        DocumentReference eventRef = db.collection("events").document(this.eventid);
+
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+                    for (Map<String, Object> userMap : signedUpUsers) {
+                        String attendeeId = (String) userMap.get("uid");
+                        Integer checkedIn =  Integer.parseInt( userMap.get("checked_in").toString());
+                        DocumentReference userRef = db.collection("users").document(attendeeId);
+                        userRef.get().addOnCompleteListener(userTask -> {
+                            if (userTask.isSuccessful()) {
+                                DocumentSnapshot userDocument = userTask.getResult();
+                                if (userDocument.exists()) {
+                                    String firstName = userDocument.getString("firstName");
+                                    String lastName = userDocument.getString("lastName");
+                                    attendees.add(new Attendee(attendeeId, firstName, lastName, checkedIn));
+                                    notifyDataSetChanged();
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
     }
 } // AttendeeAdapter class closing

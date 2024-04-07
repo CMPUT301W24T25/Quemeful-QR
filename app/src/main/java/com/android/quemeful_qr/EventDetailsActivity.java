@@ -13,6 +13,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,6 +31,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +41,8 @@ import java.util.Map;
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
-    private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription, current_milestone_text, congradulatoryText;
+    private TextView textViewEventTitle, textViewEventDate, textViewEventTime, textViewEventLocation, textViewEventDescription;
+    private ViewPager milestone_scrollview;
     private FirebaseFirestore db;
     private ImageView imageViewBackArrow, imageViewEventImage;
     private TextView viewAttendee, textViewScanQR, textViewSignUp;
@@ -45,7 +50,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private int[] MILESTONES = {1, 10, 100, 200, 500};
 
-    private CardView milestoneCardView;
+
 
     /**
      * This onCreate method is used to set up an interface with all event details.
@@ -79,9 +84,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         textViewEventDescription = findViewById(R.id.textViewEventDescription);
         viewAttendee = findViewById(R.id.viewAttendee);
 
-        milestoneCardView = findViewById(R.id.milestone_cardView);
-        current_milestone_text = findViewById(R.id.current_milestone_text);
-        congradulatoryText = findViewById(R.id.congratulatory_message);
+        milestone_scrollview = findViewById(R.id.viewPagerMilestones);
+
+
         imageViewEventImage = findViewById(R.id.imageViewEvent);
 
         textViewScanQR = findViewById(R.id.scanQRTitle);
@@ -106,36 +111,26 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
 
-            milestoneCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    navigateToLMilestone(eventId);
-                }
-            });
+
 
         } else {
             // Handle the error
         }
-        DocumentReference eventRef = db.collection("events").document(eventId);
 
+
+        DocumentReference eventRef = db.collection("events").document(eventId);
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
-                    if (signedUpUsers.size() > 0) {
 
-                        congradulatoryText.setVisibility(View.VISIBLE);
-                    }
 
-                    int nextMilestone = 0;
-                    for (int milestone : MILESTONES) {
-                        if (signedUpUsers.size() < milestone) {
-                            nextMilestone = milestone;
-                            break;
-                        }
-                    }
-                    current_milestone_text.setText( "Next Milestone: " + signedUpUsers.size() + "/" + nextMilestone);
+
+                    MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
+
+
+                    milestone_scrollview.setAdapter(pagerAdapter);
                 }}});
 
     }
@@ -237,20 +232,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    private void navigateToLMilestone(String eventId) {
-        milestone milestoneFragment = new milestone(eventId);
-
-        // Begin a transaction
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.fragment_container, milestoneFragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-    }
 
     /**
      * This method is used to fetch the event details with its specific id from the firebase,
@@ -340,13 +321,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button buttonCheckIn = findViewById(R.id.scanQRButton);
         TextView textViewSignUp = findViewById(R.id.signUpTitle);
         Button buttonSignUp = findViewById(R.id.signUpButton);
-        CardView milestone = findViewById(R.id.milestone_cardView);
+
 
         if (isUserSignedUp) {
             textViewSignUp.setVisibility(View.GONE);
             buttonSignUp.setVisibility(View.GONE);
             viewAttendee.setVisibility(View.GONE);
-            milestone.setVisibility(View.GONE);
+            milestone_scrollview.setVisibility(View.GONE);
 
             if (isUserCheckedIn) {
                 textViewScanQR.setVisibility(View.GONE);
@@ -362,7 +343,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             viewAttendee.setVisibility(View.GONE);
             textViewSignUp.setVisibility(View.VISIBLE);
             buttonSignUp.setVisibility(View.VISIBLE);
-            milestone.setVisibility(View.GONE);
+            milestone_scrollview.setVisibility(View.GONE);
         }
     }
 

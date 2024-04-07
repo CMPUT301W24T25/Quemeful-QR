@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -73,30 +74,9 @@ public class AttendeesList extends Fragment {
         // replace "eventId" with the actual event id
         RecyclerView.Adapter adapter = new AttendeeAdapter(Eventid);
         recyclerView.setAdapter(adapter);
-        TextView totalAttendeeTextView = view.findViewById(R.id.total_attendee);
-        TextView check_inTextView = view.findViewById(R.id.total_checked_in);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference eventRef = db.collection("events").document(Eventid);
-        eventRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    List<Map<String, String>> users = (List<Map<String, String>>) document.get("signed_up");
-                    EventName = (String) document.get("title");
-                    if (users != null) {
-                        totalAttendeeTextView.setText("Total Attendee: " + users.size());
-                    }
-                    Integer checkedIn = 0;
-                    for (Map<String, String> user : users) {
-                       checkedIn += Integer.parseInt( user.get("checked_in"));
-                        }
 
-                    check_inTextView.setText("Check-in: " + checkedIn);
-                    }
-            }
 
-        });
-
+        refreshData( view);
 
         ImageButton back_button = view.findViewById(R.id.back_button);
 
@@ -144,7 +124,43 @@ public class AttendeesList extends Fragment {
                 transaction.commit();
             }
         });
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Notify the adapter to refresh data
+                ((AttendeeAdapter) adapter).refreshData();
+                refreshData(  view);
+                // Stop the refreshing animation
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         return view;
+    }
+    public void refreshData( View view) {
+        TextView totalAttendeeTextView = view.findViewById(R.id.total_attendee);
+        TextView check_inTextView = view.findViewById(R.id.total_checked_in);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.collection("events").document(Eventid);
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    List<Map<String, String>> users = (List<Map<String, String>>) document.get("signed_up");
+                    EventName = (String) document.get("title");
+                    if (users != null) {
+                        totalAttendeeTextView.setText("Total Attendee: " + users.size());
+                    }
+                    Integer checkedIn = 0;
+                    for (Map<String, String> user : users) {
+                        checkedIn += Integer.parseInt( user.get("checked_in"));
+                    }
+
+                    check_inTextView.setText("Check-in: " + checkedIn);
+                }
+            }
+
+        });
     }
 
 } // AttendeeList fragment closing
