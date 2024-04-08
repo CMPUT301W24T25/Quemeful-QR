@@ -18,9 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -111,16 +113,57 @@ public class EventsTodayAdapter extends RecyclerView.Adapter<EventsTodayAdapter.
 
                 deleteButton.setOnClickListener(view -> {
                     String eventId = (String) event.getId();
-                    if (eventId != null) {
-                        db.collection("events").document(eventId).delete().addOnSuccessListener(aVoid -> {
-                            events.remove(position);
-                            notifyItemRemoved(position);
-                            notifyItemRangeChanged(position, events.size());
-                            dialog.dismiss();
+                    if (eventId != null && !eventId.isEmpty()) {
+
+                        db.collection("events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
+                            String organizerId = documentSnapshot.getString("organizer"); // Assuming 'organizer' is the field name
+
+                            // Fetching the signed_up list
+                            List<Map<String, Object>> signedUpList = (List<Map<String, Object>>) documentSnapshot.get("signed_up");
+                            if (signedUpList != null) {
+                                // Iterate over the signed_up list to remove the event ID from each user's 'events' list
+                                for (Map<String, Object> attendee : signedUpList) {
+                                    String userId = (String) attendee.get("uid");
+                                    if (userId != null && !userId.isEmpty()) {
+                                        db.collection("users").document(userId)
+                                                .update("events", FieldValue.arrayRemove(eventId))
+                                                .addOnFailureListener(e -> Log.e("EventDeletion", "Failed to remove event from user's list: " + userId, e));
+                                    }
+                                }
+                            }
+
+                            if (organizerId != null && !organizerId.isEmpty()) {
+                                // Remove the event from the organizer's events_organized list
+                                db.collection("users").document(organizerId)
+                                        .update("events_organized", FieldValue.arrayRemove(eventId))
+                                        .addOnSuccessListener(aVoid -> {
+                                            // Now delete the event after successfully removing it from the organizer's list and updating signed_up users
+                                            db.collection("events").document(eventId).delete().addOnSuccessListener(aVoidDelete -> {
+                                                // Event successfully deleted, update the UI
+                                                events.remove(position);
+                                                notifyItemRemoved(position);
+                                                notifyItemRangeChanged(position, events.size());
+                                                dialog.dismiss();
+                                            }).addOnFailureListener(e -> {
+                                                Log.e("EventDeletion", "Failed to delete event: " + eventId, e);
+                                                dialog.dismiss();
+                                            });
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("EventDeletion", "Failed to remove event from organizer's list: " + organizerId, e);
+                                            dialog.dismiss();
+                                        });
+                            } else {
+                                Log.e("EventDeletion", "Organizer ID could not be found or is empty.");
+                                dialog.dismiss();
+                            }
                         }).addOnFailureListener(e -> {
-                            // Handle failure
+                            Log.e("EventDeletion", "Failed to fetch event details: " + eventId, e);
                             dialog.dismiss();
                         });
+                    } else {
+                        Log.e("EventDeletion", "Event ID is null or empty.");
+                        dialog.dismiss();
                     }
                 });
 
