@@ -58,8 +58,11 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -116,6 +119,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
     //firebase
     private FirebaseFirestore db;
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
     // attributes for event class
     private String eventId, eventName, eventTime, eventDate, eventDescr, eventPost;
@@ -219,34 +223,42 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
 
 
-            try {
-                if(selectedImageUri != null) {
-                    // converts uri to bitmap
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
-                    // converts bitmap to base64 string
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    // In case you want to compress your image, here it's at 40%
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                    generateQRButton.setVisibility(View.VISIBLE);
-
-                    // create new event
-
-
-                } else {
-                    //empty poster check
-                    Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
-                    message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
-                    message.show();
-                }
-                // create new event
-                addNewEvent();
+//            try {
+//                if(selectedImageUri != null) {
+//                    // converts uri to bitmap
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), selectedImageUri);
+//                    // converts bitmap to base64 string
+//                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                    // In case you want to compress your image, here it's at 40%
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 40, byteArrayOutputStream);
+//                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+//                    eventPost = Base64.encodeToString(byteArray, Base64.DEFAULT);
+//
+//                    generateQRButton.setVisibility(View.VISIBLE);
+//
+//                    // create new event
+//
+//
+//                } else {
+//                    //empty poster check
+//                    Toast message = Toast.makeText(getBaseContext(), "Please add an event poster Image", Toast.LENGTH_LONG);
+//                    message.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+//                    message.show();
+//                }
+//                // create new event
+//                addNewEvent();
+//                generateQRButton.setVisibility(View.VISIBLE);
+//                reuseQRButton.setVisibility(View.VISIBLE);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+            if (selectedImageUri != null) {
+                uploadImageToFirebaseStorage(selectedImageUri);
                 generateQRButton.setVisibility(View.VISIBLE);
                 reuseQRButton.setVisibility(View.VISIBLE);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+//                limitAttendeeButton.setVisibility(View.VISIBLE);
+            } else {
+                Toast.makeText(this, "Please select an image for the event.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -331,6 +343,16 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         startTimeTextClicked = false;
         endTimeTextClicked = false;
     }
+
+    private void uploadImageToFirebaseStorage(Uri imageUri) {
+        String filePath = "eventPosters/" + eventId; // Unique path for each event poster
+        StorageReference fileRef = storageRef.child(filePath);
+
+        fileRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            String imageUrl = uri.toString();
+            addNewEvent(imageUrl); // Call method to create a new event with the image URL
+        })).addOnFailureListener(e -> Toast.makeText(CreateNewEventActivity.this, "Failed to upload image.", Toast.LENGTH_SHORT).show());
+    }
     /**
      * This method is used to start the MapActivity when map/location button is clicked.
      */
@@ -349,7 +371,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     }
 
 
-    private void addNewEvent() {
+    private void addNewEvent(String imageUrl) {
         //generates random id for the event
         eventId = db.collection("events").document().getId();
         eventName = eventTitle.getText().toString();
@@ -372,6 +394,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
         data.put("time", event.getTime());
         data.put("date", event.getDate());
         data.put("description", event.getDescription());
+        data.put("poster", imageUrl);
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
@@ -384,11 +407,13 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         }
 
 
-                        if (eventPost != null) {
-                            data.put("poster", eventPost);
-                        } else {
-                            data.put("poster", "");
-                        }
+//                        if (eventPost != null) {
+//                            data.put("poster", eventPost);
+//                        } else {
+//                            data.put("poster", "");
+//                        }
+
+
                         List<Map<String, Object>> emptySignUpList = new ArrayList<>();
                         data.put("signed_up", emptySignUpList);
 
@@ -396,13 +421,26 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                         eventsRef.document(eventId).set(data)
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("FireStore", "DocumentSnapshot successfully written!");
+                                    updateUserEvents(currentUserUID, event.getId());
                                     Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
-                                });
+                                })
+                                .addOnFailureListener(e -> Log.e(TAG, "Error writing document", e));
                     }
                 });
 
     }
-
+    private void updateUserEvents(String userId, String eventId) {
+        CollectionReference usersRef = db.collection("users");
+        usersRef.document(userId)
+                .update("events_organized", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(CreateNewEventActivity.this, "Event created and user updated successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error updating user", e);
+                    Toast.makeText(CreateNewEventActivity.this, "Failed to update user events", Toast.LENGTH_SHORT).show();
+                });
+    }
             /**
              * This method sets time in a certain format after user picks a time from the pop out window.
              * @param view the view associated with this listener

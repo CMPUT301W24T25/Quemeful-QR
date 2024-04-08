@@ -29,6 +29,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -670,20 +671,45 @@ public class EventDetailsActivity extends AppCompatActivity {
                         updateUIForGeneralUser(currentUserUID, event, documentSnapshot);
                     }
 
-                    // Decode and set the image
+//                    // Decode and set the image
+//                    if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+//                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+//                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                        imageViewEventImage.setImageBitmap(decodedByte);
+//                    } else {
+//                        imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
+//                    }
+                    // Use Glide to load the image from a URL
                     if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
-                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        imageViewEventImage.setImageBitmap(decodedByte);
+                        Glide.with(EventDetailsActivity.this)
+                                .load(event.getPoster())
+                                .into(imageViewEventImage);
                     } else {
                         imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
                     }
+                    // Now also set the map's location
+                    if(event.getLatitude() != null && event.getLongitude() != null) {
+                        GeoPoint eventLocation = new GeoPoint(event.getLatitude(), event.getLongitude());
+                        displayMarker(eventLocation, new EventMapPin(event.getTitle(), event.getLocation(), event.getLatitude(), event.getLongitude()));
+                        mapController.setCenter(eventLocation);
+                        mapController.setZoom(15); // Adjust zoom level as needed
+                    }
+
                 }
             } else {}
         }).addOnFailureListener(e -> {
         });
     }
-
+    public void displayMarker(GeoPoint center, EventMapPin pin) {
+        Marker marker = new Marker(map);
+        marker.setId("Display events overlay");
+        marker.setPosition(center);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker.setIcon(getDrawable(R.drawable.event_pin_icon));
+        map.getOverlays().add(marker);
+        marker.setTitle(pin.getTitle() + "\n" + pin.getLocation());
+        map.invalidate();
+    }
     /**
      * This method is used to change the UI when an organizer views event details.
      */

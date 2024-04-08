@@ -67,12 +67,22 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
         holder.title.setText(event.getTitle());
         holder.date.setText((CharSequence) event.getDate());
 
+//        if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+//            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+//            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//            holder.image.setImageBitmap(decodedByte);
+//        } else {
+//            holder.image.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+//        }
         if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
-            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            holder.image.setImageBitmap(decodedByte);
+            Glide.with(context)
+                    .load(event.getPoster()) // Load the image directly from the URI
+                    .placeholder(R.drawable.gradient_background) // Optional: a placeholder until the image loads
+                    .error(R.drawable.gradient_background) // Optional: an error image if the load fails
+                    .into(holder.image);
         } else {
-            holder.image.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+            // Use a default image if no poster URI is present
+            holder.image.setImageResource(R.drawable.gradient_background);
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -88,10 +89,19 @@ public class AdminEventDetailsActivity extends AppCompatActivity {
                     textViewEventDescription.setText(event.getDescription());
 
                     // Decode and set the image
+//                    if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
+//                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
+//                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                        imageViewEventImage.setImageBitmap(decodedByte);
+//                    } else {
+//                        imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
+//                    }
+
+                    // Use Glide to load the image from a URL
                     if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
-                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        imageViewEventImage.setImageBitmap(decodedByte);
+                        Glide.with(AdminEventDetailsActivity.this)
+                                .load(event.getPoster())
+                                .into(imageViewEventImage);
                     } else {
                         imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
                     }
