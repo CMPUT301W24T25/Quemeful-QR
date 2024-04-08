@@ -1,7 +1,7 @@
 # QR Code Event Check-In System
 
 ## Overview
-The QR Code Event Check-In System is designed to simplify event management and enhance the attendee check-in process using QR codes. It allows event organizers to manage details, track attendance in real-time, and communicate with attendees. Attendees can quickly check into events by scanning QR codes, enriching their event experience with minimal hassle.
+The QR Code Event Check-In System is designed to simplify event management and enhance the attendee check-in process using QR codes. It allows event organizers to manage details, track attendance in real-time. Attendees can quickly check into events by scanning QR codes, enriching their event experience with minimal hassle.
 
 ## Features
 
