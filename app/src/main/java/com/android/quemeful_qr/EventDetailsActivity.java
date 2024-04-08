@@ -137,8 +137,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         viewAttendee = findViewById(R.id.viewAttendee);
 
         //milestoneCardView = findViewById(R.id.milestone_cardView);
-        current_milestone_text = findViewById(R.id.current_milestone_text);
-        congratulatoryText = findViewById(R.id.congratulatory_message);
+//        current_milestone_text = findViewById(R.id.current_milestone_text);
+//        congratulatoryText = findViewById(R.id.congratulatory_message);
         imageViewEventImage = findViewById(R.id.imageViewEvent);
 
         textViewScanQR = findViewById(R.id.scanQRTitle);
@@ -182,7 +182,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
         buttonPromotion = findViewById(R.id.promotionButton);
-        milestoneCardView = findViewById(R.id.milestone_cardView);
 
         eventId = getIntent().getStringExtra("event_id");
 
@@ -195,7 +194,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             // on click on viewAttendee it navigates to the list of attendees.
             viewAttendee.setOnClickListener(v -> navigateToListOfAttendees(eventId));
 
-            milestoneCardView.setOnClickListener(v -> navigateToLMilestone(eventId));
 
         } else {
             // Handle the error
@@ -274,18 +272,34 @@ public class EventDetailsActivity extends AppCompatActivity {
 //        });
 
 
+//        DocumentReference eventRef = db.collection("events").document(eventId);
+//        eventRef.get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                DocumentSnapshot document = task.getResult();
+//                if (document.exists()) {
+//                    List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+//                    MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
+//                    milestone_scrollview.setAdapter(pagerAdapter);
+//                    congratulatoryText.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+
         DocumentReference eventRef = db.collection("events").document(eventId);
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     List<Map<String, Object>> signedUpUsers = (List<Map<String, Object>>) document.get("signed_up");
+
+
+
                     MilestoneAdapter pagerAdapter = new MilestoneAdapter(getSupportFragmentManager(), signedUpUsers.size());
+
+
                     milestone_scrollview.setAdapter(pagerAdapter);
-                    congratulatoryText.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+                }}});
+
 
     } // on Create closing
 
@@ -324,11 +338,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 EventMapPin eventPin = new EventMapPin(eventName, eventLocation, eventLatitude, eventLongitude);
                                 List<EventMapPin> eventPinList = new ArrayList<EventMapPin>();
                                 eventPinList.add(eventPin);
-                                Toast.makeText(EventDetailsActivity.this,
-                                        "added: " +
-                                                eventLocation + "\nLatitude: " +
-                                                eventLatitude + "\nLongitude: " +
-                                                eventLongitude, Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(EventDetailsActivity.this,
+//                                        "added: " +
+//                                                eventLocation + "\nLatitude: " +
+//                                                eventLatitude + "\nLongitude: " +
+//                                                eventLongitude, Toast.LENGTH_SHORT).show();
                                 for (int i = 0; i < eventPinList.size(); i++) {
                                     Log.d("value is", eventPinList.get(i).getLocation().toString());
                                     GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
@@ -375,8 +389,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                             displayAttendeeMarker(attendeePinGeoPoint, attendeePinList.get(j));
                         }
                     } else {
-                        Toast.makeText(EventDetailsActivity.this,
-                                "no attendees", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(EventDetailsActivity.this,
+//                                "no attendees", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -758,6 +772,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         CardView map_cardView = findViewById(R.id.map_cardView);
 
         map_cardView.setVisibility(View.GONE);
+//        milestoneCardView.setVisibility(View.GONE);
 
 
         if (isUserSignedUp) {
