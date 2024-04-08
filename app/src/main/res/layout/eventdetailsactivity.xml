@@ -43,6 +43,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/baseline_arrow_back_24" />
 
+<!--            <androidx.viewpager.widget.ViewPager-->
+<!--                android:id="@+id/viewPagerMilestones"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:layout_marginEnd="16dp"-->
+<!--                android:layout_marginBottom="16dp"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/cardViewEventDetails"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle" />-->
+
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/viewPagerMilestones"
                 android:layout_width="0dp"
@@ -56,74 +69,76 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/milestone_cardView"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_margin="16dp"
-                android:visibility="visible"
-                app:cardCornerRadius="16dp"
-                app:layout_constraintBottom_toTopOf="@id/cardViewEventDetails"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle">
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/milestone_cardView"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_margin="16dp"-->
+<!--                android:visibility="visible"-->
+<!--                app:cardCornerRadius="16dp"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/cardViewEventDetails"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle">-->
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent">-->
 
-                    <ImageView
-                        android:id="@+id/background_image_milstone"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/milestone_base"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+<!--                    <ImageView-->
+<!--                        android:id="@+id/background_image_milstone"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:scaleType="centerCrop"-->
+<!--                        android:src="@drawable/milestone_base"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
 
-                    <TextView
-                        android:id="@+id/current_milestone_text"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="4dp"
-                        android:fontFamily="monospace"
-                        android:outlineSpotShadowColor="#272626"
-                        android:shadowColor="#2B683F"
-                        android:text="@string/next_milestone_0_1"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/congratulatory_message" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/current_milestone_text"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="8dp"-->
+<!--                        android:layout_marginEnd="8dp"-->
+<!--                        android:layout_marginBottom="4dp"-->
+<!--                        android:fontFamily="monospace"-->
+<!--                        android:outlineSpotShadowColor="#272626"-->
+<!--                        android:shadowColor="#2B683F"-->
+<!--                        android:text="@string/next_milestone_0_1"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:textSize="20sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/congratulatory_message" />-->
 
-                    <TextView
-                        android:id="@+id/congratulatory_message"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="8dp"
-                        android:fontFamily="serif-monospace"
-                        android:outlineSpotShadowColor="#767676"
-                        android:shadowColor="#272727"
-                        android:text="@string/congratulations_nyou_hit_a_milestone"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toTopOf="@id/current_milestone_text"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+<!--                    <TextView-->
+<!--                        android:id="@+id/congratulatory_message"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="8dp"-->
+<!--                        android:layout_marginTop="4dp"-->
+<!--                        android:layout_marginEnd="8dp"-->
+<!--                        android:fontFamily="serif-monospace"-->
+<!--                        android:outlineSpotShadowColor="#767676"-->
+<!--                        android:shadowColor="#272727"-->
+<!--                        android:text="@string/congratulations_nyou_hit_a_milestone"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:textSize="16sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:visibility="gone"-->
+<!--                        app:layout_constraintBottom_toTopOf="@id/current_milestone_text"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-            </androidx.cardview.widget.CardView>
+<!--            </androidx.cardview.widget.CardView>-->
+
+
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewEventDetails"
@@ -135,7 +150,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/milestone_cardView">
+                app:layout_constraintTop_toBottomOf="@id/viewPagerMilestones">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -341,6 +356,26 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
+
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/map_cardView"-->
+<!--                android:layout_width="370dp"-->
+<!--                android:layout_height="329dp"-->
+<!--                app:cardBackgroundColor="@color/white"-->
+<!--                app:cardCornerRadius="20dp"-->
+<!--                app:cardElevation="2dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/viewAttendee">-->
+
+<!--                <org.osmdroid.views.MapView-->
+<!--                    android:id="@+id/map"-->
+<!--                    android:layout_width="369dp"-->
+<!--                    android:layout_height="343dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:visibility="invisible" />-->
+<!--            </androidx.cardview.widget.CardView>-->
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/map_cardView"
