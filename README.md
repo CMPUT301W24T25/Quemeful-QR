@@ -1,7 +1,7 @@
-# QR Code Event Check-In System
+# Quemeful-QR
 
 ## Overview
-The QR Code Event Check-In System is designed to simplify event management and enhance the attendee check-in process using QR codes. It allows event organizers to manage details, track attendance in real-time. Attendees can quickly check into events by scanning QR codes, enriching their event experience with minimal hassle.
+The Quemeful-QR is designed to simplify event management and enhance the attendee check-in process using QR codes. It allows event organizers to manage details, track attendance in real-time. Attendees can quickly check into events by scanning QR codes, enriching their event experience with minimal hassle.
 
 ## Features
 
@@ -26,7 +26,7 @@ The QR Code Event Check-In System is designed to simplify event management and e
 - Google Maps API
 
 ## Getting Started
-To run the QR Code Event Check-In System locally:
+To run the Quemeful-QR locally:
 
 - Clone this repository.
 - Open the project in Android Studio.
