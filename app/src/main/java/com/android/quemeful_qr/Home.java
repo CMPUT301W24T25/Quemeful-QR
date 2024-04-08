@@ -36,6 +36,8 @@ public class Home extends Fragment implements EventClickListenerInterface{
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView eventsRecyclerView;
+    TextView noUpcomingEventsTextView;
+    TextView noTodayEventsTextView;
     private RecyclerView upcomingEventsRecyclerView;
     Date eventDate;
 
@@ -65,6 +67,10 @@ public class Home extends Fragment implements EventClickListenerInterface{
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         upcomingEventsRecyclerView = view.findViewById(R.id.upcoming_events_recycler_view);
         upcomingEventsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+        noTodayEventsTextView = view.findViewById(R.id.noTodayEventsTextView);
+        noUpcomingEventsTextView = view.findViewById(R.id.noUpcomingEventsTextView);
+
+
 
         fetchEvents();
 
@@ -139,17 +145,24 @@ public class Home extends Fragment implements EventClickListenerInterface{
      * @param upcomingEvents the upcoming events.
      */
     private void updateUI(List<EventHelper> todayEvents, List<EventHelper> upcomingEvents) {
+
         if (!todayEvents.isEmpty()) {
+            noTodayEventsTextView.setVisibility(View.GONE);
             EventsTodayAdapter todayEventAdapter = new EventsTodayAdapter(getActivity(), todayEvents, this, isAdmin);
             eventsRecyclerView.setAdapter(todayEventAdapter);
         }
-        else {}
+        else {
+            noTodayEventsTextView.setVisibility(View.VISIBLE);
+        }
 
         if (!upcomingEvents.isEmpty()) {
+            noUpcomingEventsTextView.setVisibility(View.GONE);
             UpcomingEventsAdapter upcomingEventAdapter = new UpcomingEventsAdapter(upcomingEvents, this, isAdmin);
             upcomingEventsRecyclerView.setAdapter(upcomingEventAdapter);
         }
-        else {}
+        else {
+            noUpcomingEventsTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
