@@ -66,13 +66,16 @@ public class ShowNotificationsActivity extends AppCompatActivity {
                                         String image = (String) eventDocument.get("poster");
                                         String from = (String) eventDocument.get("title");
                                         List<Map<String, String>> eventNotifications = (List<Map<String, String>>) eventDocument.get("notifications");
-                                        for (Map<String, String> notificationDocument : eventNotifications) {
-                                            if (notificationDocument != null) {
-                                                String title = notificationDocument.get("title");
-                                                String body = notificationDocument.get("body");
 
-                                                String date_time = notificationDocument.get("date");
-                                                notifications.add(new Notification(title, body, from, date_time, image));
+                                        if (eventNotifications != null) {
+                                            for (Map<String, String> notificationDocument : eventNotifications) {
+                                                if (notificationDocument != null) {
+                                                    String title = notificationDocument.get("title");
+                                                    String body = notificationDocument.get("body");
+
+                                                    String date_time = notificationDocument.get("date");
+                                                    notifications.add(new Notification(title, body, from, date_time, image));
+                                                }
                                             }
                                         }
                                         notifications.sort(new Comparator<Notification>() {
