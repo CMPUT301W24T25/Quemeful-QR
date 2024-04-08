@@ -152,10 +152,11 @@ public class EventHelper implements Serializable {
     }
 
     public String getFormattedDate() {
-        Date dateObj = DateUtils.parseDate(this.date);
-        if (dateObj != null) {
+
+        try {
+            Date dateObj = DateUtils.parseDate(this.date);
             return DateUtils.formatDateToDayMonthDate(dateObj);
-        } else {
+        } catch (Exception e) {
             return "Invalid date";
         }
     }

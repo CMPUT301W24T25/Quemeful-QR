@@ -25,7 +25,7 @@ import java.util.Map;
 public class ReuseQRCodeActivity extends AppCompatActivity implements ReuseQRCodeAdapter.onCheckInQRExistListener {
 
     String eventId;
-    private FirebaseFirestore db;
+    FirebaseFirestore db;
     TextView eventTitle;
     ImageView showReusedQRCode;
     ReuseQRCodeAdapter reuseQRCodeAdapter;
@@ -70,7 +70,7 @@ public class ReuseQRCodeActivity extends AppCompatActivity implements ReuseQRCod
      * This method is used to fetch the event title from firebase and display it in the textview.
      * @param eventId the event associated with the reused QR code
      */
-    private void fetchEventName(String eventId) {
+    void fetchEventName(String eventId) {
         db.collection("events")
                 .document(eventId)
                 .get()

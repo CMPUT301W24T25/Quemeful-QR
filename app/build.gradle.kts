@@ -18,7 +18,11 @@ android {
 
     }
 
-
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -107,6 +111,12 @@ dependencies {
 }
 dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")
+}
+
+dependencies {
+    testImplementation ("junit:junit:4.13.2")
+    androidTestImplementation(  "org.robolectric:robolectric:4.12")
+
 }
 
 

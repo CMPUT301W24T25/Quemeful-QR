@@ -18,8 +18,8 @@ import java.util.Map;
  * This is an attendee adapter class used to handle attendee view data.
  */
 public class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.AttendeeViewHolder> {
-    private List<Attendee> attendees = new ArrayList<>();
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    List<Attendee> attendees = new ArrayList<>();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String eventid;
 

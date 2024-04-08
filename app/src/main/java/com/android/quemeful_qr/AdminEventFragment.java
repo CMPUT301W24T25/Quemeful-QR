@@ -19,7 +19,7 @@ import java.util.Map;
 public class AdminEventFragment extends Fragment {
     private RecyclerView recyclerView;
     private AdminEventAdapter adapter;
-    private List<Map<String, Object>> events;
+    List<Map<String, Object>> events;
 
     /**
      * This method retrieves the events from the firebase collection by calling fetchEvents() and,
