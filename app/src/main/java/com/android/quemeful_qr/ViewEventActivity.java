@@ -243,10 +243,10 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
             String title = event.getTitle();
             eventName.setText(title);
             String poster = event.getPoster();
-            if(poster != null){
-                byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
-                eventPoster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-            }
+//            if(poster != null){
+//                byte[] imageAsBytes = Base64.decode(poster.getBytes(), Base64.DEFAULT);
+//                eventPoster.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+//            }
             String desc = event.getDescription();
             eventDesc.setText(desc);
             String date = event.getDate();
