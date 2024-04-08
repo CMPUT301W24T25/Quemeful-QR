@@ -62,16 +62,19 @@ public class ShowNotificationsActivity extends AppCompatActivity {
                                     if (eventDocument.exists()) {
                                         String image = (String) eventDocument.get("poster");
                                         List<Map<String, String>> eventNotifications = (List<Map<String, String>>) eventDocument.get("notifications");
-                                        Collections.reverse(eventNotifications);
-                                        for (Map<String, String> notificationDocument : eventNotifications) {
-                                            Log.d(TAG, "Notification data: " + notificationDocument);
-                                            if (notificationDocument != null) {
-                                                String title = notificationDocument.get("title");
-                                                String body = notificationDocument.get("body");
-                                                String from = notificationDocument.get("Name");
-                                                String date_time = notificationDocument.get("date");
-                                                Log.d(TAG, "Notification: title=" + title + ", body=" + body + ", from=" + from + ", date_time=" + date_time);
-                                                notifications.add(new Notification(title, body, from, date_time, image));
+                                        if (eventNotifications != null) {
+                                            Collections.reverse(eventNotifications);
+
+                                            for (Map<String, String> notificationDocument : eventNotifications) {
+                                                Log.d(TAG, "Notification data: " + notificationDocument);
+                                                if (notificationDocument != null) {
+                                                    String title = notificationDocument.get("title");
+                                                    String body = notificationDocument.get("body");
+                                                    String from = notificationDocument.get("Name");
+                                                    String date_time = notificationDocument.get("date");
+                                                    Log.d(TAG, "Notification: title=" + title + ", body=" + body + ", from=" + from + ", date_time=" + date_time);
+                                                    notifications.add(new Notification(title, body, from, date_time, image));
+                                                }
                                             }
                                         }
                                         adapter.setNotifications(notifications);
