@@ -1,6 +1,7 @@
 package com.android.quemeful_qr;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * This class is used to add setter and getter methods for the events and its attributes,
@@ -148,5 +149,14 @@ public class EventHelper implements Serializable {
     // event poster setter
     public void setPoster(String poster) {
         this.poster = poster;
+    }
+
+    public String getFormattedDate() {
+        Date dateObj = DateUtils.parseDate(this.date);
+        if (dateObj != null) {
+            return DateUtils.formatDateToDayMonthDate(dateObj);
+        } else {
+            return "Invalid date";
+        }
     }
 } // class closing

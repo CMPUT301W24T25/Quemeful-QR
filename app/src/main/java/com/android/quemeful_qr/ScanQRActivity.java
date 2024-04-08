@@ -92,27 +92,27 @@ public class ScanQRActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null){
-            if (result.getContents() == null) {
-                Toast.makeText(getBaseContext(), "Scan Cancelled", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                confirm.setText(result.getContents());
-                Toast.makeText(getBaseContext(), "Scanned successfully", Toast.LENGTH_SHORT).show();
-                // check if a document exists with the id and name we scanned
-                //if exists, display it
-                //if not exist, error message
-                /**
-                 * This method is used to compare id from QR code with the ids in firebase,
-                 * and if finds a match, then fetches the data and switch to next page.
-                 * @param task the task to be done on complete.
-                 */
-                db.collection("events").whereEqualTo("id", result
-                        .getContents()).get().addOnCompleteListener(task -> {
+        if (data != null) {
+            IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            // Your existing code to handle the result...
+            if(result != null){
+                if (result.getContents() == null) {
+                    Toast.makeText(getBaseContext(), "Scan Cancelled", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    confirm.setText(result.getContents());
+                    Toast.makeText(getBaseContext(), "Scanned successfully", Toast.LENGTH_SHORT).show();
 
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
+                    /**
+                     * This method is used to compare id from QR code with the ids in firebase,
+                     * and if finds a match, then fetches the data and switch to next page.
+                     * @param task the task to be done on complete.
+                     */
+                    db.collection("events").whereEqualTo("id", result
+                            .getContents()).get().addOnCompleteListener(task -> {
+
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
                                 //for every document found (loop runs once - only 1 document matches uuid)
                                 Log.d(TAG, document.getId() + "=>>" + document.getData().values());
                                 //brings the user to a new activity with event details
@@ -134,17 +134,24 @@ public class ScanQRActivity extends AppCompatActivity {
                                 startActivity(intent);
 
                             }
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                        confirm.setText("QR code not recognized");
-                        //set the error message onto the camera textview "QR code not recognized"
-                    }
-                });
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            confirm.setText("QR code not recognized");
+                            //set the error message onto the camera textview "QR code not recognized"
+                        }
+                    });
+                }
+            } else {
+                //pass the result to the activity
+                super.onActivityResult(requestCode, resultCode, data);
             }
-        } else {
-            //pass the result to the activity
-            super.onActivityResult(requestCode, resultCode, data);
         }
+
+//        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+
+
+
     }
 
 } // activity class closing

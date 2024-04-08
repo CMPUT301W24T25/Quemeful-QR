@@ -65,7 +65,8 @@ public class UpcomingEventsAdapter extends RecyclerView.Adapter<UpcomingEventsAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         EventHelper event = events.get(position);
         holder.title.setText(event.getTitle());
-        holder.date.setText((CharSequence) event.getDate());
+//        holder.date.setText((CharSequence) event.getDate());
+        holder.date.setText(event.getFormattedDate());
 
 //        if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
 //            byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);

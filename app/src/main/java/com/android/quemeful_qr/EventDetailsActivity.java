@@ -93,12 +93,11 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     //location variables
     private MapView map;
-    private Button displayMapPinsActivityButton;
     private IMapController mapController;
     private MyLocationNewOverlay myLocationOverlay;
     private Double latitude;
     private Double longitude;
-    private TextView addressText;
+//    private TextView addressText;
     Double attLatitude;
     Double attLongitude;
     String attId;
@@ -147,7 +146,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         buttonCheckIn = findViewById(R.id.scanQRButton);
         buttonSignUp = findViewById(R.id.signUpButton);
         buttonPromotion = findViewById(R.id.promotionButton);
-        addressText = findViewById(R.id.address_text);
+//        addressText = findViewById(R.id.address_text);
 
         MapEventsOverlay OverlayEvents = new MapEventsOverlay(getBaseContext(), mReceive);
 //        map.getOverlays().add(OverlayEvents);
@@ -205,43 +204,76 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         //map xml
         map = findViewById(R.id.map);
-        displayMapPinsActivityButton = findViewById(R.id.display_map_pins_activity_button);
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
         loadMap();
         onPause();
 
 
-        displayMapPinsActivityButton.setOnClickListener(v -> db.collection("events").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
-                            //brings the user to a new activity with event details
-                            String eventName = document.getData().get("title").toString();
-                            String eventLocation = document.getData().get("location").toString();
-                            double eventLatitude = (Double) document.getData().get("latitude");
-                            double eventLongitude = (Double) document.getData().get("longitude");
-                            EventMapPin eventPin = new EventMapPin(eventName, eventLocation, eventLatitude, eventLongitude);
-                            List<EventMapPin> eventPinList = new ArrayList<EventMapPin>();
-                            eventPinList.add(eventPin);
-                            Toast.makeText(EventDetailsActivity.this,
-                                    "added: " +
-                                            eventLocation + "\nLatitude: " +
-                                            eventLatitude + "\nLongitude: " +
-                                            eventLongitude, Toast.LENGTH_SHORT).show();
-                            for (int i = 0; i < eventPinList.size(); i++) {
-                                Log.d("value is", eventPinList.get(i).getLocation().toString());
-                                GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
-                                displayMarker(eventPinGeoPoint, eventPin);
-                            }
+//        displayMapPinsActivityButton.setOnClickListener(v -> db.collection("events").get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        for (QueryDocumentSnapshot document : task.getResult()) { //for every document found (loop runs once - only 1 document matches uuid)
+//                            //brings the user to a new activity with event details
+//                            String eventName = document.getData().get("title").toString();
+//                            String eventLocation = document.getData().get("location").toString();
+//                            double eventLatitude = (Double) document.getData().get("latitude");
+//                            double eventLongitude = (Double) document.getData().get("longitude");
+//                            EventMapPin eventPin = new EventMapPin(eventName, eventLocation, eventLatitude, eventLongitude);
+//                            List<EventMapPin> eventPinList = new ArrayList<EventMapPin>();
+//                            eventPinList.add(eventPin);
+//                            Toast.makeText(EventDetailsActivity.this,
+//                                    "added: " +
+//                                            eventLocation + "\nLatitude: " +
+//                                            eventLatitude + "\nLongitude: " +
+//                                            eventLongitude, Toast.LENGTH_SHORT).show();
+//                            for (int i = 0; i < eventPinList.size(); i++) {
+//                                Log.d("value is", eventPinList.get(i).getLocation().toString());
+//                                GeoPoint eventPinGeoPoint = new GeoPoint(eventPinList.get(i).getLatitude(), eventPinList.get(i).getLongitude());
+//                                displayMarker(eventPinGeoPoint, eventPin);
+//                            }
+//
+//                        }
+//                    } else {
+//                        Log.d(TAG, "Error getting documents: ", task.getException());
+//                        //set the error message onto the camera textview "QR code not recognized"
+//                        Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
+//                    }
+//                })); // closing displayMapPinsActivityButton onClickListener
 
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                        //set the error message onto the camera textview "QR code not recognized"
-                        Toast.makeText(EventDetailsActivity.this, "Event not found", Toast.LENGTH_SHORT).show();
-                    }
-                })); // closing displayMapPinsActivityButton onClickListener
+//        displayMapPinsActivityButton.setOnClickListener(v -> {
+//            // Fetch the specific event using its eventId
+//            DocumentReference eventRef = db.collection("events").document(eventId);
+//            eventRef.get().addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    if (document.exists()) {
+//                        // Extract the details for the specific event
+//                        String eventName = document.getString("title");
+//                        String eventLocation = document.getString("location");
+//                        Double eventLatitude = document.getDouble("latitude");
+//                        Double eventLongitude = document.getDouble("longitude");
+//
+//                        // Create a pin for the specific event
+//                        EventMapPin eventPin = new EventMapPin(eventName, eventLocation, eventLatitude, eventLongitude);
+//
+//                        // Display the pin on the map
+//                        GeoPoint eventPinGeoPoint = new GeoPoint(eventLatitude, eventLongitude);
+//                        displayMarker(eventPinGeoPoint, eventPin);
+//
+//                        Toast.makeText(EventDetailsActivity.this,
+//                                "Event pinned: " + eventName + " at " + eventLocation,
+//                                Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        Toast.makeText(EventDetailsActivity.this, "Specific event not found", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Log.d(TAG, "Error getting document: ", task.getException());
+//                    Toast.makeText(EventDetailsActivity.this, "Error fetching specific event", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        });
+
 
         DocumentReference eventRef = db.collection("events").document(eventId);
         eventRef.get().addOnCompleteListener(task -> {
@@ -449,13 +481,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
         // Create MapController and set starting location
         mapController = map.getController();
+        GeoPoint initPinGeoPoint = new GeoPoint(53.520318, -113.523329); // uofa coordinates
+        mapController.setCenter(initPinGeoPoint);
+        mapController.setZoom(12L);
         if (enableLocations) {
             // Create location overlay
             myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
             myLocationOverlay.enableMyLocation();
             myLocationOverlay.enableFollowLocation();
             myLocationOverlay.setDrawAccuracyEnabled(true);
-            mapController.setZoom(15.5);
+            mapController.setZoom(100);
             map.getOverlays().add(myLocationOverlay);
         }
         Set user_agent;
@@ -628,7 +663,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 EventHelper event = documentSnapshot.toObject(EventHelper.class);
                 if (event != null) {
                     textViewEventTitle.setText(event.getTitle());
-                    textViewEventDate.setText(event.getDate());
+//                    textViewEventDate.setText(event.getDate());
+                    textViewEventDate.setText(event.getFormattedDate());
                     textViewEventTime.setText(event.getTime());
                     textViewEventLocation.setText(event.getLocation());
                     textViewEventDescription.setText(event.getDescription());
@@ -640,15 +676,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                         updateUIForGeneralUser(currentUserUID, event, documentSnapshot);
                     }
 
-//                    // Decode and set the image
-//                    if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
-//                        byte[] decodedString = Base64.decode(event.getPoster().trim(), Base64.DEFAULT);
-//                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//                        imageViewEventImage.setImageBitmap(decodedByte);
-//                    } else {
-//                        imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
-//                    }
-
                     // Use Glide to load the image from a URL
                     if (event.getPoster() != null && !event.getPoster().trim().isEmpty()) {
                         Glide.with(EventDetailsActivity.this)
@@ -656,6 +683,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 .into(imageViewEventImage);
                     } else {
                         imageViewEventImage.setImageResource(R.drawable.ic_launcher_background); // Default or placeholder image.
+                    }
+
+                    // Now also set the map's location
+                    if(event.getLatitude() != null && event.getLongitude() != null) {
+                        GeoPoint eventLocation = new GeoPoint(event.getLatitude(), event.getLongitude());
+                        displayMarker(eventLocation, new EventMapPin(event.getTitle(), event.getLocation(), event.getLatitude(), event.getLongitude()));
+                        mapController.setCenter(eventLocation);
+                        mapController.setZoom(15); // Adjust zoom level as needed
                     }
 
                 }
@@ -675,8 +710,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         viewAttendee.setVisibility(View.VISIBLE);
         buttonPromotion.setVisibility(View.VISIBLE);
         map.setVisibility(View.VISIBLE);
-        displayMapPinsActivityButton.setVisibility(View.VISIBLE);
-        addressText.setVisibility(View.VISIBLE);
+
+//        addressText.setVisibility(View.GONE);
+
     }
 
     /**
@@ -716,6 +752,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         Button buttonCheckIn = findViewById(R.id.scanQRButton);
         TextView textViewSignUp = findViewById(R.id.signUpTitle);
         Button buttonSignUp = findViewById(R.id.signUpButton);
+        CardView map_cardView = findViewById(R.id.map_cardView);
+
+        map_cardView.setVisibility(View.GONE);
 
 
         if (isUserSignedUp) {

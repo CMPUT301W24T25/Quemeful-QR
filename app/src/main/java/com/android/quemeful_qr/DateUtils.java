@@ -13,6 +13,7 @@ import java.util.Locale;
  */
 public class DateUtils {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private static final SimpleDateFormat desiredFormat = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
 
     /**
      * The parseDate method converts string into dates.
@@ -39,6 +40,25 @@ public class DateUtils {
         targetDate.setTime(date);
         return today.get(Calendar.YEAR) == targetDate.get(Calendar.YEAR) &&
                 today.get(Calendar.DAY_OF_YEAR) == targetDate.get(Calendar.DAY_OF_YEAR);
+    }
+
+    /**
+     * Formats a Date into a day, Month date format (e.g., Monday, January 1).
+     * @param date the Date object to format.
+     * @return A String representation of the date in the desired format.
+     */
+    public static String formatDateToDayMonthDate(Date date) {
+        return desiredFormat.format(date);
+    }
+
+    public static String formatDate(String dateString) {
+        try {
+            Date date = dateFormat.parse(dateString);
+            return desiredFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return dateString; // Return original date string if parsing fails
+        }
     }
 } // class closing
 
