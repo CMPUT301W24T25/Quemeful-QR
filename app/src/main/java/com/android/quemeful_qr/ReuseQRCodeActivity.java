@@ -2,6 +2,7 @@ package com.android.quemeful_qr;
 
 import static android.service.controls.ControlsProviderService.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -21,12 +22,13 @@ import java.util.Map;
  * This activity is used to display the QR code reused and the event title for which it is reused,
  * to allow scanning for checking in into the event.
  */
-public class ReuseQRCodeActivity extends AppCompatActivity {
+public class ReuseQRCodeActivity extends AppCompatActivity implements ReuseQRCodeAdapter.onCheckInQRExistListener {
 
     String eventId;
-    private FirebaseFirestore db;
+    FirebaseFirestore db;
     TextView eventTitle;
     ImageView showReusedQRCode;
+    ReuseQRCodeAdapter reuseQRCodeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +38,14 @@ public class ReuseQRCodeActivity extends AppCompatActivity {
         // clicking on the back arrow on top navigates back to the previous page
         Toolbar toolbar = findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
-            // back clicked
-            finish();
+            // back clicked go to dashboard
+            Intent intent = new Intent(ReuseQRCodeActivity.this, MainActivity.class);
+            startActivity(intent);
         });
+
+        // instance of the adapter
+        reuseQRCodeAdapter = new ReuseQRCodeAdapter(eventId);
+        reuseQRCodeAdapter.setOnCheckInQRExistListener(this);
 
         // initialize firebase db
         db = FirebaseFirestore.getInstance();
@@ -63,7 +70,7 @@ public class ReuseQRCodeActivity extends AppCompatActivity {
      * This method is used to fetch the event title from firebase and display it in the textview.
      * @param eventId the event associated with the reused QR code
      */
-    private void fetchEventName(String eventId) {
+    void fetchEventName(String eventId) {
         db.collection("events")
                 .document(eventId)
                 .get()
@@ -92,4 +99,11 @@ public class ReuseQRCodeActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * If the check-in QR code already exists finish the activity.
+     */
+    @Override
+    public void onCheckInQRExist() {
+        finish();
+    }
 } // activity closing

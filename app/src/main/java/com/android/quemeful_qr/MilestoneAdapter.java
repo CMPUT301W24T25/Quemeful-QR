@@ -14,7 +14,7 @@ public class MilestoneAdapter extends FragmentPagerAdapter {
 
     public MilestoneAdapter(@NonNull FragmentManager fm, int signedUp) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-       this.signedUp = signedUp;
+        this.signedUp = signedUp;
     }
 
     @NonNull

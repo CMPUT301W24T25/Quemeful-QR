@@ -38,6 +38,7 @@ public class ReuseQRCodeAdapter extends RecyclerView.Adapter<ReuseQRCodeAdapter.
 
     // item click listener for getting the selected QR code uri string from the list
     private onUriItemClickListener listener;
+    private onCheckInQRExistListener listener1;
 
     /**
      * This is a interface to listen to the selected item on the check-in QR codes' uri string list.
@@ -52,6 +53,14 @@ public class ReuseQRCodeAdapter extends RecyclerView.Adapter<ReuseQRCodeAdapter.
      */
     public void setOnUriItemClickListener(onUriItemClickListener listener) {
         this.listener = listener;
+    }
+
+    public interface onCheckInQRExistListener {
+        void onCheckInQRExist();
+    }
+
+    public void setOnCheckInQRExistListener(onCheckInQRExistListener listener1) {
+        this.listener1 = listener1;
     }
 
     /**
@@ -190,6 +199,7 @@ public class ReuseQRCodeAdapter extends RecyclerView.Adapter<ReuseQRCodeAdapter.
                             // if the field already exists ie. not null then display a toast
                             if(checkInQR != null) {
                                 Toast.makeText(itemView.getContext(), "CheckIn QR Code Already Exists", Toast.LENGTH_SHORT).show();
+                                listener1.onCheckInQRExist();
                             } else {
                                 // if the field does not exist add a new field
                                 Map<String, Object> eventCheckIn = new HashMap<>();

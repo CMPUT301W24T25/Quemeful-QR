@@ -18,7 +18,11 @@ android {
 
     }
 
-
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -93,6 +97,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
+    implementation("androidx.activity:activity:1.8.0") //
     implementation ("androidx.preference:preference:1.2.1")
     implementation("com.google.firebase:firebase-inappmessaging:20.4.1") //
 
@@ -106,6 +111,12 @@ dependencies {
 }
 dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")
+}
+
+dependencies {
+    testImplementation ("junit:junit:4.13.2")
+    androidTestImplementation(  "org.robolectric:robolectric:4.12")
+
 }
 
 

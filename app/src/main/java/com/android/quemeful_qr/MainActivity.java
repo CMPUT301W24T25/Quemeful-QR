@@ -29,8 +29,12 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -308,28 +312,43 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.getStartedButton).setOnClickListener(view -> {
             Bitmap avatarBitmap = generateAvatar(256, 256);
 
-            // Save the bitmap to internal storage and get the path
-            String avatarPath = saveToInternalStorage(avatarBitmap, deviceId);
+            // Define the callback implementation
+            UploadCallback callback = new UploadCallback() {
+                @Override
+                public void onSuccess(String downloadUrl) {
+                    // Here, downloadUrl is the URL of the uploaded avatar image
+                    // Now, create and add the new user to Firestore with the avatarUrl
+                    Map<String, Object> newUser = new HashMap<>();
+                    newUser.put("uid", deviceId);
+                    newUser.put("firstName", userFirstName);
+                    newUser.put("lastName", userLastName);
+                    newUser.put("homePage", "");
+                    newUser.put("contact", "");
+                    newUser.put("bio", "");
+                    newUser.put("avatarUrl", downloadUrl); // Use the download URL here
+                    newUser.put("Admin", false);
 
-            // Create a new user object including the Admin field set to false
-            Map<String, Object> newUser = new HashMap<>();
-            newUser.put("uid", deviceId);
-            newUser.put("firstName", userFirstName);
-            newUser.put("lastName", userLastName);
-            newUser.put("homePage", "N/A");
-            newUser.put("contact", "N/A");
-            newUser.put("bio", "N/A");
-            newUser.put("avatarUrl", avatarPath);
-            newUser.put("Admin", false);
+                    // Add the new user to Firestore
+                    db.collection("users").document(deviceId).set(newUser)
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d(TAG, "New user added with name: " + userFirstName + " " + userLastName + " and avatar URL: " + downloadUrl);
+                                transitionToMainScreen();
+                            })
+                            .addOnFailureListener(e -> Log.e(TAG, "Error adding new user", e));
+                }
 
+                @Override
+                public void onFailure(Exception e) {
+                    // Handle the failure, e.g., show an error message
+                    Log.e(TAG, "Error uploading avatar image", e);
+                }
+            };
 
-            // Add the new user to Firestore
-            db.collection("users").document(deviceId).set(newUser).addOnSuccessListener(aVoid -> {
-                Log.d(TAG, "New user added with name: " + userFirstName + " " + userLastName + " and avatar path: " + avatarPath);
-                transitionToMainScreen();
-            }).addOnFailureListener(e -> Log.e(TAG, "Error adding new user", e));
+            // Call the method to save the image to Firebase Storage and pass the callback
+            saveImageToFirebaseStorage(avatarBitmap, deviceId, callback);
         });
     }
+
 
     private Bitmap generateAvatar(int width, int height) {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -382,28 +401,24 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private String saveToInternalStorage(Bitmap bitmapImage, String imageName) {
-        ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        File directory = cw.getDir("avatarDir", Context.MODE_PRIVATE);
-        File myPath = new File(directory, imageName + ".jpg");
+    private void saveImageToFirebaseStorage(Bitmap bitmapImage, String imageName, UploadCallback callback) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
 
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(myPath);
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return myPath.getAbsolutePath();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("avatars/" + imageName + ".jpg");
+
+        UploadTask uploadTask = storageRef.putBytes(data);
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            // Image uploaded successfully
+            taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                // Here we get the download URL
+                String downloadUrl = downloadUri.toString();
+                callback.onSuccess(downloadUrl);
+            }).addOnFailureListener(callback::onFailure);
+        }).addOnFailureListener(callback::onFailure);
     }
+
 
     /**
      * This method on clicking on the custom navigation taskbar for the app screen and functions,

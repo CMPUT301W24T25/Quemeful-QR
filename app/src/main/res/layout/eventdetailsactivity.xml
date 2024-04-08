@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
-
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    android:background="@drawable/gradient_background"
+    tools:context=".EventDetailsActivity">
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/gradient_background"
-        tools:context=".EventDetailsActivity">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -26,7 +24,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="98dp"
                 android:gravity="center"
-                android:text="Event Details"
+                android:text="@string/event_details"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:fontFamily="serif"
@@ -45,6 +43,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/baseline_arrow_back_24" />
 
+<!--            <androidx.viewpager.widget.ViewPager-->
+<!--                android:id="@+id/viewPagerMilestones"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:layout_marginEnd="16dp"-->
+<!--                android:layout_marginBottom="16dp"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/cardViewEventDetails"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle" />-->
+
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/viewPagerMilestones"
                 android:layout_width="0dp"
@@ -57,6 +68,76 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle" />
+
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/milestone_cardView"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_margin="16dp"-->
+<!--                android:visibility="visible"-->
+<!--                app:cardCornerRadius="16dp"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/cardViewEventDetails"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/textViewEventPageTitle">-->
+
+<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent">-->
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/background_image_milstone"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:scaleType="centerCrop"-->
+<!--                        android:src="@drawable/milestone_base"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/current_milestone_text"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="8dp"-->
+<!--                        android:layout_marginEnd="8dp"-->
+<!--                        android:layout_marginBottom="4dp"-->
+<!--                        android:fontFamily="monospace"-->
+<!--                        android:outlineSpotShadowColor="#272626"-->
+<!--                        android:shadowColor="#2B683F"-->
+<!--                        android:text="@string/next_milestone_0_1"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:textSize="20sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/congratulatory_message" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/congratulatory_message"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="8dp"-->
+<!--                        android:layout_marginTop="4dp"-->
+<!--                        android:layout_marginEnd="8dp"-->
+<!--                        android:fontFamily="serif-monospace"-->
+<!--                        android:outlineSpotShadowColor="#767676"-->
+<!--                        android:shadowColor="#272727"-->
+<!--                        android:text="@string/congratulations_nyou_hit_a_milestone"-->
+<!--                        android:textColor="#000000"-->
+<!--                        android:textSize="16sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:visibility="gone"-->
+<!--                        app:layout_constraintBottom_toTopOf="@id/current_milestone_text"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--            </androidx.cardview.widget.CardView>-->
+
 
 
             <androidx.cardview.widget.CardView
@@ -83,16 +164,20 @@
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_launcher_background"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
                     <TextView
                         android:id="@+id/textViewEventTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="170dp"
+                        android:layout_height="30dp"
                         android:layout_marginTop="8dp"
-                        android:text="Event Title"
+                        android:text="@string/event_title"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -102,8 +187,8 @@
                         android:id="@+id/textViewEventDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Date"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/date"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageViewEvent" />
@@ -114,18 +199,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Time"
+                        android:text="@string/time"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textViewEventDate" />
 
                     <TextView
                         android:id="@+id/textViewEventLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="200dp"
+                        android:layout_height="20dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:text="Location"
+                        android:text="@string/location"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+                        android:ellipsize="end"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@+id/imageView2"
                         app:layout_constraintTop_toBottomOf="@+id/textViewEventTitle" />
@@ -138,6 +226,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textViewEventTitle"
                         app:srcCompat="@drawable/baseline_add_location_24" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -165,7 +254,7 @@
                         android:id="@+id/textViewAbout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="About"
+                        android:text="@string/about"
                         android:textAlignment="viewStart"
                         android:textColor="@color/white"
                         android:textSize="18sp"
@@ -178,7 +267,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Description"
+                        android:text="@string/description"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -202,16 +291,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
-            <Button
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                 android:id="@+id/scanQRButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
-                android:drawableStart="@drawable/baseline_barcode_reader_24"
                 android:textColor="@color/black"
                 android:text="@string/check_in"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/scanQRTitle" />
@@ -219,14 +308,15 @@
                 android:id="@+id/promotionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="180dp"
+                android:layout_marginTop="30dp"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:text="@string/promotion"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
+                app:layout_constraintTop_toBottomOf="@+id/map_cardView" />
 
             <TextView
                 android:id="@+id/signUpTitle"
@@ -259,38 +349,103 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:textColor="@color/white"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/view_attendees_announcements"
-                android:textStyle="bold"
+                android:textColor="@color/white"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/scanQRButton" />
-            <org.osmdroid.views.MapView
-                android:id="@+id/map"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:layout_gravity="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/promotionButton" />
+                app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />
 
-            <Button
-                android:id="@+id/display_map_pins_activity_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                android:drawableLeft="@drawable/baseline_barcode_reader_24"
-                android:gravity="center"
-                android:text="Map"
-                android:textColor="@color/black"
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/map_cardView"-->
+<!--                android:layout_width="370dp"-->
+<!--                android:layout_height="329dp"-->
+<!--                app:cardBackgroundColor="@color/white"-->
+<!--                app:cardCornerRadius="20dp"-->
+<!--                app:cardElevation="2dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/viewAttendee">-->
+
+<!--                <org.osmdroid.views.MapView-->
+<!--                    android:id="@+id/map"-->
+<!--                    android:layout_width="369dp"-->
+<!--                    android:layout_height="343dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:visibility="invisible" />-->
+<!--            </androidx.cardview.widget.CardView>-->
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/map_cardView"
+                android:layout_width="370dp"
+                android:layout_height="329dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:layout_editor_absoluteY="852dp"
-                app:layout_constraintTop_toBottomOf="@+id/viewAttendee" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/viewAttendee">
+
+                <org.osmdroid.views.MapView
+                    android:id="@+id/map"
+                    android:layout_width="369dp"
+                    android:layout_height="343dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:visibility="invisible" />
+            </androidx.cardview.widget.CardView>
+
+<!--            <org.osmdroid.views.MapView-->
+<!--                android:id="@+id/map"-->
+<!--                android:layout_width="355dp"-->
+<!--                android:layout_height="343dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:visibility="invisible"-->
+<!--                android:background="@drawable/rounded_border"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/viewAttendee" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/display_map_pins_activity_button"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="140dp"-->
+<!--                android:backgroundTint="@color/white"-->
+<!--                android:drawableEnd="@drawable/baseline_location_pin_24"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/see_event_location"-->
+<!--                android:textColor="@color/black"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/cardViewEventAbout" />-->
+
+
+            <!-- tools:layout_editor_absoluteY="852dp"
+            app:layout_constraintTop_toBottomOf="@+id/viewAttendee" /> -->
+
+<!--            <TextView-->
+<!--                android:id="@+id/address_text"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="150dp"-->
+<!--                android:background="@color/white"-->
+<!--                android:hint="address printed"-->
+<!--                android:visibility="invisible"-->
+<!--                android:minHeight="120dp"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textColorHint="@color/black"-->
+<!--                android:textSize="20dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/map_cardView" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-    </FrameLayout>
+</FrameLayout>
 
-</ScrollView>
+
 

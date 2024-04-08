@@ -1,14 +1,8 @@
 package com.android.quemeful_qr;
 
-import static android.app.PendingIntent.getActivity;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-import static androidx.test.InstrumentationRegistry.getContext;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -27,14 +21,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class sendNotif {
-
-
-
+public class SendNotifications {
 
     /**
      * This method is used to send a notification with the specified title and description to the event/topic.
-     * Reference URL- https://www.youtube.com/watch?v=YjNZO90yVsE&t=530s
+     * Reference URL- <a href="https://www.youtube.com/watch?v=YjNZO90yVsE&t=530s">...</a>
      * Author- Easy Tuto, Published Date- Jul 5, 2023
      * @param EventName The Name of the Event for the notification.
      * @param description The description/body of the notification.

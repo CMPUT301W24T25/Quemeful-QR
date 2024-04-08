@@ -3,6 +3,7 @@ package com.android.quemeful_qr;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class EventFragment extends Fragment {
+public class EventFragment extends Fragment implements EventClickListenerInterface{
 
     private RecyclerView eventsRecyclerView;
     private EventAdapter eventAdapter;
@@ -56,9 +57,9 @@ public class EventFragment extends Fragment {
     private void initializeRecyclerView(View view) {
         eventsRecyclerView = view.findViewById(R.id.eventsRecyclerView);
         eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        eventAdapter = new EventAdapter(new ArrayList<>(), event -> {
+        eventAdapter = new EventAdapter(getActivity(),new ArrayList<>(), event -> {
             Intent intent = new Intent(getContext(), EventDetailsActivity.class);
-            intent.putExtra("eventId", event.getId());
+            intent.putExtra("event_id", event.getId());
             startActivity(intent);
         });
         eventsRecyclerView.setAdapter(eventAdapter);
@@ -156,5 +157,13 @@ public class EventFragment extends Fragment {
         if (isAdded()) {
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onEventClick(EventHelper event) {
+        Log.d("Event Fragment", "Event clicked: " + event.getTitle());
+        Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+        intent.putExtra("event_id", event.getId());
+        startActivity(intent);
     }
 }

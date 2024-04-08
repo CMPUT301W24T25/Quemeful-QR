@@ -76,13 +76,13 @@ public class Announcement extends Fragment {
         Button post = view.findViewById(R.id.post);
 
         post.setOnClickListener(new View.OnClickListener() {
-            private sendNotif sendNotif = new sendNotif();
+            private SendNotifications sendNotifications = new SendNotifications();
 
             @Override
             public void onClick(View v) {
                 String title = titleTextInput.getText().toString();
                 String description = descriptionTextInput.getText().toString();
-                this.sendNotif.sendNotification(EventName ,title, "/topics/" + EventId, "mail_notif");
+                this.sendNotifications.sendNotification(EventName ,title, "/topics/" + EventId, "mail_notif");
 
                 titleTextInput.getText().clear();
                 descriptionTextInput.getText().clear();

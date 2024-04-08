@@ -1,6 +1,8 @@
 package com.android.quemeful_qr;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+import static androidx.test.InstrumentationRegistry.getContext;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -74,13 +78,26 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             Log.d(TAG, "bind: " + notification.getDate_time());
             fromTextView.setText(  notification.getFrom() );
 
+//            if (notification.getImage() != null && !notification.getImage().trim().isEmpty()) {
+//                byte[] decodedString = Base64.decode(notification.getImage().trim(), Base64.DEFAULT);
+//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                posterImageView.setImageBitmap(decodedByte);
+//            } else {
+//                posterImageView.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
+//            }
+            // Use Glide to load the image from the URI
             if (notification.getImage() != null && !notification.getImage().trim().isEmpty()) {
-                byte[] decodedString = Base64.decode(notification.getImage().trim(), Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                posterImageView.setImageBitmap(decodedByte);
+                Glide.with(itemView.getContext())
+                        .load(notification.getImage()) // Load the image directly from the URI
+                        .placeholder(R.drawable.gradient_background) // Optional: a placeholder until the image loads
+                        .error(R.drawable.gradient_background) // Optional: an error image if the load fails
+                        .into(posterImageView);
             } else {
                 posterImageView.setImageResource(R.drawable.gradient_background); // Placeholder if no image is present
             }
+
+
+
         }
     }
 }

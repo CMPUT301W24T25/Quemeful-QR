@@ -16,9 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class calender_fragment extends Fragment {
-    private CalendarView mCalendarView;
-    private TextView mSelectedDate;
+public class CalenderFragment extends Fragment {
+    CalendarView mCalendarView;
+    TextView mSelectedDate;
     private SimpleDateFormat dateFormat;
     private SharedViewModel sharedViewModel;
 

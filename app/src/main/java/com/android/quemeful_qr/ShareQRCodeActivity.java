@@ -69,29 +69,51 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
     /**
      * This method is used to share the event promo QR code that on scanning shows the event details.
      */
+//    private void UriToShare(){
+//        // get the string url after uploading the QR code to firebase storage using the interface defined below.
+//        if (passedBitmap != null) {
+//            // for generate new promo QR code
+//            getDownloadUrl(passedBitmap, promo_qr_url -> {
+//                // convert url string to uri
+//                Uri uri = Uri.parse(promo_qr_url);
+//                // intent to share
+//                Intent intent = new Intent(Intent.ACTION_SEND);
+//                intent.setClipData(ClipData.newRawUri("event promotional QR Code", uri));
+//                intent.putExtra(Intent.EXTRA_STREAM, uri);
+//                intent.setType("image/jpg");
+//                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
+//                // show the android share sheet/ share pop up
+//                startActivity(Intent.createChooser(intent, "Share Using"));
+//            });
+//
+//        } if (passedUri != null){ // for existing promo QR code
+//            Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
+//            intent.setClipData(ClipData.newRawUri("event promotional QR Code", passedUri));
+//            intent.putExtra(Intent.EXTRA_STREAM, passedUri);
+//            intent.setType("image/jpg");
+//            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
+//            startActivity(Intent.createChooser(intent, "Share Using"));
+//        }
+//    }
+
     private void UriToShare(){
-        // get the string url after uploading the QR code to firebase storage using the interface defined below.
         if (passedBitmap != null) {
-            // for generate new promo QR code
-            getDownloadUrl(passedBitmap, promo_qr_url -> {
-                // convert url string to uri
+            // Updated to use the modified method
+            BitmapToByteArray(passedBitmap, promo_qr_url -> {
                 Uri uri = Uri.parse(promo_qr_url);
-                // intent to share
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setClipData(ClipData.newRawUri("event promotional QR Code", uri));
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
                 intent.setType("image/jpg");
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
-                // show the android share sheet/ share pop up
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(intent, "Share Using"));
             });
-
-        } if (passedUri != null){ // for existing promo QR code
-            Intent intent = new Intent(Intent.ACTION_SEND); // intent to share
+        } else if (passedUri != null){
+            Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setClipData(ClipData.newRawUri("event promotional QR Code", passedUri));
             intent.putExtra(Intent.EXTRA_STREAM, passedUri);
             intent.setType("image/jpg");
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // give permission
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(intent, "Share Using"));
         }
     }
@@ -100,13 +122,31 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
      * This method is used to convert the bitmap to byte array in a worker thread.
      * @param bitmap  The bitmap to be converted to byte array.
      */
-    private void BitmapToByteArray(Bitmap bitmap) {
+//    private void BitmapToByteArray(Bitmap bitmap) {
+//        new Thread(() -> {
+//            // converting bitmap to byte array
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            assert bitmap != null;
+//            bitmap.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
+//            imageByteArray = byteArrayOutputStream.toByteArray();
+//        }).start();
+//    }
+
+    private void BitmapToByteArray(Bitmap bitmap, UploadListener uploadListener) {
         new Thread(() -> {
-            // converting bitmap to byte array
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            assert bitmap != null;
             bitmap.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
-            imageByteArray = byteArrayOutputStream.toByteArray();
+            byte[] imageByteArray = byteArrayOutputStream.toByteArray();
+
+            // Move the upload logic here
+            String QrImagePath = "PromoQRCodeImages/" + System.currentTimeMillis() + ".jpg";
+            StorageReference QrImageRef = reference.child(QrImagePath);
+            UploadTask uploadTask = QrImageRef.putBytes(imageByteArray);
+            uploadTask.addOnSuccessListener(taskSnapshot -> QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String promoQRCodeURI = uri.toString();
+                        uploadListener.onUpload(promoQRCodeURI);
+                    }).addOnFailureListener(e -> Log.e(TAG, "Failed to download URL", e)))
+                    .addOnFailureListener(e -> Log.e(TAG, "Failed to upload image", e));
         }).start();
     }
 
@@ -123,29 +163,29 @@ public class ShareQRCodeActivity extends AppCompatActivity  {
      * @param bitmap The bitmap (promotion QR Code image) to upload.
      * @param uploadListener used to get the download url as a return after upload task.
      */
-    private void getDownloadUrl(Bitmap bitmap, UploadListener uploadListener) {
-        // call method to convert bitmap to byte array (done in a worker thread to prevent block in main (UI) thread
-        BitmapToByteArray(bitmap);
-
-        // a unique path (folder) in the firebase storage to upload the promo Qr images
-        String QrImagePath = "PromoQRCodeImages/" + System.currentTimeMillis() + ".jpg";
-        StorageReference QrImageRef = reference.child(QrImagePath);
-
-        // upload
-        UploadTask uploadTask = QrImageRef.putBytes(imageByteArray);
-        uploadTask.addOnSuccessListener(taskSnapshot -> {
-            // get download url of the promo QR code
-            QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                // get the uri consisting the download url to string
-                String promoQRCodeURI = uri.toString();
-                uploadListener.onUpload(promoQRCodeURI);
-
-            }).addOnFailureListener(e -> {
-                // handle fail to download url
-            });
-        }).addOnFailureListener(e -> {
-            // handle upload to storage failure
-        });
-    }
+//    private void getDownloadUrl(Bitmap bitmap, UploadListener uploadListener) {
+//        // call method to convert bitmap to byte array (done in a worker thread to prevent block in main (UI) thread
+//        BitmapToByteArray(bitmap);
+//
+//        // a unique path (folder) in the firebase storage to upload the promo Qr images
+//        String QrImagePath = "PromoQRCodeImages/" + System.currentTimeMillis() + ".jpg";
+//        StorageReference QrImageRef = reference.child(QrImagePath);
+//
+//        // upload
+//        UploadTask uploadTask = QrImageRef.putBytes(imageByteArray);
+//        uploadTask.addOnSuccessListener(taskSnapshot -> {
+//            // get download url of the promo QR code
+//            QrImageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//                // get the uri consisting the download url to string
+//                String promoQRCodeURI = uri.toString();
+//                uploadListener.onUpload(promoQRCodeURI);
+//
+//            }).addOnFailureListener(e -> {
+//                // handle fail to download url
+//            });
+//        }).addOnFailureListener(e -> {
+//            // handle upload to storage failure
+//        });
+//    }
 
 } // activity closing

@@ -55,7 +55,7 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
         reference = storage.getReference();
 
         // clicking on the back arrow on top navigates back to the previous page
-        Toolbar toolbar = (Toolbar) findViewById(R.id.backTool);
+        Toolbar toolbar = findViewById(R.id.backTool);
         toolbar.setNavigationOnClickListener(v -> {
             // back clicked - close this activity
             finish();
@@ -142,9 +142,8 @@ public class GeneratePromotionalQRCodeActivity extends AppCompatActivity {
                 db.collection("events")
                         .document(eventId)
                         .update(eventPromoData)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d(TAG,"Event with specific eventId successfully updated with promotion field.");
-                        }).addOnFailureListener(e -> {
+                        .addOnSuccessListener(aVoid ->
+                                Log.d(TAG,"Event with specific eventId successfully updated with promotion field.")).addOnFailureListener(e -> {
                             // handle fail to update event document with specific eventId
                             Log.d(TAG, "failed to add event promotion QR Code field to events collection with document eventId.");
                         });

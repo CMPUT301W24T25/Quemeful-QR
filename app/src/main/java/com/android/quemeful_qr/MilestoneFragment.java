@@ -26,6 +26,12 @@ public class MilestoneFragment extends Fragment {
 
     }
 
+    public MilestoneFragment(String eventId) {
+    }
+    public MilestoneFragment(){
+
+    }
+
     public static MilestoneFragment newInstance(int milestone, int signedUp) {
         MilestoneFragment fragment = new MilestoneFragment(milestone, signedUp);
         Bundle args = new Bundle();

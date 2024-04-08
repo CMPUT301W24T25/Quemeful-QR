@@ -1,15 +1,18 @@
 package com.android.quemeful_qr;
 
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +24,7 @@ import java.util.Map;
 public class AdminDashboardFragment extends Fragment {
     private RecyclerView recyclerView;
     private AdminDashboardAdapter adapter;
+    FirebaseFirestore db;
 
     /**
      * This is a default constructor (no parameters).
@@ -66,8 +70,8 @@ public class AdminDashboardFragment extends Fragment {
      * This method is used to retrieve all non-admin users from the firebase collection.
      * (also counts the number of non-admin users)
      */
-    private void fetchUsers() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    void fetchUsers() {
+        db = FirebaseFirestore.getInstance();
         db.collection("users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Map<String, Object>> users = new ArrayList<>();

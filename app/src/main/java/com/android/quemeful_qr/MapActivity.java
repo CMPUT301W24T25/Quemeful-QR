@@ -24,10 +24,10 @@ package com.android.quemeful_qr;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -35,6 +35,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,23 +72,13 @@ public class MapActivity extends AppCompatActivity {
     private IMapController mapController;
     private MyLocationNewOverlay myLocationOverlay;
 
-    private Button returnToCurrentLocation;
-    private Button searchMapButton;
-    private Button confirmLocationButton;
-
-    private Button locationSettingsButton;
-    private Button clearAddressButton;
     private EditText addressText;
 
+    private double latitude, longitude;
 
-    //    private double latitude = 41.1616;
-//    private double longitude = -8.5856;
-    private double latitude;
-    private double longitude;
-
-    private LocationManager locationManager;
-    private int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private String locationName;
+    private SharedPreferences settings;
+    private boolean enableLocations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,60 +87,58 @@ public class MapActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_map);
+        settings = getSharedPreferences(UserSettings.LOCATION_PREFERENCES, MODE_PRIVATE);
+        enableLocations = settings.getBoolean("custom_location",false);
 
-        returnToCurrentLocation = (Button) findViewById(R.id.return_to_current_location);
-        searchMapButton = (Button) findViewById(R.id.search_map_button);
-        confirmLocationButton = (Button) findViewById(R.id.confirm_location_button);
-        locationSettingsButton = (Button) findViewById(R.id.location_settings_button);
-        clearAddressButton = (Button) findViewById(R.id.clear_address_button);
-        addressText = findViewById(R.id.address_text);
+        Button returnToCurrentLocation = findViewById(R.id.return_to_current_location);
+        ImageButton searchMapButton = findViewById(R.id.search_map_button);
+        Button confirmLocationButton = findViewById(R.id.confirm_location_button);
+        Button locationSettingsButton = findViewById(R.id.location_settings_button);
+        TextView clearAddressButton = findViewById(R.id.clear_address_button);
+        addressText = findViewById(R.id.search_map_edittext);
 
         loadMap();
         onPause();
 
-        searchMapButton.setOnClickListener(new View.OnClickListener() {
+        searchMapButton.setOnClickListener(v -> {
+            locationName = addressText.getText().toString();
+
+            try {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+                List<Address> geoResults = geocoder.getFromLocationName(locationName, 1);
+
+                if (geoResults != null && !geoResults.isEmpty()) {
+                    Address addr = geoResults.get(0);
+                    latitude = addr.getLatitude();
+                    longitude = addr.getLongitude();
+                    GeoPoint location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
 
 
-            @Override
-            public void onClick(View v) {
-                locationName = addressText.getText().toString();
-
-                try {
-                    Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-
-                    List<Address> geoResults = geocoder.getFromLocationName(locationName, 1);
-
-                    if (geoResults != null && !geoResults.isEmpty()) {
-                        Address addr = geoResults.get(0);
-                        latitude = addr.getLatitude();
-                        longitude = addr.getLongitude();
-                        GeoPoint location = new GeoPoint(addr.getLatitude(), addr.getLongitude());
+                    mapController.animateTo(location);
+                    mapController.setZoom(15.5);
+                    mapController.setCenter(location);
+                    onPause();
+                    addEventMarker(location);
 
 
-                        mapController.animateTo(location);
-                        mapController.setZoom(15.5);
-                        mapController.setCenter(location);
-                        onPause();
-                        addEventMarker(location);
+                    Toast.makeText(getApplicationContext(), "Location: " + locationName + "\n" + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
 
-
-                        Toast.makeText(getApplicationContext(), "Location: " + locationName + "\n" + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Location Not Found", Toast.LENGTH_LONG).show();
-                    }
-                } catch (Exception e) {
-                    Log.d("catch", e.toString());
-                    Toast.makeText(getApplicationContext(), "Failed Search", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Location Not Found", Toast.LENGTH_LONG).show();
                 }
-
-
+            } catch (Exception e) {
+                Log.d("catch", e.toString());
+                Toast.makeText(getApplicationContext(), "Failed Search", Toast.LENGTH_LONG).show();
             }
+
+
         });
         returnToCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // if location permissions are granted
+                if (!enableLocations){return;}
                 mapController.animateTo(myLocationOverlay.getMyLocation());
                 mapController.setZoom(15.5);
                 mapController.setCenter(myLocationOverlay.getMyLocation());
@@ -157,33 +147,19 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        locationSettingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAppSettings();
-            }
-        });
+        locationSettingsButton.setOnClickListener(v -> openAppSettings());
 
-        clearAddressButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addressText.setText("");
-            }
-        });
+        clearAddressButton.setOnClickListener(v -> addressText.setText(""));
 
-        confirmLocationButton.setOnClickListener(new View.OnClickListener() {
+        confirmLocationButton.setOnClickListener(v -> {
 
-            @Override
-            public void onClick(View v) {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("location string",addressText.getText().toString());
+            returnIntent.putExtra("location latitude", latitude);
+            returnIntent.putExtra("location longitude", longitude);
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
 
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("location string",addressText.getText().toString());
-                returnIntent.putExtra("location latitude", latitude);
-                returnIntent.putExtra("location longitude", longitude);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
-
-            }
         });
 
         //add pins when tap on map
@@ -244,33 +220,36 @@ public class MapActivity extends AppCompatActivity {
         // Create MapController and set starting location
         mapController = map.getController();
 
-        // Create location overlay
-        myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
-        myLocationOverlay.enableMyLocation();
-        myLocationOverlay.enableFollowLocation();
-        myLocationOverlay.setDrawAccuracyEnabled(true);
-        myLocationOverlay.runOnFirstFix(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+        if (enableLocations) {
+            // Create location overlay
+            myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
+            myLocationOverlay.enableMyLocation();
+            myLocationOverlay.enableFollowLocation();
+            myLocationOverlay.setDrawAccuracyEnabled(true);
+            myLocationOverlay.runOnFirstFix(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        mapController.animateTo(myLocationOverlay.getMyLocation());
-                        mapController.setZoom(15.5);
-                        mapController.setCenter(myLocationOverlay.getMyLocation());
+                            mapController.animateTo(myLocationOverlay.getMyLocation());
+                            mapController.setZoom(15.5);
+                            mapController.setCenter(myLocationOverlay.getMyLocation());
 
-                    }
-                });
-            }
-        });
-        map.getOverlays().add(myLocationOverlay);
+                        }
+                    });
+                }
+            });
+
+            map.getOverlays().add(myLocationOverlay);
+        }else{
+
+        }
 
         // Set user agent
         Configuration.getInstance().setUserAgentValue("RossMaps");
 
-        System.out.println(myLocationOverlay.getMyLocation());
-        System.out.println("Create done");
 
     }
 
@@ -351,15 +330,11 @@ public class MapActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(data);
                     String addressName = jsonObject.getString("display_name");
                     Log.d("address name", addressName);
-                    runOnUiThread(new Runnable() {
+                    runOnUiThread(() -> {
 
-                        @Override
-                        public void run() {
+                        // Stuff that updates the UI
+                        addressText.setText(addressName);
 
-                            // Stuff that updates the UI
-                            addressText.setText(addressName);
-
-                        }
                     });
 
 
