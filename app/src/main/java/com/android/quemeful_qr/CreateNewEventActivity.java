@@ -183,6 +183,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         // opens a fragment to pick the starting time of the event.
         startTime.setOnClickListener(v -> {
+
             startTimeTextClicked = true;
             DialogFragment timePicker = new TimePickerFragment();
             timePicker.show(getSupportFragmentManager(), "start time picker");
@@ -199,10 +200,12 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         // opens a fragment to pick the starting date of the event.
         startDate.setOnClickListener(v -> {
+            eventDescription.setEnabled(false);
 
             startDateTextClicked = true;
             DialogFragment newFragment = new DatePickerFragment();
             newFragment.show(getSupportFragmentManager(), "StartDatePicker");
+            eventDescription.setEnabled(true);
         });
 
         // opens a fragment to pick the ending date of the event.
@@ -259,6 +262,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         // on click generates a new QR by starting Generate new QR activity
         generateQRButton.setOnClickListener(v -> {
+
             Intent intent = new Intent(CreateNewEventActivity.this, GenerateNewQRActivity.class);
             intent.putExtra("eventId", eventId);
             intent.putExtra("event name", eventName);
@@ -271,7 +275,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
 
         // cancels creating new event by closing this activity
         cancelButton.setOnClickListener(v -> {
-            Toast.makeText(CreateNewEventActivity.this, "Create New Event Cancelled", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(CreateNewEventActivity.this, "Create New Event Cancelled", Toast.LENGTH_SHORT).show();
             finish();
         });
 
@@ -410,7 +414,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                 locationLongitude = data.getDoubleExtra("location longitude", 0);
                 eventLocation.setText(locationString); //brings location from map activity to the location textbox
 
-                Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), locationLatitude + "," + locationLongitude, Toast.LENGTH_LONG).show();
 
             }
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -487,6 +491,7 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
                                     Log.d("FireStore", "DocumentSnapshot successfully written!");
                                     updateUserEvents(currentUserUID, event.getId());
                                     Toast.makeText(CreateNewEventActivity.this, "Create New Event Successful", Toast.LENGTH_SHORT).show();
+
                                 })
                                 .addOnFailureListener(e -> Log.e(TAG, "Error writing document", e));
 
@@ -554,9 +559,11 @@ public class CreateNewEventActivity extends AppCompatActivity implements DatePic
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         startTime = findViewById(R.id.enter_startTime);
         if (startTimeTextClicked){
+
             String startTimeString = String.format("%02d:%02d", hourOfDay, minute);
             startTime.setText(startTimeString);
             startTimeTextClicked = false;
+
         }else if (endTimeTextClicked){
             String endTimeString = String.format("%02d:%02d", hourOfDay, minute);
             endTime.setText(endTimeString);

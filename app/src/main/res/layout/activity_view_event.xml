@@ -12,11 +12,16 @@
         android:id="@+id/event_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_below="@+id/header"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="10dp"
         android:text="Event Name"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="26sp"/>
+        android:textSize="30sp" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/backTool"
@@ -35,26 +40,13 @@
         android:textSize="30sp"
         android:textAlignment="center"/>
 
-    <EditText
-        android:id="@+id/address_text"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_below="@id/event_name_textview"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/rounded_background"
-        android:gravity="center"
-        android:padding="4dp"
-        android:textColor="@color/black"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:cornerRadius="10dp" />
 
     <Button
         android:id="@+id/confirm_check_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/textview_event_time"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="#E3D39E"
         android:text="Confirm Check In"
         android:textColor="@color/black"
@@ -64,7 +56,7 @@
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:layout_below="@id/confirm_check_in_button"
         android:backgroundTint="#E3D39E"
         android:text="Cancel"
@@ -72,22 +64,14 @@
         android:layout_centerInParent="true"/>
 
 
-    <ImageView
-        android:id="@+id/poster_view"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_below="@id/address_text"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/transparent" />
 
     <TextView
         android:id="@+id/textview_event_description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/poster_view"
+        android:layout_height="260dp"
+        android:layout_below="@+id/event_name_textview"
         android:layout_marginTop="30dp"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textColor="@color/white"
         android:gravity="center" />
 
@@ -96,8 +80,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textview_event_description"
-        android:layout_marginTop="30dp"
-        android:textSize="20sp"
+        android:layout_marginTop="40dp"
+        android:textSize="25sp"
         android:textColor="@color/white"
         android:gravity="center" />
 
@@ -106,8 +90,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textview_event_date"
-        android:layout_marginTop="30dp"
-        android:textSize="20sp"
+        android:layout_marginTop="40dp"
+        android:textSize="25sp"
         android:textColor="@color/white"
         android:gravity="center" />
 

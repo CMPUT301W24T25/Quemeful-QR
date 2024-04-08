@@ -97,11 +97,11 @@ public class ScanQRActivity extends AppCompatActivity {
             // Your existing code to handle the result...
             if(result != null){
                 if (result.getContents() == null) {
-                    Toast.makeText(getBaseContext(), "Scan Cancelled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Scan Cancelled", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    confirm.setText(result.getContents());
-                    Toast.makeText(getBaseContext(), "Scanned successfully", Toast.LENGTH_SHORT).show();
+//                    confirm.setText(result.getContents());
+                    Toast.makeText(getBaseContext(), "Scanned successfully", Toast.LENGTH_LONG).show();
 
                     /**
                      * This method is used to compare id from QR code with the ids in firebase,
@@ -125,7 +125,7 @@ public class ScanQRActivity extends AppCompatActivity {
                                 eventTime = document.getData().get("time").toString();
                                 eventDate = document.getData().get("date").toString();
                                 eventDescription = document.getData().get("description").toString();
-                                confirm.setText(eventPoster);
+//                                confirm.setText(eventPoster);
 
                                 EventHelper event = new EventHelper(eventUUID, eventName, eventLocation, eventLatitude, eventLongitude, eventTime, eventDate, eventDescription, eventPoster);
                                 Intent intent = new Intent(ScanQRActivity.this, ViewEventActivity.class);

@@ -122,7 +122,7 @@ public class MapActivity extends AppCompatActivity {
                     addEventMarker(location);
 
 
-                    Toast.makeText(getApplicationContext(), "Location: " + locationName + "\n" + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Location: " + locationName + "\n" + latitude + ", " + longitude, Toast.LENGTH_LONG).show();
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Location Not Found", Toast.LENGTH_LONG).show();
@@ -152,14 +152,12 @@ public class MapActivity extends AppCompatActivity {
         clearAddressButton.setOnClickListener(v -> addressText.setText(""));
 
         confirmLocationButton.setOnClickListener(v -> {
-
             Intent returnIntent = new Intent();
             returnIntent.putExtra("location string",addressText.getText().toString());
             returnIntent.putExtra("location latitude", latitude);
             returnIntent.putExtra("location longitude", longitude);
             setResult(Activity.RESULT_OK, returnIntent);
             finish();
-
         });
 
         //add pins when tap on map
@@ -171,8 +169,8 @@ public class MapActivity extends AppCompatActivity {
                 addEventMarker(p);
                 latitude = p.getLatitude();
                 longitude = p.getLongitude();
-                Toast.makeText(MapActivity.this,
-                        "Lat: " + p.getLatitude() + ", Long: " + p.getLongitude(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(MapActivity.this,
+//                        "Lat: " + p.getLatitude() + ", Long: " + p.getLongitude(), Toast.LENGTH_LONG).show();
                 new fetchData().start();
                 return true;
             }
@@ -222,6 +220,7 @@ public class MapActivity extends AppCompatActivity {
 
         if (enableLocations) {
             // Create location overlay
+
             myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
             myLocationOverlay.enableMyLocation();
             myLocationOverlay.enableFollowLocation();

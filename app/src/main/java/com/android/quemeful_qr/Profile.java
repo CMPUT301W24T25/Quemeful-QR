@@ -128,8 +128,15 @@ public class Profile extends Fragment {
                 editor.apply();
 
 
-                Toast message = Toast.makeText(getContext(), "Check getSharedPreferences: " + settings.getBoolean("custom_location", true), Toast.LENGTH_LONG);
-                message.show();
+//                Toast message = Toast.makeText(getContext(), "Check getSharedPreferences: " + settings.getBoolean("custom_location", true), Toast.LENGTH_LONG);
+//                message.show();
+                if (settings.getBoolean("custom_location", true)){
+                    Toast message = Toast.makeText(getContext(), "Geolocation enabled", Toast.LENGTH_LONG);
+                    message.show();
+                }else{
+                    Toast message = Toast.makeText(getContext(), "Geolocation disabled", Toast.LENGTH_LONG);
+                    message.show();
+                }
 
             }
         });

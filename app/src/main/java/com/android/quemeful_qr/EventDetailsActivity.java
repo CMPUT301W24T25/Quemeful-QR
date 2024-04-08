@@ -375,11 +375,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                             attLongitude = (Double) signupList.get(i).get("attendee_longitude");
                             AttendeeMapPin attendeePin = new AttendeeMapPin(attId, attLatitude, attLongitude);
                             attendeePinList.add(attendeePin);
-                            Toast.makeText(EventDetailsActivity.this,
-                                    "added: " +
-                                            attLatitude + "\nLatitude: " +
-                                            attLongitude + "\nLongitude: " +
-                                            attId, Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(EventDetailsActivity.this,
+//                                    "added: " +
+//                                            attLatitude + "\nLatitude: " +
+//                                            attLongitude + "\nLongitude: " +
+//                                            attId, Toast.LENGTH_SHORT).show();
                         }
                     }
                     if (!attendeePinList.isEmpty()) {

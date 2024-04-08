@@ -39,6 +39,7 @@
         android:layout_marginTop="70dp"
         android:layout_below="@+id/header"
         android:gravity="center"
+        android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="30sp" />
 
@@ -55,9 +56,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/QRImage"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:text="@string/please_scan_the_above_qr_code_to_check_in_for_this_event"
         android:textAlignment="center"
-        android:textSize="19sp" />
+        android:textColor="@color/white"
+        android:textSize="25sp" />
 
 </RelativeLayout>

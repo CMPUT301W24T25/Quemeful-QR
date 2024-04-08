@@ -3,6 +3,7 @@
 //https://www.youtube.com/watch?v=qY-xFxZ7HKY
 //https://stackoverflow.com/a/4981063 thread
 //https://stackoverflow.com/a/2227299
+//https://stackoverflow.com/a/44444471
 
 package com.android.quemeful_qr;
 
@@ -17,6 +18,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
@@ -83,7 +85,7 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
 
     private Double attendeeLatitude;
     private Double attendeeLongitude;
-    private EditText addressText;
+
 
 
 
@@ -109,12 +111,12 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
         
         confirmCheckInButton = findViewById(R.id.confirm_check_in_button);
         cancelButton = findViewById(R.id.cancel_button);
-        addressText = findViewById(R.id.address_text);
+
 
 
         // initialize instances from xml
         eventName = findViewById(R.id.event_name_textview);
-        eventPoster = findViewById(R.id.poster_view);
+//        eventPoster = findViewById(R.id.poster_view);
         eventDesc = findViewById(R.id.textview_event_description);
         eventDate = findViewById(R.id.textview_event_date);
         eventTime = findViewById(R.id.textview_event_time);
@@ -226,6 +228,12 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
 
                        }
                });
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        finish();
+                    }
+                }, 1500);
 
 
             }
@@ -278,7 +286,7 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
     }
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Toast.makeText(this,""+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,""+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_LONG).show();
         Geocoder geocoder = new Geocoder(ViewEventActivity.this, Locale.getDefault());
 
         geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 5, new Geocoder.GeocodeListener() {
