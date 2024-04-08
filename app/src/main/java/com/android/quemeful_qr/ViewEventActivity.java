@@ -147,6 +147,7 @@ public class ViewEventActivity extends AppCompatActivity implements LocationList
                 DocumentReference eventsDocRef = db.collection("events").document(eventId);
 
                 String currentUserUID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
                 DocumentReference user = db.collection("users").document(currentUserUID);
                 Map<String, Object> locationMap = getLocation();
                 eventsDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

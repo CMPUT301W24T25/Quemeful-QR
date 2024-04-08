@@ -160,8 +160,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "MapView is null");
         }
-        displayEventPins();
-        displayAttendeePins();
+
 
         // navigate back to previous page on clicking the back arrow.
         imageViewBackArrow.setOnClickListener(v -> finish());
@@ -484,15 +483,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         GeoPoint initPinGeoPoint = new GeoPoint(53.520318, -113.523329); // uofa coordinates
         mapController.setCenter(initPinGeoPoint);
         mapController.setZoom(12L);
-        if (enableLocations) {
-            // Create location overlay
-            myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
-            myLocationOverlay.enableMyLocation();
-            myLocationOverlay.enableFollowLocation();
-            myLocationOverlay.setDrawAccuracyEnabled(true);
-            mapController.setZoom(100);
-            map.getOverlays().add(myLocationOverlay);
-        }
+
+//        if (enableLocations) {
+//            // Create location overlay
+//            myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(this), map);
+//            myLocationOverlay.enableMyLocation();
+//            myLocationOverlay.enableFollowLocation();
+//            myLocationOverlay.setDrawAccuracyEnabled(true);
+//            mapController.setZoom(100);
+//            map.getOverlays().add(myLocationOverlay);
+//        }
         Set user_agent;
         Configuration.getInstance().setUserAgentValue("RossMaps");
     }
@@ -687,11 +687,14 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                     // Now also set the map's location
                     if(event.getLatitude() != null && event.getLongitude() != null) {
+                        displayEventPins();
+                        displayAttendeePins();
                         GeoPoint eventLocation = new GeoPoint(event.getLatitude(), event.getLongitude());
                         displayMarker(eventLocation, new EventMapPin(event.getTitle(), event.getLocation(), event.getLatitude(), event.getLongitude()));
                         mapController.setCenter(eventLocation);
                         mapController.setZoom(15); // Adjust zoom level as needed
                     }
+
 
                 }
             } else {}
