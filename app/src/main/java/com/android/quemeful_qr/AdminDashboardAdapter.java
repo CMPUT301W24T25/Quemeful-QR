@@ -8,12 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -94,14 +97,17 @@ public class AdminDashboardAdapter extends RecyclerView.Adapter<AdminDashboardAd
                 String userId = (String) data.get("uid");
                 if (userId != null) {
                     db.collection("users").document(userId).delete().addOnSuccessListener(aVoid -> {
+
                         dataList.remove(position);
                         notifyItemRemoved(position);
                         notifyItemRangeChanged(position, dataList.size());
                         dialog.dismiss();
+
                     }).addOnFailureListener(e -> {
                         // Handle failure
                         dialog.dismiss();
                     });
+
                 }
             });
 

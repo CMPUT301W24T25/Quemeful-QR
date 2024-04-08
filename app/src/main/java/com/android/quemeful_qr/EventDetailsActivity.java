@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.View;
@@ -191,7 +190,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("uid", currentUserUID);
         userMap.put("checked_in", "0"); // Assuming "0" means not checked-in and "1" means checked-in
-        FirebaseMessaging.getInstance().subscribeToTopic(eventId);
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(EventDetailsActivity.this, "Subscribed to event notifications", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(EventDetailsActivity.this, "Failed to subscribe to event notifications", Toast.LENGTH_SHORT).show();
+            }
+        });
         DocumentReference user = db.collection("users").document(currentUserUID);
         user.update("events", FieldValue.arrayUnion(eventId));
         eventRef.update("signed_up", FieldValue.arrayUnion(userMap))

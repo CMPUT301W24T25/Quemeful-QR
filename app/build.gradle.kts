@@ -94,7 +94,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
     implementation ("androidx.preference:preference:1.2.1")
-    implementation("com.google.firebase:firebase-inappmessaging:20.4.0") //
+    implementation("com.google.firebase:firebase-inappmessaging:20.4.1") //
 
     implementation ("com.google.firebase:firebase-analytics:21.5.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")

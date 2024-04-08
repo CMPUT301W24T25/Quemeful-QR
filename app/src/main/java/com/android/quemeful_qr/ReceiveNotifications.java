@@ -26,15 +26,6 @@
     public class ReceiveNotifications extends FirebaseMessagingService {
 
         /**
-         * This method is called when a new token is generated for the device.
-         * @param token The new token generated for the device.
-         */
-        @Override
-        public void onNewToken(@NonNull String token) {
-            super.onNewToken(token);
-        }
-
-        /**
          * This method is called when a new FCM message is received.
          * @param message The incoming FCM message.
          */
@@ -74,8 +65,8 @@
          * @param message The body/message of the notification.
          */
         public void handleMessage(String title,String  message, String icon) {
-            String CHANNEL_ID = "MESSAGE";
-            String channelName = "NOTIFICATION MESSAGE";
+            String CHANNEL_ID = title;
+            String channelName = title;
             Intent intent = new Intent(getApplicationContext(), ShowNotificationsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
 
@@ -92,9 +83,7 @@
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
             }
-
-
-                notification.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
+             notification.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
             notificationManager.notify(0, notification.build());
         }

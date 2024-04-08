@@ -6,19 +6,22 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.ImageButton;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.quemeful_qr.Notification;
-import com.android.quemeful_qr.NotificationAdapter;
-import com.android.quemeful_qr.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ShowNotificationsActivity extends AppCompatActivity {
@@ -61,19 +64,34 @@ public class ShowNotificationsActivity extends AppCompatActivity {
                                     DocumentSnapshot eventDocument = eventTask.getResult();
                                     if (eventDocument.exists()) {
                                         String image = (String) eventDocument.get("poster");
+                                        String from = (String) eventDocument.get("title");
                                         List<Map<String, String>> eventNotifications = (List<Map<String, String>>) eventDocument.get("notifications");
-                                        Collections.reverse(eventNotifications);
                                         for (Map<String, String> notificationDocument : eventNotifications) {
-                                            Log.d(TAG, "Notification data: " + notificationDocument);
                                             if (notificationDocument != null) {
                                                 String title = notificationDocument.get("title");
                                                 String body = notificationDocument.get("body");
-                                                String from = notificationDocument.get("Name");
+
                                                 String date_time = notificationDocument.get("date");
-                                                Log.d(TAG, "Notification: title=" + title + ", body=" + body + ", from=" + from + ", date_time=" + date_time);
                                                 notifications.add(new Notification(title, body, from, date_time, image));
                                             }
                                         }
+                                        notifications.sort(new Comparator<Notification>() {
+                                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM HH:mm", Locale.ENGLISH);
+
+                                            @Override
+                                            public int compare(Notification notification1, Notification notification2) {
+                                                try {
+                                                    Date date1 = dateFormat.parse(notification1.getDate_time());
+                                                    Date date2 = dateFormat.parse(notification2.getDate_time());
+                                                    // Compare dates
+                                                    return date2.compareTo(date1);
+                                                } catch (ParseException e) {
+                                                    e.printStackTrace();
+                                                    return 0; // Handle parsing exception
+                                                }
+                                            }
+                                        });
+
                                         adapter.setNotifications(notifications);
                                     } else {
                                         Log.d(TAG, "Event document does not exist");

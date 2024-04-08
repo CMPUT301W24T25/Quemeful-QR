@@ -1,41 +1,23 @@
 package com.android.quemeful_qr;
 
-import static androidx.test.InstrumentationRegistry.getContext;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 /**
  * This is a fragment class representing an announcement posting feature.
@@ -108,7 +90,6 @@ public class Announcement extends Fragment {
                 Map<String,String> notification = new HashMap<>();
                 notification.put("title", title);
                 notification.put("body",description);
-                notification.put("Name", EventName);
                 LocalDateTime currentDate = LocalDateTime.now();
                 DateTimeFormatter currrentDateFormatted = DateTimeFormatter.ofPattern("dd MMM HH:mm");
                 String formattedDateTime = currentDate.format(currrentDateFormatted);
