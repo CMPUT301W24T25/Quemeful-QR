@@ -3,6 +3,14 @@
 ## Overview
 The Quemeful-QR is designed to simplify event management and enhance the attendee check-in process using QR codes. It allows event organizers to manage details, track attendance in real-time. Attendees can quickly check into events by scanning QR codes, enriching their event experience with minimal hassle.
 
+## Members:
+- babariya - Yash Babariya
+- ddpatel1 - Dhvani Patel
+- jahnabi - Jahnabi Mondal
+- mmerchan - Hussain Merchant
+- suhanshk - Suhansh Patel
+- vtrac1 - Victoria Trac
+
 ## Features
 
 ### QR Code Scanning
